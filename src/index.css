@@ -2,9 +2,27 @@
 
 @layer components {
   .btn-register {
-    @apply w-full bg-purple-500 text-white p-2 rounded hover:bg-blue-600 transition
+    @apply w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 cursor-pointer;
   }
+
+  .btn-login {
+    @apply w-full bg-white text-purple-600 py-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 cursor-pointer
+  }
+
+  .splash{
+    @apply bg-purple-500 fixed inset-0 flex items-center justify-center
+  }
+
   .input-form {
     @apply w-full p-2 border border-gray-300 rounded
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  
+  .animate-fadeIn {
+    animation: fadeIn .8s ease-in-out forwards;
   }
 }

@@ -1,21 +1,34 @@
-// src/App.jsx
-import { Routes, Route, Link } from "react-router-dom";
-import RegisterPage from "./pages/RegisterPage";
+import React, { useState, useEffect } from "react";
+import Logo from './assets/image.webp'
+import Login from './components/Login/Login';
+
+const SplashScreen = ({ onFinish }) => {
+  useEffect(() => {
+    setTimeout(onFinish, 2500); // Dura 2.5 segundos
+  }, [onFinish]);
+
+  return (
+    <div className="splash">
+      <img src={Logo} className="w-auto h-24 opacity-0 scale-90 animate-fadeIn " alt="Logo" />
+    </div>
+  );
+};
 
 const App = () => {
+  const [showSplash, setShowSplash] = useState(true);
+
   return (
-    <div className="text-center p-4">
-      <h1 className="text-3xl font-bold">Bienvenido a la App</h1>
-      <nav className="mt-4">
-        <Link to="/registro" className="text-blue-500 underline">
-          Ir a Registro
-        </Link>
-      </nav>
-      
-      <Routes>
-        <Route path="/" element={<h1>Bienvenido a la App</h1>} />
-        <Route path="/registro" element={<RegisterPage />} />
-      </Routes>
+    <div>
+      {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
+      {!showSplash && <Login />}
+    </div>
+  );
+};
+
+const MainApp = () => {
+  return (
+    <div className="h-screen flex items-center justify-center">
+      <h1 className="text-4xl font-bold">¡Bienvenido a la App! 🎉</h1>
     </div>
   );
 };
