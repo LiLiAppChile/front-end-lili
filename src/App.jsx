@@ -1,35 +1,36 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState, useEffect } from "react";
+import Logo from './assets/image.webp'
+import Login from './components/Login/Login';
 
-function App() {
-  const [count, setCount] = useState(0)
+const SplashScreen = ({ onFinish }) => {
+  useEffect(() => {
+    setTimeout(onFinish, 2500); // Dura 2.5 segundos
+  }, [onFinish]);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div className="splash">
+      <img src={Logo} className="w-auto h-24 opacity-0 scale-90 animate-fadeIn " alt="Logo" />
+    </div>
+  );
+};
 
-export default App
+const App = () => {
+  const [showSplash, setShowSplash] = useState(true);
+
+  return (
+    <div>
+      {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
+      {!showSplash && <Login />}
+    </div>
+  );
+};
+
+const MainApp = () => {
+  return (
+    <div className="h-screen flex items-center justify-center">
+      <h1 className="text-4xl font-bold">¡Bienvenido a la App! 🎉</h1>
+    </div>
+  );
+};
+
+export default App;
