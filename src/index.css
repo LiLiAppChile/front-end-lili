@@ -13,6 +13,10 @@
     @apply bg-purple-500 fixed inset-0 flex items-center justify-center
   }
 
+  .input-form {
+    @apply w-full p-2 border border-gray-300 rounded
+  }
+
   @keyframes fadeIn {
     from { opacity: 0; transform: scale(0.9); }
     to { opacity: 1; transform: scale(1); }
@@ -21,5 +25,4 @@
   .animate-fadeIn {
     animation: fadeIn .8s ease-in-out forwards;
   }
-
 }
