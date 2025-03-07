@@ -1,7 +1,10 @@
-import React from 'react';
-import Logo from '../../assets/image.webp';
+import React from "react";
+import { useNavigate } from "react-router-dom"; // Importamos useNavigate
+import Logo from "../../assets/image.webp";
 
 const Login = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-purple-500 p-4">
       <div className="flex flex-col items-center justify-center space-y-8 w-full">
@@ -11,13 +14,10 @@ const Login = () => {
         </div>
 
         <div className="w-64 space-y-4">
-          <button
-            className="btn-login"
-          >
+          <button className="btn-login" onClick={() => navigate("/register")}>
             Regístrate
           </button>
-          <button
-            className="btn-register">
+          <button className="btn-register">
             Inicia sesión
           </button>
         </div>

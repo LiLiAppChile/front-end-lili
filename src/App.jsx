@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Logo from './assets/image.webp'
 import Login from './components/Login/Login';
+import RegisterPage from "./components/Register/RegisterPage";
 
 const SplashScreen = ({ onFinish }) => {
   useEffect(() => {
@@ -21,6 +22,8 @@ const App = () => {
     <div>
       {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
       {!showSplash && <Login />}
+      {!showSplash && <RegisterPage />}
+
     </div>
   );
 };
