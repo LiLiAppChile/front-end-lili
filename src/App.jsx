@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import SplashScreen from "./components/SplashScreen/SplashScreen";
 import Login from "./components/Login/Login";
 import Register from "./components/Register/Register";
+import LoginUsers from "./components/Login/LoginUsers";
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -15,6 +16,7 @@ const App = () => {
         <Routes> 
           <Route path="/" element={<Login />} /> 
           <Route path="/register" element={<Register />} /> 
+          <Route path="/login" element={<LoginUsers />} /> 
         </Routes>
       )}
     </div>

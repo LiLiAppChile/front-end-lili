@@ -9,6 +9,14 @@
     @apply w-full text-center bg-white text-purple-600 py-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 cursor-pointer
   }
 
+  .inputs-login {
+    @apply w-full pl-10 px-4 py-2 rounded-lg focus:outline-none bg-purple-100
+  }
+
+  .icons-login {
+    @apply absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500
+  }
+
   .splash{
     @apply bg-purple-500 fixed inset-0 flex items-center justify-center
   }
