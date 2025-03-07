@@ -1,5 +1,6 @@
-import React from 'react';
-import Logo from '../../assets/image.webp';
+import React from "react";
+import { Link } from "react-router-dom";
+import Logo from "../../assets/Logo.webp";
 
 const Login = () => {
   return (
@@ -10,16 +11,13 @@ const Login = () => {
           <img src={Logo} className="w-auto h-12 mx-auto" alt="Logo" />
         </div>
 
-        <div className="w-64 space-y-4">
-          <button
-            className="btn-login"
-          >
+        <div className="flex flex-col items-center space-y-4 w-64">
+          <Link to="/register" className="btn-login">
             Regístrate
-          </button>
-          <button
-            className="btn-register">
+          </Link>
+          <Link to="/login" className="btn-register">
             Inicia sesión
-          </button>
+          </Link>
         </div>
       </div>
     </div>

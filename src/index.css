@@ -2,11 +2,11 @@
 
 @layer components {
   .btn-register {
-    @apply w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 cursor-pointer;
+    @apply w-full text-center bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 cursor-pointer;
   }
 
   .btn-login {
-    @apply w-full bg-white text-purple-600 py-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 cursor-pointer
+    @apply w-full text-center bg-white text-purple-600 py-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 cursor-pointer
   }
 
   .splash{
