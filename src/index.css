@@ -5,24 +5,52 @@
     @apply w-full text-center bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 cursor-pointer;
   }
 
+  .btn-promociones {
+    @apply w-full text-center bg-purple-600 text-white py-4 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 cursor-pointer;
+  }
+
   .btn-login {
-    @apply w-full text-center bg-white text-purple-600 py-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 cursor-pointer
+    @apply w-full text-center bg-white text-purple-600 py-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 cursor-pointer;
   }
 
   .inputs-login {
-    @apply w-full pl-10 px-4 py-2 rounded-lg focus:outline-none bg-purple-100
+    @apply w-full pl-10 px-4 py-2 rounded-lg focus:outline-none bg-purple-100;
   }
 
   .icons-login {
-    @apply absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500
+    @apply absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500;
+  }
+
+  .icon-notify {
+    @apply h-10 w-10 bg-gray-100 text-gray-800 rounded-full p-1 hover:bg-gray-200 transition hover:text-gray-900;
+  }
+
+  .notify-number {
+    @apply absolute -top-2 -right-2 bg-purple-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center;
   }
 
   .splash{
-    @apply bg-purple-500 fixed inset-0 flex items-center justify-center
+    @apply bg-purple-500 fixed inset-0 flex items-center justify-center;
   }
 
   .input-form {
-    @apply w-full p-2 border border-gray-300 rounded
+    @apply w-full p-2 border border-gray-300 rounded;
+  }
+
+  .job-list {
+    @apply font-semibold bg-gray-100 py-3 px-2 rounded-lg shadow-sm flex justify-between;
+  }
+
+  .detail-joblist {
+    @apply hover:text-purple-600 cursor-pointer transition
+  }
+
+  .bottom-menu {
+    @apply fixed bottom-0 left-0 w-full bg-purple-500 border-t border-gray-200 shadow-lg
+  }
+
+  .icons-menu {
+    @apply flex flex-col items-center text-white cursor-pointer;
   }
 
   @keyframes fadeIn {
