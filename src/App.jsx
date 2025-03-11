@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import SplashScreen from "./components/SplashScreen/SplashScreen";
+import LandingPage from "./components/LandingPage/LandingPage";
+import RegisterPage from "./components/Register/Register";
 import Login from "./components/Login/Login";
-import Register from "./components/Register/Register";
-import LoginUsers from "./components/Login/LoginUsers";
+import HomePage from "./components/HomePage/HomePage";
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -14,9 +15,10 @@ const App = () => {
         <SplashScreen onFinish={() => setShowSplash(false)} />
       ) : (
         <Routes> 
-          <Route path="/" element={<Login />} /> 
-          <Route path="/register" element={<Register />} /> 
-          <Route path="/login" element={<LoginUsers />} /> 
+          <Route path="/" element={<LandingPage />} /> {/* Página de inicio */}
+          <Route path="/login" element={<Login />} /> {/* Página de inicio de sesión */}
+          <Route path="/register" element={<RegisterPage />} /> {/* Página de registro */}
+          <Route path="/home" element={<HomePage />} /> {/* Página principal (dashboard) */}
         </Routes>
       )}
     </div>
