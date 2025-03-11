@@ -1,4 +1,4 @@
-import TrainingExample from "../../assets/training-example.png";
+import TrainingExample from "../../../../assets/training-example.png";
 
 const TrainingUsers = () => {
     return (

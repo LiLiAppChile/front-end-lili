@@ -1,8 +1,8 @@
-import HeaderUsers from "./HeaderUsers"
-import JobsUsers from "./JobsUsers"
-import PromotionUsers from "./PromotionUsers"
-import BottomMenu from "./BottomMenu"
-import TrainingUsers from "./TrainingUsers"
+import HeaderUsers from "../Header/HeaderUsers"
+import JobsUsers from "../Home/Jobs/JobsUsers"
+import PromotionUsers from "../Home/Promotion/PromotionUsers"
+import BottomMenu from "../BottomMenu/BottomMenu"
+import TrainingUsers from "../Home/Training/TrainingUsers"
 
 const HomeUsers = () => {
 

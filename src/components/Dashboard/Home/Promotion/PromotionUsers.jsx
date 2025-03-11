@@ -1,4 +1,4 @@
-import PromoImg from "../../assets/promo-example.png"
+import PromoImg from "../../../../assets/promo-example.png"
 
 const PromotionUsers = () => {
     return (
