@@ -5,12 +5,12 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./index.css";
-import HomeUsers from "./components/Dashboard/HomeUsers";
+import HomeUsers from "./components/Dashboard/Home/HomeUsers";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <HomeUsers />
     </BrowserRouter>
   </StrictMode>
 );
