@@ -1,6 +1,6 @@
 import React from "react";
-import { useNavigate } from "react-router-dom"; // Importamos useNavigate
-import Logo from "../../assets/image.webp";
+import { Link, useNavigate } from "react-router-dom";
+import Logo from "../../assets/Logo.webp";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,12 +14,17 @@ const Login = () => {
         </div>
 
         <div className="w-64 space-y-4">
-          <button className="btn-login" onClick={() => navigate("/register")}>
+          <button 
+            className="btn-login"
+            onClick={() => navigate("/register")}
+          >
             Regístrate
           </button>
-          <button className="btn-register">
-            Inicia sesión
-          </button>
+          <Link to="/login">
+            <button className="btn-register">
+              Inicia sesión
+            </button>
+          </Link>
         </div>
       </div>
     </div>

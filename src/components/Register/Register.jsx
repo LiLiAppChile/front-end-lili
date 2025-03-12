@@ -1,4 +1,3 @@
-// src/pages/RegisterPage.jsx
 import React, { useState } from "react";
 
 const RegisterPage = () => {
@@ -6,7 +5,7 @@ const RegisterPage = () => {
     nombre: "",
     rut: "",
     correo: "",
-    contraseña: "",
+    password: "",
     telefono: "",
     especialidad: "",
     ciudad: "",
@@ -18,8 +17,15 @@ const RegisterPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Validación básica del RUT
+    if (formData.rut.length < 8) {
+      alert("El RUT ingresado es inválido. Debe tener al menos 8 caracteres.");
+      return;
+    }
+
     console.log("Datos del formulario:", formData);
-    // datos para enviar a Firebase o para ver la lógica del registro
+    // Aquí iría la lógica para enviar los datos a Firebase
   };
 
   return (
@@ -33,7 +39,7 @@ const RegisterPage = () => {
             placeholder="Nombre"
             value={formData.nombre}
             onChange={handleChange}
-            className="input-form"
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
             required
           />
           <input
@@ -42,7 +48,7 @@ const RegisterPage = () => {
             placeholder="RUT"
             value={formData.rut}
             onChange={handleChange}
-            className="input-form"
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
             required
           />
           <input
@@ -51,16 +57,16 @@ const RegisterPage = () => {
             placeholder="Correo"
             value={formData.correo}
             onChange={handleChange}
-            className="input-form"
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
             required
           />
           <input
             type="password"
-            name="contraseña"
+            name="password"
             placeholder="Contraseña"
-            value={formData.contraseña}
+            value={formData.password}
             onChange={handleChange}
-            className="input-form"
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
             required
           />
           <input
@@ -69,7 +75,7 @@ const RegisterPage = () => {
             placeholder="Teléfono"
             value={formData.telefono}
             onChange={handleChange}
-            className="input-form"
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
             required
           />
           <input
@@ -78,7 +84,7 @@ const RegisterPage = () => {
             placeholder="Especialidad"
             value={formData.especialidad}
             onChange={handleChange}
-            className="input-form"
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
             required
           />
           <input
@@ -87,12 +93,12 @@ const RegisterPage = () => {
             placeholder="Ciudad"
             value={formData.ciudad}
             onChange={handleChange}
-            className="input-form"
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
             required
           />
           <button
             type="submit"
-            className="btn-register"
+            className="w-full bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 transition duration-300"
           >
             Continuar
           </button>
