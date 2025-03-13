@@ -6,11 +6,12 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./index.css";
 import HomeUsers from "./components/Dashboard/Home/HomeUsers";
+import Profile from "./components/Dashboard/Profile/Profile";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <HomeUsers />
+      <Profile />
     </BrowserRouter>
   </StrictMode>
 );
