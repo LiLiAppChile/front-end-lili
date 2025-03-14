@@ -1,13 +1,12 @@
-// src/pages/RegisterPage.jsx
 import React, { useState } from "react";
-/* import { createUserWithEmailAndPassword, deleteUser } from "firebase/auth"; */
-/* import { auth } from "../../firebase"; */
+import { useAuth } from "../../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    password: "",
     phone: "",
     rut: "",
     specialties: [],
@@ -19,6 +18,7 @@ const RegisterPage = () => {
   const [errors, setErrors] = useState({});
   const [backendError, setBackendError] = useState("");
   const [firebaseError, setFirebaseError] = useState("");
+  const { register } = useAuth();
   const navigate = useNavigate();
 
   const specialtiesOptions = [
@@ -76,6 +76,7 @@ const RegisterPage = () => {
 
     if (!formData.name) newErrors.name = "El nombre es obligatorio.";
     if (!formData.email) newErrors.email = "El correo electrónico es obligatorio.";
+    if (!formData.password) newErrors.password = "La contraseña es obligatoria.";
     if (!formData.phone) newErrors.phone = "El teléfono es obligatorio.";
     if (!formData.rut) newErrors.rut = "El RUT es obligatorio.";
     if (formData.specialties.length === 0) newErrors.specialties = "Debes seleccionar al menos una especialidad.";
@@ -94,19 +95,8 @@ const RegisterPage = () => {
       return;
     }
 
-    let user = null;
-
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        formData.email,
-        formData.password
-      );
-      user = userCredential.user;
-      console.log("Usuario registrado en Firebase:", user);
-
-      const userData = {
-        uid: user.uid,
+      await register(formData.email, formData.password, {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
@@ -116,27 +106,7 @@ const RegisterPage = () => {
         siiRegistered: formData.siiRegistered,
         hasTools: formData.hasTools,
         ownTransportation: formData.ownTransportation,
-        createdAt: new Date().toISOString(),
-        delete: false,
-        validUser: false,
-      };
-
-      const createUserResponse = await fetch("http://[::1]:3001/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userData),
       });
-
-      if (!createUserResponse.ok) {
-        const errorData = await createUserResponse.json();
-        throw new Error(errorData.message || "Error al guardar los datos en el backend");
-      }
-
-      const result = await createUserResponse.json();
-      console.log("Usuario guardado en el backend:", result);
-
       navigate("/home");
     } catch (error) {
       console.error("Error en el registro:", error.message);
@@ -147,15 +117,6 @@ const RegisterPage = () => {
         setFirebaseError("El correo electrónico ya está en uso, por favor inicia sesión.");
       } else {
         setFirebaseError("Error en el registro. Inténtalo de nuevo.");
-      }
-
-      if (user) {
-        try {
-          await deleteUser(user);
-          console.log("Usuario eliminado de Firebase debido a un error en el backend.");
-        } catch (deleteError) {
-          console.error("Error al eliminar el usuario de Firebase:", deleteError);
-        }
       }
     }
   };
@@ -193,9 +154,11 @@ const RegisterPage = () => {
               type="password"
               name="password"
               placeholder="Contraseña"
+              value={formData.password}
               onChange={handleChange}
               className="input-form"
             />
+            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
           </div>
           <div>
             <input
@@ -296,7 +259,7 @@ const RegisterPage = () => {
           </label>
           {backendError && <p className="text-red-500 text-sm text-center">{backendError}</p>}
           {firebaseError && <p className="text-red-500 text-sm text-center">{firebaseError}</p>}
-          <button type="submit" className="btn-register">
+          <button type="submit" className="btn-register mx-auto block border border-black">
             Continuar
           </button>
         </form>
