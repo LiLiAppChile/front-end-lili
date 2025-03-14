@@ -8,7 +8,7 @@ const SplashScreen = ({ onFinish }) => {
   }, [onFinish]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-purple-500">
+    <div className="flex items-center justify-center min-h-screen">
       <img
         src={Logo}
         className="w-auto h-24 opacity-0 scale-90 animate-fadeIn"
