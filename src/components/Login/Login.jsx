@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../firebase";
+ /* import { signInWithEmailAndPassword } from "firebase/auth"; */
+/* import { auth } from "../../firebase"; */
 import Logo from "../../assets/Logo.webp";
 import { MdEmail, MdLock } from "react-icons/md";
 

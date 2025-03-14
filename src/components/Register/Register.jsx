@@ -1,7 +1,7 @@
 // src/pages/RegisterPage.jsx
 import React, { useState } from "react";
-import { createUserWithEmailAndPassword, deleteUser } from "firebase/auth";
-import { auth } from "../../firebase";
+/* import { createUserWithEmailAndPassword, deleteUser } from "firebase/auth"; */
+/* import { auth } from "../../firebase"; */
 import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
