@@ -1,15 +1,19 @@
-import React from 'react';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import { StarIcon } from '@heroicons/react/24/outline';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import User from "../../../assets/user.jpeg"
+import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
+    const navigate = useNavigate();
+
     return (
         <>
         <div className="flex justify-between items-center border-b-2 mb-5 border-gray-200 pb-4 py-5 px-5">
             <h1 className="text-2xl font-bold">Perfil</h1>
-            <Cog6ToothIcon className="icon-notify cursor-pointer" />
+            <button className="icons-menu" onClick={() => navigate('/settings')}>
+                <Cog6ToothIcon className="icon-notify cursor-pointer" />
+            </button>
         </div>
 
         <div className="flex flex-col items-center gap-6 bg-gray-100 rounded-2xl py-5 px-5 mr-5 ml-5 shadow-md">
