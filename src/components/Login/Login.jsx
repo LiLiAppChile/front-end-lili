@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
- /* import { signInWithEmailAndPassword } from "firebase/auth"; */
-/* import { auth } from "../../firebase"; */
 import LogoCasa from "../../assets/Logo.png";
 import { MdEmail, MdLock } from "react-icons/md";
+import { useAuth } from "../../Context/AuthContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -16,13 +16,9 @@ const Login = () => {
     setError("");
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      console.log("Usuario autenticado:", user);
-
+      await login(email, password);
       navigate("/home");
     } catch (error) {
-      console.error("Error al iniciar sesión:", error.message);
       setError("Correo o contraseña incorrectos. Inténtalo de nuevo.");
     }
   };
@@ -58,9 +54,8 @@ const Login = () => {
         <div className="text-center">
         <span className="text-[var(--text-primary)] underline justify-center">¿Olvidaste tu contraseña?</span>
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-        <button type="submit" className="btn-login-sesion
-        mt-20">
-          Iniciar Sesión
+        <button type="submit" className="btn-login">
+          Ingresar
         </button>
         </div>
       </form>
