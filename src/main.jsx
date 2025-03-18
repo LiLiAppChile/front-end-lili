@@ -11,7 +11,7 @@ import Profile from "./components/Dashboard/Profile/Profile";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <HomeUsers />
     </BrowserRouter>
   </StrictMode>
 );

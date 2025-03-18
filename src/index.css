@@ -3,24 +3,36 @@
 
 @layer components {
 
+  :root{
+    --bg-primary: #714DBF;
+    --bg-secundary: #ffff;
+    --bg-tertiary: #EAECF6;
+    --border-primary: #9BA5B7;
+    --text-primary: #714DBF;
+  }
+
   .btn-register {
     @apply w-60 text-center bg-white font-semibold py-3 rounded-lg cursor-pointer;
   }
 
   .btn-promociones {
-    @apply w-full text-center bg-purple-600 text-white py-4 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 cursor-pointer;
+    @apply w-full text-center bg-[var(--bg-primary)] text-white py-4 rounded-lg focus:outline-none focus:ring-2 cursor-pointer;
+  }
+
+  .input-login-sesion{
+    @apply w-full border-1 rounded-lg py-2 focus:outline-none border-[var(--border-primary)] px-3 font-sans
   }
 
   .btn-login {
-    @apply w-60 text-center bg-white font-semibold py-3 rounded-lg cursor-pointer;
+    @apply w-60 text-center bg-[var(--bg-secundary)] font-semibold py-3 rounded-lg cursor-pointer;
+  }
+
+  .btn-login-sesion {
+    @apply w-60 text-center bg-[var(--bg-primary)] text-white font-semibold py-3 rounded-lg cursor-pointer;
   }
 
   .inputs-login {
     @apply w-full pl-10 px-4 py-2 rounded-lg focus:outline-none bg-purple-100;
-  }
-
-  .icons-login {
-    @apply absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500;
   }
 
   .icon-notify {
@@ -40,7 +52,7 @@
   }
 
   .job-list {
-    @apply font-semibold bg-gray-100 py-3 px-2 rounded-lg shadow-sm flex justify-between;
+    @apply bg-[var(--bg-tertiary)] py-3 px-5 rounded-lg flex justify-between font-sans;
   }
 
   .detail-joblist {
@@ -60,7 +72,7 @@
   }
 
   body {
-    background-color: #714DBF;
+    background-color: var(--bg-primary);
     font-family: "Poppins";
   }
 
@@ -181,4 +193,11 @@
   font-family: "Poppins", sans-serif;
   font-weight: 900;
   font-style: italic;
+}
+
+.noto-sans {
+  font-family: "Noto Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 100;
+  font-style: normal;
 }
