@@ -9,6 +9,16 @@ import Profile from "./components/Dashboard/Profile/Profile";
 import SettingsPage from "./components/Dashboard/SettingsPage/SettingsPage";
 import { AuthProvider } from "./Context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import LaboralInfo from "./components/Dashboard/SettingsPage/LaboralInfo";
+import BankInfo from "./components/Dashboard/SettingsPage/BankInfo";
+import AboutLili from "./components/Dashboard/SettingsPage/AboutLili";
+import HowItWorks from "./components/Dashboard/SettingsPage/HowItWorks";
+import Guarantees from "./components/Dashboard/SettingsPage/Guarantees";
+import ContactSupport from "./components/Dashboard/SettingsPage/ContactSupport";
+import Terms from "./components/Dashboard/SettingsPage/Terms";
+import RefundPolicy from "./components/Dashboard/SettingsPage/RefundPolicy";
+import PrivacyPolicy from "./components/Dashboard/SettingsPage/PrivacyPolicy";
+import Contact from "./components/Dashboard/SettingsPage/Contact";
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -26,6 +36,17 @@ const App = () => {
             <Route path="/home" element={<ProtectedRoute><HomePage/></ProtectedRoute>} /> {/* Página principal (dashboard) */}
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} /> {/* Página principal (dashboard) */}
             <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} /> {/* Página de configuración */}
+            {/* Rutas de configuración */}
+            <Route path="/laboral-info" element={<LaboralInfo />} />
+            <Route path="/bank-info" element={<BankInfo />} />
+            <Route path="/about-lili" element={<AboutLili />} />
+            <Route path="/how-it-works" element={<HowItWorks />} />
+            <Route path="/guarantees" element={<Guarantees />} />
+            <Route path="/contact-support" element={<ContactSupport />} /> {/* Cambiado */}
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/refund-policy" element={<RefundPolicy />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/contact" element={<Contact />} />
           </Routes>
         </AuthProvider>
       )}
