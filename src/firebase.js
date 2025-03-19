@@ -4,13 +4,13 @@ import { getFirestore } from "firebase/firestore";
 
 // Configuración de Firebase usando variables de entorno
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+  apiKey: "AIzaSyCKE2jIyXfEbaXIoWmjKRYj0A0v7sTx-mY",
+  authDomain: "liliapp-fe07b.firebaseapp.com",
+  projectId: "liliapp-fe07b",
+  storageBucket: "liliapp-fe07b.firebasestorage.app",
+  messagingSenderId: "161501442887",
+  appId: "1:161501442887:web:200e05c71678d657bad262",
+  measurementId: "G-XXEMHGCLTH"
 };
 
 // Inicializa Firebase
