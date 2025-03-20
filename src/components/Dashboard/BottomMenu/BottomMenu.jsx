@@ -1,5 +1,7 @@
 import { HomeIcon, UserIcon, ClipboardDocumentIcon, BookOpenIcon, CalendarIcon } from '@heroicons/react/24/solid';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHouse } from '@fortawesome/free-solid-svg-icons';
 
 const BottomMenu = () => {
   const navigate = useNavigate();
@@ -8,11 +10,11 @@ const BottomMenu = () => {
     <div className="bottom-menu ">
       <div className="flex justify-around items-center p-4">
         <button className="icons-menu" onClick={() => navigate('/home')}>
-          <HomeIcon className="h-7 w-7" />
+          <FontAwesomeIcon icon={faHouse} className="h-7 w-7" />
         </button>
 
         <button className="icons-menu">
-          <ClipboardDocumentIcon className="h-7 w-7" />
+          <ClipboardDocumentIcon className="h-7 w-7" onClick={() => navigate('/requests')}/>
         </button>
 
         <button className="icons-menu">

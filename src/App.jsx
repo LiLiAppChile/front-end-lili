@@ -7,6 +7,8 @@ import Login from "./components/Login/Login";
 import HomePage from "./components/HomePage/HomePage";
 import Profile from "./components/Dashboard/Profile/Profile";
 import SettingsPage from "./components/Dashboard/SettingsPage/SettingsPage";
+import Requests from "./components/Dashboard/Home/Requests/Requests";
+import TaskDetail from "./components/Dashboard/Home/Requests/TaskDetail";
 import { AuthProvider } from "./Context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LaboralInfo from "./components/Dashboard/SettingsPage/LaboralInfo";
@@ -34,7 +36,9 @@ const App = () => {
             <Route path="/login" element={<Login />} /> {/* Página de inicio de sesión */}
             <Route path="/register" element={<RegisterPage />} /> {/* Página de registro */}
             <Route path="/home" element={<ProtectedRoute><HomePage/></ProtectedRoute>} /> {/* Página principal (dashboard) */}
-            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} /> {/* Página principal (dashboard) */}
+            <Route path="/requests" element={<ProtectedRoute><Requests/></ProtectedRoute>} /> {/* Página Solicitudes */}
+            <Route path="/details" element={<ProtectedRoute><TaskDetail/></ProtectedRoute>} /> {/* Página Detalle Solicitudes*/}
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} /> {/* Página Perfil */}
             <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} /> {/* Página de configuración */}
             {/* Rutas de configuración */}
             <Route path="/laboral-info" element={<LaboralInfo />} />

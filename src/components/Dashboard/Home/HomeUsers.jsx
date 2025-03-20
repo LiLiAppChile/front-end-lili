@@ -7,16 +7,16 @@ import TrainingUsers from "../Home/Training/TrainingUsers"
 const HomeUsers = () => {
 
     return (
-    <div className="p-4">
+    <div className="p-4 bg-white">
         <HeaderUsers />
 
       <button className="btn-promociones">
         Completar formulario
       </button>
 
-        <PromotionUsers />
         <JobsUsers />
         <TrainingUsers />
+        <PromotionUsers />
         <BottomMenu />
     </div>
     )

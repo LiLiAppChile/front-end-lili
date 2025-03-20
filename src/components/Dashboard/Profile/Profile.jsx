@@ -2,13 +2,17 @@ import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import { StarIcon } from '@heroicons/react/24/outline';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import User from "../../../assets/user.jpeg"
+import Navbar from "../BottomMenu/BottomMenu"
 import { useNavigate } from 'react-router-dom';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGear } from '@fortawesome/free-solid-svg-icons';
 const Profile = () => {
     const navigate = useNavigate();
 
     return (
         <>
+        <Navbar />
+        <section className='bg-white'>
         <div className="flex justify-between items-center border-b-2 mb-5 border-gray-200 pb-4 py-5 px-5">
             <h1 className="text-2xl font-bold">Perfil</h1>
             <button className="icons-menu" onClick={() => navigate('/settings')}>
@@ -81,6 +85,7 @@ const Profile = () => {
                 </div>
             </div>
         </div>
+        </section>
         </>
     )
 }

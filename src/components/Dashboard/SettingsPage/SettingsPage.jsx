@@ -12,6 +12,18 @@ const SettingsPage = () => {
   };
 
   return (
+<<<<<<< HEAD
+=======
+    <>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-6">Configuración</h1>
+      <button
+        onClick={logout}
+        className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition"
+        >
+        Cerrar sesión
+      </button>
+>>>>>>> 3c56f4a946da83963bf59d165e8e81eacdbde167
     <div className="min-h-screen bg-[#ffffff] p-4">
       {/* Botón para volver a la pestaña anterior */}
       <div className="flex items-center mb-4">
@@ -131,6 +143,10 @@ const SettingsPage = () => {
         </button>
       </div>
     </div>
+<<<<<<< HEAD
+
+=======
+>>>>>>> 3c56f4a946da83963bf59d165e8e81eacdbde167
   );
 };
 
