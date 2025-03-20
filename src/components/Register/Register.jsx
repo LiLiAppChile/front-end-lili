@@ -74,13 +74,37 @@ const RegisterPage = () => {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.name) newErrors.name = "El nombre es obligatorio.";
-    if (!formData.email) newErrors.email = "El correo electrónico es obligatorio.";
-    if (!formData.password) newErrors.password = "La contraseña es obligatoria.";
-    if (!formData.phone) newErrors.phone = "El teléfono es obligatorio.";
-    if (!formData.rut) newErrors.rut = "El RUT es obligatorio.";
-    if (formData.specialties.length === 0) newErrors.specialties = "Debes seleccionar al menos una especialidad.";
-    if (!formData.commune) newErrors.commune = "La comuna es obligatoria.";
+    if (!formData.name) {
+      newErrors.name = "El nombre es obligatorio.";
+    } else if (formData.name.length < 2) {
+      newErrors.name = "El nombre debe tener al menos 2 caracteres.";
+    } else if (formData.name.length > 50) {
+      newErrors.name = "El nombre no puede exceder los 50 caracteres.";
+    }
+
+    if (!formData.email) {
+      newErrors.email = "El correo electrónico es obligatorio.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "El correo electrónico debe ser válido.";
+    }
+
+    if (!formData.phone) {
+      newErrors.phone = "El teléfono es obligatorio.";
+    } else if (!/^\+?\d{10,15}$/.test(formData.phone)) {
+      newErrors.phone = "El número de teléfono debe ser válido y tener entre 10 y 15 dígitos.";
+    }
+
+    if (!formData.rut) {
+      newErrors.rut = "El RUT es obligatorio.";
+    }
+
+    if (!formData.commune) {
+      newErrors.commune = "La comuna es obligatoria.";
+    }
+
+    if (formData.specialties.length === 0) {
+      newErrors.specialties = "Debes seleccionar al menos una especialidad.";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -96,6 +120,7 @@ const RegisterPage = () => {
     }
 
     try {
+      const createdAt = new Date().toISOString();
       await register(formData.email, formData.password, {
         name: formData.name,
         email: formData.email,
@@ -106,6 +131,7 @@ const RegisterPage = () => {
         siiRegistered: formData.siiRegistered,
         hasTools: formData.hasTools,
         ownTransportation: formData.ownTransportation,
+        createdAt: createdAt,
       });
       navigate("/home");
     } catch (error) {
