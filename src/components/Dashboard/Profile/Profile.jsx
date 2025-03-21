@@ -20,7 +20,7 @@ const Profile = () => {
             </button>
         </div>
 
-        <div className="flex flex-col items-center gap-6 bg-gray-100 rounded-2xl py-5 px-5 mr-5 ml-5 shadow-md">
+        <div className="flex flex-col items-center gap-6 bg-gray-100 rounded-lg py-5 px-5 mr-5 ml-5 shadow-md">
         <div className="rounded-full overflow-hidden">
             <img src={User} alt="Foto de perfil" className='profile-photo'/>
         </div>
@@ -47,7 +47,7 @@ const Profile = () => {
                     <p className='pt-1 font-semibold text-indigo-500'>Ver más</p>
                 </div>
 
-            <div className='flex flex-col items-center gap-6 bg-gray-100 rounded-2xl py-5 px-5 mr-5 ml-5 mt-6 shadow-md'>
+            <div className='flex flex-col items-center gap-6 bg-gray-100 rounded-lg py-5 px-5 mr-5 ml-5 mt-6 shadow-md'>
                 <div className='flex flex-col border-b-2 pb-8 border-gray-200'>
                     <div className='flex'>
                     <img src={User} alt="reviwer-photo" 

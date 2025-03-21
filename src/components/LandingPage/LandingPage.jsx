@@ -1,8 +1,9 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Logo from "../../assets/Logo.webp";
 
 const LandingPage = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
       <div className="flex flex-col items-center justify-center space-y-8 w-full">
@@ -12,12 +13,19 @@ const LandingPage = () => {
         </div>
 
         <div className="flex flex-col items-center space-y-4 w-64 mt-22">
-          <Link to="/register" className="btn-login">
-            Regístrate
-          </Link>
-          <Link to="/login" className="btn-register">
+          <button
+            onClick={() => navigate("/login")}
+            className="btn-register bg-white py-3 px-4 rounded-lg w-full border border-gray-300 hover:bg-gray-300 transition"
+          >
             Inicia sesión
-          </Link>
+          </button>
+
+          <button
+            onClick={() => navigate("/register")}
+            className="btn-login bg-white py-3 px-4 rounded-lg w-full border border-gray-300 hover:bg-gray-300 transition"
+          >
+            Regístrate
+          </button>
         </div>
       </div>
     </div>
