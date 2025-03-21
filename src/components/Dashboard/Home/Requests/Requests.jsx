@@ -1,21 +1,20 @@
-"use client"
 import Navbar from "../../BottomMenu/BottomMenu"
-
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 
+// EN ESTE COMPONENTE LA NAVBAR SE DESPLAZA UN POCO A LA DERECHA AL ABRIRLO PORQUE NO HAY SCROLLBAR. QUEDA POR SOLUCIONAR.
 const Requests = () => {
+  const navigate = useNavigate();
 
-  // Estado para la pestaña activa
   const [tabActivo, setTabActivo] = useState("pendientes")
 
-
   return (
-<>
-<Navbar />
-
-    <div className="flex flex-col min-h-screen bg-white">
-      <div className="border-b p-4 flex items-center gap-2">
-        <h1 className="text-xl font-bold">Solicitudes</h1>
+    <>
+    <Navbar/>
+    <div className="flex flex-col min-h-screen bg-white overflow-y-scroll">
+      <div className=" p-4 flex items-center gap-2 border-b-2 mb-5 border-gray-200 pb-4">
+        <img src="./src/assets/Vector.png" alt="checkbox" />
+        <h1 className="text-2xl font-bold">Solicitudes</h1>
       </div>
 
       <div className="flex border-b">
@@ -64,6 +63,12 @@ const Requests = () => {
                   <p className="font-medium">Nombre</p>
                   <p className="text-sm text-gray-600">Fecha</p>
                   <p className="text-sm text-gray-600">Comuna</p>
+                  <button 
+                    onClick={() => navigate("/details")} 
+                    className="btn-details bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 border border-blue-500 transition px-2 py-1"
+                  >
+                    Ver detalles
+                  </button>
                 </div>
                 <div className="flex gap-2 pt-2.5">
                 <button
@@ -108,9 +113,9 @@ const Requests = () => {
             </div>
       </div>
     </div>
-                      </>
+    </>
   )
 }
 
-export default Requests
+export default Requests;
 

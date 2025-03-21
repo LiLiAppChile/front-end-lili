@@ -285,8 +285,11 @@ const RegisterPage = () => {
           </label>
           {backendError && <p className="text-red-500 text-sm text-center">{backendError}</p>}
           {firebaseError && <p className="text-red-500 text-sm text-center">{firebaseError}</p>}
-          <button type="submit" className="btn-register mx-auto block border border-black">
-            Continuar
+          <button
+              type="submit"
+              className="btn-register bg-white items-center justify-center py-3 px-4 rounded-lg border border-gray-300 hover:bg-gray-300 transition mx-auto block"
+            >
+              Continuar
           </button>
         </form>
       </div>

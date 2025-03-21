@@ -21,6 +21,7 @@ import Terms from "./components/Dashboard/SettingsPage/Terms";
 import RefundPolicy from "./components/Dashboard/SettingsPage/RefundPolicy";
 import PrivacyPolicy from "./components/Dashboard/SettingsPage/PrivacyPolicy";
 import Contact from "./components/Dashboard/SettingsPage/Contact";
+import Form from "./components/form/form";
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -40,17 +41,18 @@ const App = () => {
             <Route path="/details" element={<ProtectedRoute><TaskDetail/></ProtectedRoute>} /> {/* Página Detalle Solicitudes*/}
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} /> {/* Página Perfil */}
             <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} /> {/* Página de configuración */}
+            <Route path="/form" element={<ProtectedRoute><Form /></ProtectedRoute>} /> {/* Página de formulario */}
             {/* Rutas de configuración */}
-            <Route path="/laboral-info" element={<LaboralInfo />} />
-            <Route path="/bank-info" element={<BankInfo />} />
-            <Route path="/about-lili" element={<AboutLili />} />
-            <Route path="/how-it-works" element={<HowItWorks />} />
-            <Route path="/guarantees" element={<Guarantees />} />
-            <Route path="/contact-support" element={<ContactSupport />} /> {/* Cambiado */}
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/refund-policy" element={<RefundPolicy />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/contact" element={<Contact />} />
+            <Route path="/laboral-info" element={<ProtectedRoute><LaboralInfo /></ProtectedRoute>} />
+            <Route path="/bank-info" element={<ProtectedRoute><BankInfo /></ProtectedRoute>} />
+            <Route path="/about-lili" element={<ProtectedRoute><AboutLili /></ProtectedRoute>} />
+            <Route path="/how-it-works" element={<ProtectedRoute><HowItWorks /></ProtectedRoute>} />
+            <Route path="/guarantees" element={<ProtectedRoute><Guarantees /></ProtectedRoute>} />
+            <Route path="/contact-support" element={<ProtectedRoute><ContactSupport /></ProtectedRoute>} /> {/* Cambiado */}
+            <Route path="/terms" element={<ProtectedRoute><Terms /></ProtectedRoute>} />
+            <Route path="/refund-policy" element={<ProtectedRoute><RefundPolicy /></ProtectedRoute>} />
+            <Route path="/privacy-policy" element={<ProtectedRoute><PrivacyPolicy /></ProtectedRoute>} />
+            <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
           </Routes>
         </AuthProvider>
       )}

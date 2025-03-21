@@ -24,7 +24,9 @@ const Login = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-white p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#f3f4f6] p-4">
+      <div className="flex flex-col items-center justify-center bg-white min-h-0 px-4 py-10 rounded-lg shadow-md">
+
       <img src={LogoCasa} alt="Logo" className="w-auto h-20" />
       <h1 className="text-[32px] font-bold mb-8 mt-5">Inicia Sesión</h1>
 
@@ -52,20 +54,21 @@ const Login = () => {
           />
         </div>
         <div className="text-center">
-        <span className="text-[var(--text-primary)] underline justify-center">¿Olvidaste tu contraseña?</span>
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-        <button type="submit" className="btn-login">
+        <button type="submit" className="btn-login bg-[#714dbf] text-white px-4 py-3 rounded-lg hover:bg-[#5a3c9f] transition">
           Ingresar
         </button>
+        <span className="inline-block text-[var(--text-primary)] underline justify-center p-4">¿Olvidaste tu contraseña?</span>
         </div>
       </form>
 
-      <p className="text-center text-white mt-4">
+      <p className="text-center mt-4">
         ¿No tienes una cuenta?{" "}
         <Link to="/register" className="underline">
           Regístrate
         </Link>
       </p>
+      </div>
     </div>
   );
 };

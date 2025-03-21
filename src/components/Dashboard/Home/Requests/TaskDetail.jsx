@@ -4,12 +4,10 @@
   import { faComment } from "@fortawesome/free-regular-svg-icons";
   import { faCamera } from "@fortawesome/free-solid-svg-icons";
   import { faCancel } from "@fortawesome/free-solid-svg-icons";
-  import Navbar from "../../BottomMenu/BottomMenu"
   
   export default function TaskDetail() {
     return (
       <>
-      <Navbar />
       <div className="flex flex-col min-h-screen bg-white">
         <div className="flex-1 max-w-md w-full mx-auto bg-white pb-16">
           <div className="p-4 border-b-1 border-[#DDE1E6] flex items-center">
