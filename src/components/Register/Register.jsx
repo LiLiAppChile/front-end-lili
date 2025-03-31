@@ -1,109 +1,60 @@
 import React, { useState } from "react";
 import { useAuth } from "../../Context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import LogoCasa from "../../assets/Logo.png";
+import SuccessPopup from "./Succespopup";
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
-    phone: "",
-    rut: "",
-    specialties: [],
-    commune: "",
-    siiRegistered: false,
-    hasTools: false,
-    ownTransportation: false,
+    confirmPassword: "",
+    acceptTerms: false
   });
+
   const [errors, setErrors] = useState({});
-  const [backendError, setBackendError] = useState("");
   const [firebaseError, setFirebaseError] = useState("");
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const specialtiesOptions = [
-    "Gasfitería",
-    "Electricidad",
-    "Cerrajería",
-    "Limpieza",
-    "Seguridad",
-    "Climatización",
-    "Carpintería",
-    "Albañilería",
-    "Pintura",
-    "Jardinería",
-    "Artefactos",
-    "Control de plagas",
-  ];
-
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    if (type === "checkbox") {
-      setFormData({
-        ...formData,
-        [name]: checked,
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
-    }
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
-  };
-
-  const addSpecialty = (e) => {
-    const value = e.target.value;
-    if (value && !formData.specialties.includes(value)) {
-      setFormData({
-        ...formData,
-        specialties: [...formData.specialties, value],
-      });
-      setErrors((prevErrors) => ({ ...prevErrors, specialties: "" }));
-    }
-    e.target.value = "";
-  };
-
-  const handleSpecialtyClick = (specialty) => {
     setFormData({
       ...formData,
-      specialties: formData.specialties.filter((item) => item !== specialty),
+      [name]: type === "checkbox" ? checked : value
     });
+    setErrors({ ...errors, [name]: "" });
   };
 
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.name) {
-      newErrors.name = "El nombre es obligatorio.";
+    if (!formData.name.trim()) {
+      newErrors.name = "El nombre completo es obligatorio";
     } else if (formData.name.length < 2) {
-      newErrors.name = "El nombre debe tener al menos 2 caracteres.";
-    } else if (formData.name.length > 50) {
-      newErrors.name = "El nombre no puede exceder los 50 caracteres.";
+      newErrors.name = "El nombre debe tener al menos 2 caracteres";
     }
 
     if (!formData.email) {
-      newErrors.email = "El correo electrónico es obligatorio.";
+      newErrors.email = "El correo electrónico es obligatorio";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "El correo electrónico debe ser válido.";
+      newErrors.email = "Ingresa un correo electrónico válido";
     }
 
-    if (!formData.phone) {
-      newErrors.phone = "El teléfono es obligatorio.";
-    } else if (!/^\+?\d{10,15}$/.test(formData.phone)) {
-      newErrors.phone = "El número de teléfono debe ser válido y tener entre 10 y 15 dígitos.";
+    if (!formData.password) {
+      newErrors.password = "La contraseña es obligatoria";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "La contraseña debe tener al menos 6 caracteres";
     }
 
-    if (!formData.rut) {
-      newErrors.rut = "El RUT es obligatorio.";
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Las contraseñas no coinciden";
     }
 
-    if (!formData.commune) {
-      newErrors.commune = "La comuna es obligatoria.";
-    }
-
-    if (formData.specialties.length === 0) {
-      newErrors.specialties = "Debes seleccionar al menos una especialidad.";
+    if (!formData.acceptTerms) {
+      newErrors.acceptTerms = "Debes aceptar los términos y condiciones";
     }
 
     setErrors(newErrors);
@@ -112,186 +63,165 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setBackendError("");
     setFirebaseError("");
 
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     try {
       const createdAt = new Date().toISOString();
       await register(formData.email, formData.password, {
         name: formData.name,
         email: formData.email,
-        phone: formData.phone,
-        rut: formData.rut,
-        specialties: formData.specialties,
-        commune: formData.commune,
-        siiRegistered: formData.siiRegistered,
-        hasTools: formData.hasTools,
-        ownTransportation: formData.ownTransportation,
         createdAt: createdAt,
+        validUser: false
       });
-      navigate("/home");
+      
+      setShowSuccessPopup(true);
+      
     } catch (error) {
       console.error("Error en el registro:", error.message);
-
-      if (error.message.includes("correo ya está en uso")) {
-        setBackendError("El correo electrónico ya está en uso.");
-      } else if (error.message.includes("auth/email-already-in-use")) {
-        setFirebaseError("El correo electrónico ya está en uso, por favor inicia sesión.");
+      if (error.code === "auth/email-already-in-use") {
+        setFirebaseError("Este correo ya está registrado. ¿Ya tienes una cuenta?");
       } else {
         setFirebaseError("Error en el registro. Inténtalo de nuevo.");
       }
     }
   };
 
+  const handleContinueToForm = () => {
+    setShowSuccessPopup(false);
+    navigate("/form");
+  };
+
+  const handleLater = async () => {
+    setShowSuccessPopup(false);
+
+      navigate('/home'); // Redirige a la página principal
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center text-gray-700 mb-6">Registro</h2>
+        <img src={LogoCasa} alt="Logo" className="w-auto h-16 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Regístrate</h2>
+        
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Campos del formulario */}
+          {/* Nombre completo */}
           <div>
+            <label className="block mb-1 font-medium text-gray-700">Nombre completo</label>
             <input
               type="text"
               name="name"
-              placeholder="Nombre"
+              placeholder="Nombre completo"
               value={formData.name}
               onChange={handleChange}
-              className="input-form"
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                errors.name ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:ring-blue-200"
+              }`}
             />
-            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+            {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
           </div>
+
+          {/* Correo electrónico */}
           <div>
+            <label className="block mb-1 font-medium text-gray-700">Correo electrónico</label>
             <input
               type="email"
               name="email"
               placeholder="Correo electrónico"
               value={formData.email}
               onChange={handleChange}
-              className="input-form"
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                errors.email ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:ring-blue-200"
+              }`}
             />
-            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+            {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
           </div>
+
+          {/* Contraseña */}
           <div>
+            <label className="block mb-1 font-medium text-gray-700">Contraseña</label>
             <input
               type="password"
               name="password"
               placeholder="Contraseña"
               value={formData.password}
               onChange={handleChange}
-              className="input-form"
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                errors.password ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:ring-blue-200"
+              }`}
             />
-            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+            {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password}</p>}
           </div>
+
+          {/* Confirmar contraseña */}
           <div>
+            <label className="block mb-1 font-medium text-gray-700">Confirmar contraseña</label>
             <input
-              type="text"
-              name="phone"
-              placeholder="Teléfono"
-              value={formData.phone}
+              type="password"
+              name="confirmPassword"
+              placeholder="Confirmar contraseña"
+              value={formData.confirmPassword}
               onChange={handleChange}
-              className="input-form"
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                errors.confirmPassword ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:ring-blue-200"
+              }`}
             />
-            {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+            {errors.confirmPassword && <p className="mt-1 text-sm text-red-500">{errors.confirmPassword}</p>}
           </div>
-          <div>
-            <input
-              type="text"
-              name="rut"
-              placeholder="RUT"
-              value={formData.rut}
-              onChange={handleChange}
-              className="input-form"
-            />
-            {errors.rut && <p className="text-red-500 text-sm mt-1">{errors.rut}</p>}
-          </div>
-          <div>
-            <label htmlFor="specialties" className="text-sm font-medium text-gray-700">
-              Especialidades *
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {formData.specialties.map((specialty, index) => (
-                <div
-                  key={index}
-                  className="flex items-center bg-blue-100 text-blue-800 rounded-full px-3 py-1 text-sm"
-                >
-                  <span>{specialty}</span>
-                  <button
-                    type="button"
-                    onClick={() => handleSpecialtyClick(specialty)}
-                    className="ml-2 text-blue-800 hover:text-blue-600"
-                  >
-                    &times;
-                  </button>
-                </div>
-              ))}
+
+          {/* Términos y condiciones */}
+          <div className="flex items-start">
+            <div className="flex items-center h-5">
+              <input
+                id="acceptTerms"
+                name="acceptTerms"
+                type="checkbox"
+                checked={formData.acceptTerms}
+                onChange={handleChange}
+                className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300"
+              />
             </div>
-            <select
-              onChange={addSpecialty}
-              className="input-form"
-            >
-              <option value="">Selecciona una especialidad</option>
-              {specialtiesOptions.map((option, index) => (
-                <option key={index} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-            {errors.specialties && <p className="text-red-500 text-sm mt-1">{errors.specialties}</p>}
+            <label htmlFor="acceptTerms" className="ml-2 text-sm">
+              He leído y acepto los{" "}
+              <Link to="/terminos" className="underline text-[#714dbf] hover:text-[#5a3da3]">
+                Términos y Condiciones
+              </Link>
+            </label>
           </div>
-          <div>
-            <input
-              type="text"
-              name="commune"
-              placeholder="Comuna"
-              value={formData.commune}
-              onChange={handleChange}
-              className="input-form"
-            />
-            {errors.commune && <p className="text-red-500 text-sm mt-1">{errors.commune}</p>}
-          </div>
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              name="siiRegistered"
-              checked={formData.siiRegistered}
-              onChange={handleChange}
-              className="checkbox-form"
-            />
-            <span>Registrado en el SII</span>
-          </label>
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              name="hasTools"
-              checked={formData.hasTools}
-              onChange={handleChange}
-              className="checkbox-form"
-            />
-            <span>Tiene herramientas</span>
-          </label>
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              name="ownTransportation"
-              checked={formData.ownTransportation}
-              onChange={handleChange}
-              className="checkbox-form"
-            />
-            <span>Tiene transporte propio</span>
-          </label>
-          {backendError && <p className="text-red-500 text-sm text-center">{backendError}</p>}
-          {firebaseError && <p className="text-red-500 text-sm text-center">{firebaseError}</p>}
+          {errors.acceptTerms && <p className="mt-1 text-sm text-red-500">{errors.acceptTerms}</p>}
+
+          {/* Mensaje de error de Firebase */}
+          {firebaseError && (
+            <div className="p-3 text-sm text-red-700 bg-red-100 rounded-lg">
+              {firebaseError}
+            </div>
+          )}
+
+          {/* Botón de registro */}
           <button
-              type="submit"
-              className="btn-register bg-white items-center justify-center py-3 px-4 rounded-lg border border-gray-300 hover:bg-gray-300 transition mx-auto block"
-            >
-              Continuar
+            type="submit"
+            className="w-full py-3 px-4 bg-[#714dbf] text-white font-medium rounded-lg hover:bg-[#5a3da3] transition duration-200 focus:outline-none focus:ring-2 focus:ring-[#5a3da3] focus:ring-opacity-50"
+          >
+            Registrarme
           </button>
+
+          {/* Enlace a inicio de sesión */}
+          <div className="text-center text-sm text-gray-600">
+            ¿Ya tienes una cuenta?{" "}
+            <Link to="/login" className="text-[#714dbf] hover:underline font-medium">
+              Inicia sesión
+            </Link>
+          </div>
         </form>
+
+        {/* Popup de éxito */}
+        {showSuccessPopup && (
+          <SuccessPopup 
+            onContinue={handleContinueToForm}
+            onLater={handleLater}
+          />
+        )}
       </div>
     </div>
   );
