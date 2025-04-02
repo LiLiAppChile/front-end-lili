@@ -27,6 +27,7 @@ const App = () => {
 
   return (
     <div>
+      
       {showSplash ? (
         <SplashScreen onFinish={() => setShowSplash(false)} />
       ) : (

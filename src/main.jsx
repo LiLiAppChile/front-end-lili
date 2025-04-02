@@ -7,11 +7,14 @@ import App from "./App";
 import "./index.css";
 import TaskDetail from "./components/Dashboard/Home/Requests/TaskDetail";
 import Profile from "./components/Dashboard/Profile/Profile";
+import PendingTask from "./components/Dashboard/Home/Requests/PendingTask";
+import JobsUsers from "./components/Dashboard/Home/Jobs/JobsUsers";
+import Requests from "./components/Dashboard/Home/Requests/Requests";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <Requests />
     </BrowserRouter>
   </StrictMode>
 );

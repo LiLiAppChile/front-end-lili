@@ -1,47 +1,34 @@
 import React from "react";
 import { useAuth } from "../../../Context/AuthContext";
-import { useNavigate } from "react-router-dom"; // Importa useNavigate para manejar la navegación
+import { useNavigate } from "react-router-dom";
 
 const SettingsPage = () => {
   const { logout } = useAuth();
-  const navigate = useNavigate(); // Usa useNavigate para la navegación
+  const navigate = useNavigate();
 
-  // Función para manejar la navegación (puedes personalizar las rutas según tu aplicación)
   const handleNavigation = (path) => {
     navigate(path);
   };
 
   return (
-<<<<<<< HEAD
-=======
-    <>
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-6">Configuración</h1>
-      <button
-        onClick={logout}
-        className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition"
-        >
-        Cerrar sesión
-      </button>
->>>>>>> 3c56f4a946da83963bf59d165e8e81eacdbde167
-    <div className="min-h-screen bg-[#ffffff] p-4">
+    <div className="min-h-screen bg-white p-4">
       {/* Botón para volver a la pestaña anterior */}
       <div className="flex items-center mb-4">
         <button
-          onClick={() => navigate(-1)} // Navega a la página anterior
+          onClick={() => navigate(-1)}
           className="flex items-center text-[#6D28D9] text-2xl font-bold mr-2 cursor-pointer"
         >
           <span className="text-[#6D28D9] text-3xl font-medium">&lt;</span>
         </button>
         <button
-          onClick={() => navigate(-1)} // Navega a la página anterior
-          className="text-2xl font-bold text-[#000000] cursor-pointer"
+          onClick={() => navigate(-1)}
+          className="text-2xl font-bold text-black cursor-pointer"
         >
           Configuración
         </button>
       </div>
 
-      {/* Borde inferior debajo de "Configuración" (más arriba) */}
+      {/* Borde inferior debajo de "Configuración" */}
       <div className="border-b border-[#d1d5db] mb-6"></div>
 
       {/* Grupos de opciones */}
@@ -49,14 +36,14 @@ const SettingsPage = () => {
         {/* Información laboral y bancaria */}
         <div className="bg-[#eaecf6] rounded-lg p-4 space-y-2">
           <button
-            onClick={() => handleNavigation("/laboral-info")} // Cambia la ruta según tu aplicación
+            onClick={() => handleNavigation("/laboral-info")}
             className="w-full flex justify-between items-center py-2 border-b border-[#d1d5db] cursor-pointer"
           >
             <span className="font-semibold">Información laboral</span>
             <span className="text-[#6D28D9] text-xl">&gt;</span>
           </button>
           <button
-            onClick={() => handleNavigation("/bank-info")} // Cambia la ruta según tu aplicación
+            onClick={() => handleNavigation("/bank-info")}
             className="w-full flex justify-between items-center py-2 cursor-pointer"
           >
             <span className="font-semibold">Información bancaria</span>
@@ -67,14 +54,14 @@ const SettingsPage = () => {
         {/* LiLi App y cómo funciona */}
         <div className="bg-[#eaecf6] rounded-lg p-4 space-y-2">
           <button
-            onClick={() => handleNavigation("/about-lili")} // Cambia la ruta según tu aplicación
+            onClick={() => handleNavigation("/about-lili")}
             className="w-full flex justify-between items-center py-2 border-b border-[#d1d5db] cursor-pointer"
           >
             <span className="font-semibold">¿Qué es LiLi App?</span>
             <span className="text-[#6D28D9] text-xl">&gt;</span>
           </button>
           <button
-            onClick={() => handleNavigation("/how-it-works")} // Cambia la ruta según tu aplicación
+            onClick={() => handleNavigation("/how-it-works")}
             className="w-full flex justify-between items-center py-2 cursor-pointer"
           >
             <span className="font-semibold">¿Cómo funciona?</span>
@@ -85,35 +72,35 @@ const SettingsPage = () => {
         {/* Garantías, coberturas, resolución de problemas, términos y condiciones, políticas de reembolso y privacidad */}
         <div className="bg-[#eaecf6] rounded-lg p-4 space-y-2">
           <button
-            onClick={() => handleNavigation("/guarantees")} // Cambia la ruta según tu aplicación
+            onClick={() => handleNavigation("/guarantees")}
             className="w-full flex justify-between items-center py-2 border-b border-[#d1d5db] cursor-pointer"
           >
             <span className="font-semibold">Garantías y coberturas</span>
             <span className="text-[#6D28D9] text-xl">&gt;</span>
           </button>
           <button
-            onClick={() => handleNavigation("/contact-support")} // Cambia la ruta según tu aplicación
+            onClick={() => handleNavigation("/contact-support")}
             className="w-full flex justify-between items-center py-2 border-b border-[#d1d5db] cursor-pointer"
           >
             <span className="font-semibold">Resolución de problemas</span>
             <span className="text-[#6D28D9] text-xl">&gt;</span>
           </button>
           <button
-            onClick={() => handleNavigation("/terms")} // Cambia la ruta según tu aplicación
+            onClick={() => handleNavigation("/terms")}
             className="w-full flex justify-between items-center py-2 border-b border-[#d1d5db] cursor-pointer"
           >
             <span className="font-semibold">Términos y condiciones</span>
             <span className="text-[#6D28D9] text-xl">&gt;</span>
           </button>
           <button
-            onClick={() => handleNavigation("/refund-policy")} // Cambia la ruta según tu aplicación
+            onClick={() => handleNavigation("/refund-policy")}
             className="w-full flex justify-between items-center py-2 border-b border-[#d1d5db] cursor-pointer"
           >
             <span className="font-semibold">Políticas de reembolso</span>
             <span className="text-[#6D28D9] text-xl">&gt;</span>
           </button>
           <button
-            onClick={() => handleNavigation("/privacy-policy")} // Cambia la ruta según tu aplicación
+            onClick={() => handleNavigation("/privacy-policy")}
             className="w-full flex justify-between items-center py-2 cursor-pointer"
           >
             <span className="font-semibold">Políticas de privacidad</span>
@@ -124,7 +111,7 @@ const SettingsPage = () => {
         {/* Contáctanos */}
         <div className="bg-[#eaecf6] rounded-lg p-4">
           <button
-            onClick={() => handleNavigation("/contact")} // Cambia la ruta según tu aplicación
+            onClick={() => handleNavigation("/contact")}
             className="w-full flex justify-between items-center py-2 cursor-pointer"
           >
             <span className="font-semibold">Contáctanos</span>
@@ -137,16 +124,12 @@ const SettingsPage = () => {
       <div className="mt-8 flex justify-center">
         <button
           onClick={logout}
-          className="bg-[#ffffff] border border-red-500 text-red-500 py-2 px-4 rounded-lg hover:bg-red-50 transition font-bold cursor-pointer"
+          className="bg-white border border-red-500 text-red-500 py-2 px-4 rounded-lg hover:bg-red-50 transition font-bold cursor-pointer"
         >
           Cerrar sesión
         </button>
       </div>
     </div>
-<<<<<<< HEAD
-
-=======
->>>>>>> 3c56f4a946da83963bf59d165e8e81eacdbde167
   );
 };
 
