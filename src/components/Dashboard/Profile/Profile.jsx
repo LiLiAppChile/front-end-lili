@@ -20,16 +20,16 @@ const Profile = () => {
         commune: "",
         personalDescription: ""
     });
-    
+
     useEffect(() => {
         console.log("Datos recibidos en Profile:", userData);
-        
+
         if (userData) {
-            setProfile({
-                ...profile,
+            setProfile((prevProfile) => ({
+                ...prevProfile,
                 ...userData,
                 specialties: userData.specialties || []
-            });
+            }));
             setIsLoading(false);
         } else {
             setIsLoading(true);
@@ -65,36 +65,36 @@ const Profile = () => {
                 {/* Profile Section */}
                 <div className="flex flex-col items-center gap-6 bg-gray-100 rounded-lg py-5 px-5 mx-5 shadow-md">
                     <div className="rounded-full overflow-hidden w-24 h-24">
-                        <img 
-                            src={profile.profilePicture || UserPlaceholder} 
-                            alt="Profile" 
+                        <img
+                            src={profile.profilePicture || UserPlaceholder}
+                            alt="Profile"
                             className="w-full h-full object-cover"
                         />
                     </div>
-                    
+
                     <div className="flex flex-col gap-2 w-full">
                         <div className='flex justify-evenly items-center'>
                             <h2 className="text-xl font-bold">
                                 {profile.name || "Nombre no disponible"}
                             </h2>
-                            <PencilSquareIcon 
-                                className="w-8 h-8 cursor-pointer hover:text-indigo-500 transition" 
+                            <PencilSquareIcon
+                                className="w-8 h-8 cursor-pointer hover:text-indigo-500 transition"
                                 onClick={() => navigate('/edit-profile')}
                             />
                         </div>
-                        
+
                         <div className='flex justify-center items-center'>
                             <p className="text-gray-600 font-bold mr-0.5">5.0</p>
                             <StarIcon className="text-amber-300 w-6 h-6" />
                             <p className="ml-2 text-gray-600 font-bold">164 reseñas</p>
                         </div>
-                        
+
                         {/* Especialidades */}
                         <div className='flex flex-wrap gap-2 justify-center'>
                             {profile.specialties && profile.specialties.length > 0 ? (
                                 profile.specialties.map((specialty, index) => (
-                                    <p 
-                                        key={index} 
+                                    <p
+                                        key={index}
                                         className='border-2 rounded-full py-1 px-4 border-indigo-600 text-indigo-600 hover:bg-indigo-300 hover:border-indigo-300 transition hover:text-indigo-50 font-bold cursor-pointer'
                                     >
                                         {specialty}
@@ -104,7 +104,7 @@ const Profile = () => {
                                 <p className="text-gray-500 italic">Sin especialidades registradas</p>
                             )}
                         </div>
-                        
+
                         {/* Información de contacto */}
                         <div className="mt-4 w-full">
                             <div className="bg-white p-4 rounded-lg shadow">
@@ -122,7 +122,7 @@ const Profile = () => {
                                     <span className="font-semibold">Comuna:</span> {profile.commune || "No proporcionado"}
                                 </p>
                             </div>
-                            
+
                             {/* Descripción personal */}
                             {profile.personalDescription && (
                                 <div className="bg-white p-4 rounded-lg shadow mt-4">

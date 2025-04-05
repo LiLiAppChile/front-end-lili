@@ -32,13 +32,13 @@ const App = () => {
         <SplashScreen onFinish={() => setShowSplash(false)} />
       ) : (
         <AuthProvider>
-          <Routes> 
+          <Routes>
             <Route path="/" element={<LandingPage />} /> {/* Página de inicio */}
             <Route path="/login" element={<Login />} /> {/* Página de inicio de sesión */}
             <Route path="/register" element={<RegisterPage />} /> {/* Página de registro */}
-            <Route path="/home" element={<ProtectedRoute><HomePage/></ProtectedRoute>} /> {/* Página principal (dashboard) */}
-            <Route path="/requests" element={<ProtectedRoute><Requests/></ProtectedRoute>} /> {/* Página Solicitudes */}
-            <Route path="/details" element={<ProtectedRoute><TaskDetail/></ProtectedRoute>} /> {/* Página Detalle Solicitudes*/}
+            <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} /> {/* Página principal (dashboard) */}
+            <Route path="/requests" element={<ProtectedRoute><Requests /></ProtectedRoute>} /> {/* Página Solicitudes */}
+            <Route path="/details" element={<ProtectedRoute><TaskDetail /></ProtectedRoute>} /> {/* Página Detalle Solicitudes*/}
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} /> {/* Página Perfil */}
             <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} /> {/* Página de configuración */}
             <Route path="/form" element={<ProtectedRoute><Form /></ProtectedRoute>} /> {/* Página de formulario */}
