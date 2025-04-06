@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import LogoCasa from "../../assets/Logo.png";
-import { MdEmail, MdLock } from "react-icons/md";
 import { useAuth } from "../../Context/AuthContext";
 
 const Login = () => {
@@ -19,7 +18,7 @@ const Login = () => {
       await login(email, password);
       navigate("/home");
     } catch (error) {
-      setError("Correo o contraseña incorrectos. Inténtalo de nuevo.");
+      setError(error.message || "Correo o contraseña incorrectos. Inténtalo de nuevo.");
     }
   };
 
@@ -28,6 +27,12 @@ const Login = () => {
       <div className="flex flex-col items-center justify-center bg-white min-h-0 px-4 py-10 rounded-lg shadow-md">
         <img src={LogoCasa} alt="Logo" className="w-auto h-16" />
         <h1 className="text-[32px] font-bold mb-8 mt-5">Inicia Sesión</h1>
+
+        {error && (
+          <div className="w-full max-w-xs mb-4 p-2 bg-red-100 border border-red-400 text-red-700 rounded text-center">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleLogin} className="w-full max-w-xs space-y-6">
           <div className="relative">
@@ -53,7 +58,6 @@ const Login = () => {
             />
           </div>
           <div className="text-center">
-            {error && <p className="text-red-500 text-sm text-center">{error}</p>}
             <button type="submit" className="btn-login bg-[#714dbf] text-white px-4 py-3 rounded-lg hover:bg-[#5a3c9f] transition">
               Ingresar
             </button>
