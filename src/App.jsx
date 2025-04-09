@@ -6,14 +6,6 @@ import RegisterPage from "./components/Register/Register";
 import Login from "./components/Login/Login";
 import HomePage from "./components/HomePage/HomePage";
 import Profile from "./components/Dashboard/Profile/Profile";
-import React, { useState } from "react";
-import { Routes, Route } from "react-router-dom";
-import SplashScreen from "./components/SplashScreen/SplashScreen";
-import LandingPage from "./components/LandingPage/LandingPage";
-import RegisterPage from "./components/Register/Register";
-import Login from "./components/Login/Login";
-import HomePage from "./components/HomePage/HomePage";
-import Profile from "./components/Dashboard/Profile/Profile";
 import SettingsPage from "./components/Dashboard/SettingsPage/SettingsPage";
 import Requests from "./components/Dashboard/Home/Requests/Requests";
 import TaskDetail from "./components/Dashboard/Home/Requests/TaskDetail";
@@ -41,37 +33,142 @@ const App = () => {
       ) : (
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<LandingPage />} /> {/* Página de inicio */}
-            <Route path="/login" element={<Login />} /> {/* Página de inicio de sesión */}
-            <Route path="/register" element={<RegisterPage />} /> {/* Página de registro */}
-            <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} /> {/* Página principal (dashboard) */}
-            <Route path="/requests" element={<ProtectedRoute><Requests /></ProtectedRoute>} /> {/* Página Solicitudes */}
-            <Route path="/details" element={<ProtectedRoute><TaskDetail /></ProtectedRoute>} /> {/* Página Detalle Solicitudes*/}
-            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} /> {/* Página Perfil */}
-            <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} /> {/* Página de configuración */}
-            <Route path="/form" element={<ProtectedRoute><Form /></ProtectedRoute>} /> {/* Página de formulario */}
-            {/* Rutas de configuración */}
-            <Route path="/laboral-info" element={<ProtectedRoute><LaboralInfo /></ProtectedRoute>} />
-            <Route path="/bank-info" element={<ProtectedRoute><BankInfo /></ProtectedRoute>} />
-            <Route path="/about-lili" element={<ProtectedRoute><AboutLili /></ProtectedRoute>} />
-            <Route path="/how-it-works" element={<ProtectedRoute><HowItWorks /></ProtectedRoute>} />
-            <Route path="/guarantees" element={<ProtectedRoute><Guarantees /></ProtectedRoute>} />
-            <Route path="/contact-support" element={<ProtectedRoute><ContactSupport /></ProtectedRoute>} /> {/* Cambiado */}
-            <Route path="/terms" element={<ProtectedRoute><Terms /></ProtectedRoute>} />
-            <Route path="/refund-policy" element={<ProtectedRoute><RefundPolicy /></ProtectedRoute>} />
-            <Route path="/privacy-policy" element={<ProtectedRoute><PrivacyPolicy /></ProtectedRoute>} />
-            <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route
+              path="/home"
+              element={
+                <ProtectedRoute>
+                  <HomePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/requests"
+              element={
+                <ProtectedRoute>
+                  <Requests />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/details"
+              element={
+                <ProtectedRoute>
+                  <TaskDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <SettingsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/form"
+              element={
+                <ProtectedRoute>
+                  <Form />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/laboral-info"
+              element={
+                <ProtectedRoute>
+                  <LaboralInfo />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/bank-info"
+              element={
+                <ProtectedRoute>
+                  <BankInfo />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/about-lili"
+              element={
+                <ProtectedRoute>
+                  <AboutLili />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/how-it-works"
+              element={
+                <ProtectedRoute>
+                  <HowItWorks />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/guarantees"
+              element={
+                <ProtectedRoute>
+                  <Guarantees />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/contact-support"
+              element={
+                <ProtectedRoute>
+                  <ContactSupport />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/terms"
+              element={
+                <ProtectedRoute>
+                  <Terms />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/refund-policy"
+              element={
+                <ProtectedRoute>
+                  <RefundPolicy />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/privacy-policy"
+              element={
+                <ProtectedRoute>
+                  <PrivacyPolicy />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/contact"
+              element={
+                <ProtectedRoute>
+                  <Contact />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </AuthProvider>
       )}
     </div>
   );
 };
-
-{
-  <ProtectedRoute>
-    <Profile />
-  </ProtectedRoute>
-}
 
 export default App;
