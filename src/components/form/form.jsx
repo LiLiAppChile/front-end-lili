@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FiPaperclip, FiChevronDown } from "react-icons/fi";
 import { uploadToCloudinary } from "../Cloudinary/Services/upload.service";
 import { useAuth } from "../../Context/AuthContext";
+import FormSuccessPopup from "./FormSuccessPopUp";
 
 // Datos para los selects
 const regionesChile = [
@@ -56,7 +57,9 @@ const SquareCheckbox = ({ checked, onChange, label }) => (
 
 export default function FormularioPostulacion() {
   const navigate = useNavigate();
+  const { updateUser } = useAuth();
   const [submitting, setSubmitting] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [formData, setFormData] = useState({
     // Datos personales
     rut: "",
@@ -119,8 +122,6 @@ export default function FormularioPostulacion() {
     nombreTitular: '',
     numeroCuenta: ''
   });
-
-  const { updateUser } = useAuth();
 
   const handleInputChange = (e, field) => {
     setFormData({ ...formData, [field]: e.target.value });
@@ -437,15 +438,15 @@ export default function FormularioPostulacion() {
 
       setSubmitting(true);
 
-      const result = await updateUser(userUpdateData);
-
+      const result = await updateUser(userUpdateData, { showLoading: false });
       if (result.success) {
-        navigate('/home', {
-          state: {
-            userData: result.user,
-            updateDate: new Date().toLocaleString()
-          }
-        });
+        setShowSuccessPopup(true);
+        /*         navigate('/home', {
+                  state: {
+                    userData: result.user,
+                    updateDate: new Date().toLocaleString()
+                  }
+                }); */
       }
     } catch (error) {
       console.error('Error en el envío del formulario:', error.message);
@@ -453,6 +454,11 @@ export default function FormularioPostulacion() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleClosePopup = () => {
+    setShowSuccessPopup(false);
+    navigate('/home'); // Navegar a home cuando se cierre el popup
   };
 
   return (
@@ -875,6 +881,9 @@ export default function FormularioPostulacion() {
           </div>
         </div>
       </div>
+      {showSuccessPopup && (
+        <FormSuccessPopup onClose={handleClosePopup} />
+      )}
     </div>
   );
 }

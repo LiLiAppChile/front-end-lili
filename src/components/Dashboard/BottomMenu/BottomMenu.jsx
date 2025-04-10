@@ -26,66 +26,76 @@ const BottomMenu = () => {
   };
 
   return (
-    <div className="bottom-menu bg-[#714dbf] h-13 w-full fixed bottom-0 z-50">
-      <div className="flex justify-around items-center p-3">
+    <div className="bottom-menu bg-[#714dbf] w-full fixed bottom-0 z-50 rounded-t-xl">
+      <div className="flex justify-around items-center py-2">
         <button
-          className="icons-menu flex flex-col items-center"
+          className="icons-menu flex flex-col items-center w-full h-10"
           onClick={() => handleNavigation('/home')}
         >
-          {activeIcon === '/home' ? (
-            <HomeIconSolid className="h-7 w-7 text-white" />
-          ) : (
-            <HomeIconOutline className="h-7 w-7 text-white" />
-          )}
-          {activeIcon === '/home' && <div className="h-0.5 w-7 bg-white mt-0.5"></div>}
+          <div className="h-5 w-5 flex items-center justify-center">
+            {activeIcon === '/home' ? (
+              <img src="./src/assets/LiLiIconSolid.png" alt="HomeIconWhite" className="h-5 w-5 object-contain" />
+            ) : (
+              <img src="./src/assets/LiLiIconHomeWhite.png" alt="HomeIconWhiteSolid" className="h-5 w-5 object-contain" />
+            )}
+          </div>
+          {activeIcon === '/home' && <div className="h-0.5 w-6 bg-white mt-1"></div>}
         </button>
 
         <button
-          className="icons-menu flex flex-col items-center"
+          className="icons-menu flex flex-col items-center w-full h-10"
           onClick={() => handleNavigation('/requests')}
         >
-          {activeIcon === '/requests' ? (
-            <ClipboardDocumentIconSolid className="h-7 w-7 text-white" />
-          ) : (
-            <ClipboardDocumentIconOutline className="h-7 w-7 text-white" />
-          )}
-          {activeIcon === '/requests' && <div className="h-0.5 w-7 bg-white mt-0.5"></div>}
+          <div className="h-5 w-5 flex items-center justify-center">
+            {activeIcon === '/requests' ? (
+              <img src="./src/assets/checkboxSolid.png" alt="checkboxSolid" className="h-5 w-5 object-contain" />
+            ) : (
+              <img src="./src/assets/checkboxWhite.png" alt="checkboxSolid" className="h-5 w-5 object-contain" />
+            )}
+          </div>
+          {activeIcon === '/requests' && <div className="h-0.5 w-6 bg-white mt-1"></div>}
         </button>
 
         <button
-          className="icons-menu flex flex-col items-center"
+          className="icons-menu flex flex-col items-center w-full h-10"
           onClick={() => handleNavigation('/history')}
         >
-          {activeIcon === '/history' ? (
-            <BookOpenIconSolid className="h-7 w-7 text-white" />
-          ) : (
-            <BookOpenIconOutline className="h-7 w-7 text-white" />
-          )}
-          {activeIcon === '/history' && <div className="h-0.5 w-7 bg-white mt-0.5"></div>}
+          <div className="h-6 w-6 flex items-center justify-center">
+            {activeIcon === '/history' ? (
+              <BookOpenIconSolid className="h-full w-full text-white" />
+            ) : (
+              <BookOpenIconOutline className="h-full w-full text-white" />
+            )}
+          </div>
+          {activeIcon === '/history' && <div className="h-0.5 w-6 bg-white mt-1"></div>}
         </button>
 
         <button
-          className="icons-menu flex flex-col items-center"
+          className="icons-menu flex flex-col items-center w-full h-10"
           onClick={() => handleNavigation('/calendar')}
         >
-          {activeIcon === '/calendar' ? (
-            <CalendarIconSolid className="h-7 w-7 text-white" />
-          ) : (
-            <CalendarIconOutline className="h-7 w-7 text-white" />
-          )}
-          {activeIcon === '/calendar' && <div className="h-0.5 w-7 bg-white mt-0.5"></div>}
+          <div className="h-6 w-6 flex items-center justify-center">
+            {activeIcon === '/calendar' ? (
+              <CalendarIconSolid className="h-full w-full text-white" />
+            ) : (
+              <CalendarIconOutline className="h-full w-full text-white" />
+            )}
+          </div>
+          {activeIcon === '/calendar' && <div className="h-0.5 w-6 bg-white mt-1"></div>}
         </button>
 
         <button
-          className="icons-menu flex flex-col items-center"
+          className="icons-menu flex flex-col items-center w-full h-10"
           onClick={() => handleNavigation('/profile')}
         >
-          {activeIcon === '/profile' ? (
-            <UserIconSolid className="h-7 w-7 text-white" />
-          ) : (
-            <UserIconOutline className="h-7 w-7 text-white" />
-          )}
-          {activeIcon === '/profile' && <div className="h-0.5 w-7 bg-white mt-0.5"></div>}
+          <div className="h-6 w-6 flex items-center justify-center">
+            {activeIcon === '/profile' ? (
+              <UserIconSolid className="h-full w-full text-white" />
+            ) : (
+              <UserIconOutline className="h-full w-full text-white" />
+            )}
+          </div>
+          {activeIcon === '/profile' && <div className="h-0.5 w-6 bg-white mt-1"></div>}
         </button>
       </div>
     </div>

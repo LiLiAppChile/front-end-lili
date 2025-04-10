@@ -8,6 +8,8 @@ import {
   onAuthStateChanged,
   signOut
 } from "firebase/auth";
+import axios from "axios";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const AuthContext = createContext();
 
@@ -61,6 +63,63 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
   }, [logout]);
+
+  const fetchReviews = useCallback(async () => {
+    try {
+      const currentUser = auth.currentUser;
+      const uid = currentUser.uid;
+      const token = await auth.currentUser?.getIdToken();
+
+      const response = await axios.get(`http://[::1]:3001/reviews/professional/${uid}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Cache-Control": "no-cache"
+        },
+      });
+
+      const data = response.data;
+
+      console.log("Response de reseñas:", data);
+
+      return data;
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+      return [];
+    }
+  }, []);
+
+  const updateProfile = useCallback(async (profileData) => {
+    try {
+      setLoading(true);
+      const currentUser = auth.currentUser;
+      if (!currentUser) throw new Error('Usuario no autenticado');
+
+      const token = await currentUser.getIdToken(true);
+      const cleanedPayload = Object.fromEntries(
+        Object.entries(profileData).filter(([_, value]) => value !== null && value !== undefined)
+      );
+
+      const response = await axios.patch(
+        `http://[::1]:3001/users/${currentUser.uid}`,
+        cleanedPayload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const updatedUser = response.data;
+      setUserData(prev => ({ ...prev, ...updatedUser }));
+      localStorage.setItem("userData", JSON.stringify(updatedUser));
+      return { success: true, user: updatedUser };
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      return { success: false, error: error.message };
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -133,22 +192,25 @@ export const AuthProvider = ({ children }) => {
         validUser: true
       };
 
-      const response = await fetch("http://[::1]:3001/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(userDataForBackend),
-      });
+      let response;
+      try {
+        response = await axios.post(
+          "http://[::1]:3001/users",
+          userDataForBackend,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } catch (error) {
 
-      if (!response.ok) {
-        const errorData = await response.json();
         await deleteUser(user);
-        throw new Error(errorData.message || "Error al registrar en el backend");
+        const backendMessage = error.response?.data?.message || "Error al registrar en el backend";
+        throw new Error(backendMessage);
       }
 
-      const responseData = await response.json();
+      const responseData = response.data;
       const newUserData = { ...userDataForBackend, ...responseData.user };
       setUser(user);
       setUserData(newUserData);
@@ -165,9 +227,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const updateUser = async (formData) => {
+
+  const updateUser = async (formData, options = { showLoading: true }) => {
     try {
-      setLoading(true);
+      if (options.showLoading) {
+        setLoading(true);
+      }
+
       const currentUser = auth.currentUser;
       if (!currentUser) throw new Error('Usuario no autenticado');
 
@@ -183,14 +249,10 @@ export const AuthProvider = ({ children }) => {
         siiRegistered: formData.siiRegistered,
         hasTools: formData.hasTools,
         ownTransportation: formData.ownTransportation,
-        identityCardFront: formData.identityCardFront?.url ?
-          { url: formData.identityCardFront.url } : null,
-        identityCardBack: formData.identityCardBack?.url ?
-          { url: formData.identityCardBack.url } : null,
-        backgroundCertificate: formData.backgroundCertificate?.url ?
-          { url: formData.backgroundCertificate.url } : null,
-        additionalCertificate: formData.additionalCertificate?.url ?
-          { url: formData.additionalCertificate.url } : null,
+        identityCardFront: formData.identityCardFront?.url ? { url: formData.identityCardFront.url } : null,
+        identityCardBack: formData.identityCardBack?.url ? { url: formData.identityCardBack.url } : null,
+        backgroundCertificate: formData.backgroundCertificate?.url ? { url: formData.backgroundCertificate.url } : null,
+        additionalCertificate: formData.additionalCertificate?.url ? { url: formData.additionalCertificate.url } : null,
         bankName: formData.bankName,
         accountType: formData.accountType,
         accountHolderName: formData.accountHolderName,
@@ -198,42 +260,39 @@ export const AuthProvider = ({ children }) => {
         siiActivitiesStarted: formData.siiActivitiesStarted
       };
 
-      // Depuración final
-      console.log('Payload para backend:', JSON.stringify(payload, null, 2));
+      const cleanedPayload = Object.fromEntries(
+        Object.entries(payload).filter(([_, value]) => value !== null && value !== undefined)
+      );
 
-      const response = await fetch(`http://[::1]:3001/users/${uid}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await axios.patch(
+        `http://[::1]:3001/users/${uid}`,
+        cleanedPayload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      const responseData = await response.json();
-      if (!response.ok) {
-        console.error('Error detallado del backend:', responseData);
-        throw new Error(responseData.message || 'Error al actualizar');
-      }
-
+      const responseData = response.data;
       setUserData(responseData.user);
       localStorage.setItem("userData", JSON.stringify(responseData.user));
       return { success: true, user: responseData.user };
 
     } catch (error) {
-      console.error('Error completo:', {
-        message: error.message,
-        stack: error.stack,
-        formData: JSON.parse(JSON.stringify(formData))
-      });
+      console.error('Error al actualizar usuario:', error);
       throw error;
     } finally {
-      setLoading(false);
+      if (options.showLoading) {
+        setLoading(false);
+      }
     }
   };
 
   if (!authChecked) {
-    return <div>Cargando...</div>;
+    return (
+      <LoadingSpinner />
+    );
   }
 
   return (
@@ -246,7 +305,9 @@ export const AuthProvider = ({ children }) => {
       loading,
       fetchUserData,
       updateUser,
-      authChecked
+      authChecked,
+      fetchReviews,
+      updateProfile,
     }}>
       {children}
     </AuthContext.Provider>
