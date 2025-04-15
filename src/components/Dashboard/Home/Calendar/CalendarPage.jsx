@@ -5,7 +5,7 @@ import "moment/locale/es";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import BottomMenu from "../../BottomMenu/BottomMenu";
 
-const API_URL = "http://[::1]:3000/events"; // Cambia esto por la URL real de tu backend
+const API_URL = "http://[::1]:3001/events"; // Cambia esto por la URL real de tu backend
 
 const CalendarPage = () => {
   moment.locale("es");
