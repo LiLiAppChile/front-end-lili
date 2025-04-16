@@ -1,8 +1,7 @@
-// src/pages/JobDetailPage/JobDetailPage.jsx
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
-// Importa tus datos de ejemplo (o tu lógica de fetch)
-import { sampleHistoryData } from "./HistoryPage"; // Ajusta la ruta si es necesario
+
+import { sampleHistoryData } from "./HistoryPage"; // Ajustar a fetch de BBDD
 
 // Helper para formatear moneda (reutilizar o importar)
 const formatCurrency = (value) => {
@@ -15,7 +14,7 @@ const formatCurrency = (value) => {
   return `$${numberValue.toLocaleString("es-CL")}`;
 };
 
-// Helper para obtener color de badge de especialidad
+// Helper para obtener color de badge de especialidad**Cambiar a íconos de Figma**//
 const getSpecialtyBadgeColor = (specialty) => {
   switch (specialty?.toLowerCase()) {
     case "gasfitería":
@@ -31,7 +30,7 @@ const JobDetailPage = () => {
   const { id } = useParams(); // Obtiene el ID de la URL
   const navigate = useNavigate();
 
-  // Encuentra el item correspondiente (en una app real, harías fetch)
+  // Encuentra el item correspondiente **Cambiar a fetch de BBDD actualizada**
   const item = sampleHistoryData.find((job) => job.id === id);
 
   if (!item) {
@@ -87,13 +86,13 @@ const JobDetailPage = () => {
       <div className="flex-grow p-4 space-y-6 overflow-y-auto">
         {/* Banner de Estado (Pago Realizado / Pendiente) */}
         {isPaid && item.paid_date && (
-          <div className="p-3 bg-purple-100 text-purple-700 rounded-lg text-center font-medium text-sm">
+          <div className="p-3 bg-[#CBB4FF] text-black-700 rounded-lg text-center font-medium text-sm">
             {item.boleta_url ? "Pago realizado el " : "Trabajo pagado el "}{" "}
             {item.paid_date}
           </div>
         )}
         {!isPaid && (
-          <div className="p-3 bg-orange-100 text-orange-700 rounded-lg text-center font-medium text-sm">
+          <div className="p-3 bg-[#CBB4FF] text-black-700 rounded-lg text-center font-medium text-sm">
             Pago Pendiente
           </div>
         )}
@@ -120,83 +119,114 @@ const JobDetailPage = () => {
           </div>
         )}
 
-        {/* Información Técnica / Información Trabajo */}
-        <div className="space-y-3">
+        {/* --- SECCIÓN INFORMACIÓN TÉCNICA REFINADA --- */}
+        <div className="bg-[#EAECF6] rounded-[10px] p-4 w-full h-auto overflow-y-auto space-y-4 mx-auto">
+          {" "}
+          {/* Espacio interno para los elementos de esta sección */}
           <h2 className="text-md font-semibold text-gray-800">
             {isPaid && item.boleta_url
               ? "Información trabajo"
               : "Información técnica"}
           </h2>
-          <div className="text-sm space-y-1 text-gray-700">
-            <p>
-              <span className="font-medium text-gray-900">Cliente:</span>{" "}
-              {item.cliente}
-            </p>
-            <p>
-              <span className="font-medium text-gray-900">Comuna:</span>{" "}
-              {item.comuna}
-            </p>
-            <p>
-              <span className="font-medium text-gray-900">Fecha:</span>{" "}
-              {item.fecha}
-            </p>
-            <p>
-              <span className="font-medium text-gray-900">Hora:</span>{" "}
-              {item.hora}
-            </p>
-            <p>
-              <span className="font-medium text-gray-900">Pago:</span>{" "}
-              {formatCurrency(item.monto)}
-            </p>
-          </div>
-        </div>
-
-        {/* Especialidad */}
-        <div className="space-y-2">
-          <h3 className="text-sm font-medium text-gray-900">Especialidad:</h3>
-          <span
-            className={`inline-block px-3 py-0.5 ${getSpecialtyBadgeColor(
-              item.especialidad
-            )} rounded-full font-medium text-xs`}
-          >
-            {item.especialidad}
-          </span>
-        </div>
-
-        {/* Detalle */}
-        <div className="space-y-2">
-          <h3 className="text-sm font-medium text-gray-900">Detalle:</h3>
-          <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-            {item.detalle.map((detail, index) => (
-              <li key={index}>{detail}</li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Imágenes */}
-        {item.imagenes && item.imagenes.length > 0 && (
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium text-gray-900">Imágenes:</h3>
-            <div className="grid grid-cols-3 gap-2">
-              {item.imagenes.map((imgUrl, index) => (
-                <a
-                  key={index}
-                  href={imgUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {" "}
-                  {/* Enlace opcional */}
-                  <img
-                    src={imgUrl}
-                    alt={`Imagen ${index + 1}`}
-                    className="w-full h-24 object-cover rounded-md border border-gray-200 hover:opacity-90"
-                  />
-                </a>
-              ))}
+          {/* Bloque Cliente a Pago */}
+          <div className="text-sm space-y-2">
+            {" "}
+            {/* Espacio entre filas */}
+            {/* Usamos flex para alinear etiqueta y valor en cada fila */}
+            <div className="flex">
+              <span className="w-1/4 font-semibold text-gray-900 shrink-0">
+                Cliente:
+              </span>{" "}
+              {/* Etiqueta con ancho fijo o mínimo */}
+              <span className="text-gray-700">{item.cliente}</span>
+            </div>
+            <div className="flex">
+              <span className="w-1/4 font-semibold text-gray-900 shrink-0">
+                Comuna:
+              </span>
+              <span className="text-gray-700">{item.comuna}</span>
+            </div>
+            <div className="flex">
+              <span className="w-1/4 font-semibold text-gray-900 shrink-0">
+                Fecha:
+              </span>
+              <span className="text-gray-700">{item.fecha}</span>
+            </div>
+            <div className="flex">
+              <span className="w-1/4 font-semibold text-gray-900 shrink-0">
+                Hora:
+              </span>
+              <span className="text-gray-700">{item.hora}</span>
+            </div>
+            <div className="flex">
+              <span className="w-1/4 font-semibold text-gray-900 shrink-0">
+                Pago:
+              </span>
+              <span className="text-gray-700">
+                {formatCurrency(item.monto)}
+              </span>
             </div>
           </div>
-        )}
+          {/* --- Separador --- */}
+          <hr className="border-t border-[#CACCD6]" />
+          {/* Bloque Especialidad */}
+          <div className="flex items-center text-sm gap-3">
+            {" "}
+            {/* Flex para alinear etiqueta y píldora */}
+            <span className="font-semibold text-gray-900 shrink-0">
+              Especialidad:
+            </span>
+            <span
+              className={`inline-block px-3 py-1 ${getSpecialtyBadgeColor(
+                item.especialidad
+              )} rounded-full text-xs font-medium`} // Clases dinámicas para la píldora
+            >
+              {item.especialidad}
+            </span>
+          </div>
+          {/* --- Separador --- */}
+          <hr className="border-t border-[#CACCD6]" />
+          {/* Bloque Detalle */}
+          <div className="space-y-2">
+            {" "}
+            {/* Espacio entre etiqueta y lista */}
+            <h3 className="text-sm font-semibold text-gray-900">Detalle:</h3>
+            <ul className="list-disc list-inside text-sm text-gray-700 space-y-1 pl-2">
+              {" "}
+              {/* Ligero indentado para las viñetas */}
+              {item.detalle.map((detail, index) => (
+                <li key={index}>{detail}</li>
+              ))}
+            </ul>
+          </div>
+          {/* --- Separador --- */}
+          <hr className="border-t border-[#CACCD6]" />
+          {/* Bloque Imágenes */}
+          {item.imagenes && item.imagenes.length > 0 && (
+            <div className="space-y-2">
+              {" "}
+              {/* Espacio entre etiqueta e imágenes */}
+              <h3 className="text-sm font-semibold text-gray-900">Imágenes:</h3>
+              <div className="grid grid-cols-3 gap-2">
+                {item.imagenes.map((imgUrl, index) => (
+                  <a
+                    key={index}
+                    href={imgUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img
+                      src={imgUrl}
+                      alt={`Imagen ${index + 1}`}
+                      className="w-full h-24 object-cover rounded-lg border border-gray-200 hover:opacity-90" // Usamos rounded-lg para más redondeo
+                    />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+        {/* --- FIN SECCIÓN INFORMACIÓN TÉCNICA --- */}
 
         {/* Seguimiento (si aplica según tu lógica y datos) */}
         {(item.foto_inicio_url || item.foto_final_url) && (

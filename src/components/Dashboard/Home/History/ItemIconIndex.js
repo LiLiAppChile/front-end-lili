@@ -31,11 +31,10 @@ const Icons = {
 
   // Estados de Pago
 
-  paid: IconPaidComplete, // Alias en inglés por si acaso
-  pending: IconPendingComplete, // Alias en inglés
+  paid: IconPaidComplete,
+  pending: IconPendingComplete,
 
   default: OtrosIcon,
 };
 
-// --- Exporta el objeto ---
 export default Icons;

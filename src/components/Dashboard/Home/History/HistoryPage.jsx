@@ -1,10 +1,7 @@
-// src/pages/HistoryPage/HistoryPage.jsx
-import React, { useState } from "react"; // Removed useNavigate if handled in HistoryItem
-// Assuming BottomMenu is correctly imported
+import React, { useState, useMemo } from "react";
 import Navbar from "../../BottomMenu/BottomMenu";
-import HistoryItem from "./HistoryItem"; // Import the new component
-
-// --- Sample Data (Replace with actual data fetching) ---
+import HistoryItem from "./HistoryItem";
+import PaymentHistoryItem from "./PaymentHistoryItem";
 
 const formatCurrency = (value) => {
   if (value === undefined || value === null) return "";
@@ -18,8 +15,8 @@ export const sampleHistoryData = [
     comuna: "Las Condes",
     fecha: "21-03-25",
     hora: "10:00",
-    type: "water", // 'water' o 'electric'
-    status: "pending", // 'pending', 'paid' (o 'completed_pending_payment', 'completed_paid')
+    type: "water",
+    status: "pending",
     monto: 85000,
     especialidad: "Gasfitería",
     detalle: [
@@ -112,30 +109,44 @@ export const sampleHistoryData = [
     boleta_url: "https://www.sii.cl/images/factura_ejemplo.png", // URL de ejemplo factura
     paid_date: "27-03-25", // Fecha de pago
   },
-  // Añade más datos con la nueva estructura si necesitas paginación completa
 ];
-// Add more items if needed for pagination testing
-
-// --- End Sample Data ---
 
 const HistoryPage = () => {
   const [tabActivo, setTabActivo] = useState("trabajos");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
 
-  // --- Filtrado y Paginación ---
+  // --- Lógica de Filtrado y Paginación ---
+  // Filtra los datos según la pestaña activa ANTES de paginar
+  const dataToShow = useMemo(() => {
+    if (tabActivo === "pagos") {
+      // Filtra solo los trabajos con estado 'paid'
+      return sampleHistoryData.filter((item) => item.status === "paid");
+    }
+    // Para la pestaña 'trabajos', muestra todos (o aplica otros filtros si los tienes)
+    return sampleHistoryData;
+  }, [tabActivo]); // Se recalcula solo si tabActivo cambia
 
-  const filteredData = sampleHistoryData; // Pendiente agregar lógica de filtrado y fetch de Data
-  const totalItems = filteredData.length;
+  // Calcula la paginación basada en los datos filtrados (dataToShow)
+  const totalItems = dataToShow.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentItems = filteredData.slice(startIndex, endIndex);
+  const endIndex = Math.min(startIndex + itemsPerPage, totalItems); // Asegura no exceder el total
+  const currentItemsOnPage = dataToShow.slice(startIndex, endIndex);
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
+    } else if (page < 1) {
+      setCurrentPage(1);
+    } else {
+      setCurrentPage(totalPages);
     }
+  };
+
+  const handleTabClick = (tab) => {
+    setTabActivo(tab);
+    setCurrentPage(1); // Vuelve a la página 1 al cambiar de pestaña
   };
 
   return (
@@ -145,16 +156,15 @@ const HistoryPage = () => {
         <img src="./src/assets/HistorialIcon.png" alt="historial" />
         <h1 className="text-2xl font-bold text-gray-800">Historial</h1>
       </div>
-      {/* Tabs */}
-      <div className="flex border-b bg-white border-gray-200">
+      {/* Tabs Container */}
+      <div className="flex bg-white px-4">
         <button
-          className={`flex-1 py-3 text-center font-medium text-sm relative ${
-            // Adjusted font size
+          className={`flex-1 py-3 text-center font-medium text-sm relative transition-colors duration-150 ${
             tabActivo === "trabajos"
               ? "text-purple-600"
-              : "text-gray-500 hover:text-gray-700" // Adjusted inactive color
+              : "text-gray-500 hover:text-gray-700 border-b border-gray-200"
           }`}
-          onClick={() => setTabActivo("trabajos")}
+          onClick={() => handleTabClick("trabajos")}
         >
           Trabajos
           {tabActivo === "trabajos" && (
@@ -162,13 +172,12 @@ const HistoryPage = () => {
           )}
         </button>
         <button
-          className={`flex-1 py-3 text-center font-medium text-sm relative ${
-            // Adjusted font size
+          className={`flex-1 py-3 text-center font-medium text-sm relative transition-colors duration-150 ${
             tabActivo === "pagos"
               ? "text-purple-600"
-              : "text-gray-500 hover:text-gray-700" // Adjusted inactive color
+              : "text-gray-500 hover:text-gray-700 border-b border-gray-200"
           }`}
-          onClick={() => setTabActivo("pagos")}
+          onClick={() => handleTabClick("pagos")}
         >
           Pagos
           {tabActivo === "pagos" && (
@@ -199,40 +208,71 @@ const HistoryPage = () => {
           </div>
         </div>
       </div>
-      {/* Pagination Info */}
-      <div className="px-4 pt-1 pb-3 bg-white flex justify-end items-center text-xs text-gray-500">
-        {" "}
-        {/* Adjusted styles */}
-        {`${startIndex + 1}-${Math.min(endIndex, totalItems)} de ${totalItems}`}
+      <div className="px-4 pt-1 pb-3 flex justify-end items-center text-xs text-gray-500">
+        {totalItems > 0
+          ? `${startIndex + 1}-${endIndex} de ${totalItems}`
+          : "0 de 0"}
       </div>
-      {/* Content Area: Header + List */}
-      <div className="flex-grow px-4 pb-20 bg-white">
-        {" "}
-        {/* Added pb-20 to avoid overlap with bottom nav */}
-        {/* Table Header */}
-        <div className="flex items-center justify-between p-3 mb-1 bg-white rounded-md text-xs font-medium text-gray-600">
-          {/* Adjusted column widths to match HistoryItem approx */}
-          <div className="w-1/4 pr-2 text-left">Cliente</div>
-          <div className="w-1/4 text-center">Fecha</div>
-          <div className="w-1/4 text-center">Tipo</div>
-          <div className="w-1/4 text-center">Pago</div>
-          <div className="w-auto pl-2">
-            <span className="w-4"></span>
-          </div>{" "}
-          {/* Spacer for arrow column */}
-        </div>
-        {/* History List */}
-        <div>
-          {currentItems.length > 0 ? (
-            currentItems.map((item) => (
-              <HistoryItem key={item.id} item={item} />
-            ))
-          ) : (
-            <p className="text-center text-gray-500 mt-8">
-              No hay historial para mostrar.
-            </p>
-          )}
-        </div>
+      {/* -------> ÁREA DE CONTENIDO PRINCIPAL (LISTA) <------- */}
+      <div className="flex-grow px-4 pb-20 space-y-3">
+        {/* --- Renderizado Condicional del Contenido --- */}
+        {tabActivo === "trabajos" && (
+          <>
+            {/* Encabezado de la tabla TRABAJOS */}
+            <div className="flex items-center justify-between p-3 bg-[#EAECF6] rounded-md text-xs font-medium text-gray-700">
+              <div className="w-1/4 pr-2 text-left">Cliente</div>
+              <div className="w-1/4 text-center">Fecha</div>
+              <div className="w-1/4 text-center pl-4">Tipo</div>
+              <div className="w-1/4 text-center pl-6">Pago</div>
+              <div className="w-auto pl-2">
+                <span className="w-4"></span>
+              </div>
+            </div>
+            {/* Lista de History Items (Trabajos) */}
+            <div className="space-y-2">
+              {currentItemsOnPage.length > 0 ? (
+                currentItemsOnPage.map((item) => (
+                  <HistoryItem key={item.id} item={item} />
+                ))
+              ) : (
+                <p className="text-center text-gray-500 mt-8">
+                  No hay trabajos para mostrar.
+                </p>
+              )}
+            </div>
+          </>
+        )}
+
+        {tabActivo === "pagos" && (
+          <>
+            {/* Encabezado de la tabla PAGOS */}
+            <div className="flex items-center justify-between p-3 bg-[#EAECF6] rounded-md text-xs font-medium text-gray-700">
+              <div className="w-2/5 pr-2 text-left">Cliente</div>{" "}
+              {/* Ancho ajustado */}
+              <div className="w-1/4 text-center">Fecha</div>
+              <div className="w-1/4 text-center">Monto</div>
+              <div className="w-auto pl-2">
+                <span className="w-4 h-4"></span>
+              </div>{" "}
+              {/* Spacer con tamaño */}
+            </div>
+            {/* Lista de Payment History Items (Pagos) */}
+            <div className="space-y-2">
+              {/* Mapea sobre los items YA FILTRADOS y paginados */}
+              {currentItemsOnPage.length > 0 ? (
+                currentItemsOnPage.map((item) => (
+                  <PaymentHistoryItem key={item.id} item={item} />
+                ))
+              ) : (
+                <p className="text-center text-gray-500 mt-8">
+                  No hay pagos para mostrar.
+                </p>
+              )}
+            </div>
+          </>
+        )}
+        {/* --- FIN Renderizado Condicional --- */}
+
         {/* Paginación */}
         {totalPages > 1 && (
           <div className="mt-6 flex justify-center items-center gap-2">
@@ -245,20 +285,9 @@ const HistoryPage = () => {
               <img src="./src/assets/Group151.png" alt="group151" />
             </button>
 
-            {/* Simple Page Indicator (Could expand to show page numbers) */}
             <span className="text-sm text-gray-700">
               Página {currentPage} de {totalPages}
             </span>
-            {/* Example of numbered pages (add more logic for ellipsis ...) */}
-            {/* {[...Array(totalPages)].map((_, i) => (
-                    <button
-                        key={i + 1}
-                        onClick={() => handlePageChange(i + 1)}
-                        className={`px-3 py-1 rounded-md text-sm ${currentPage === i + 1 ? 'bg-purple-600 text-white' : 'hover:bg-gray-200'}`}
-                    >
-                        {i + 1}
-                    </button>
-                ))} */}
 
             <button
               onClick={() => handlePageChange(currentPage + 1)}
