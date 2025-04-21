@@ -1,27 +1,26 @@
-import React, { useState } from "react";
-import { Routes, Route } from "react-router-dom";
-import SplashScreen from "./components/SplashScreen/SplashScreen";
-import LandingPage from "./components/LandingPage/LandingPage";
-import RegisterPage from "./components/Register/Register";
-import Login from "./components/Login/Login";
-import HomePage from "./components/HomePage/HomePage";
-import Profile from "./components/Dashboard/Profile/Profile";
-import SettingsPage from "./components/Dashboard/SettingsPage/SettingsPage";
-import Requests from "./components/Dashboard/Home/Requests/Requests";
-import TaskDetail from "./components/Dashboard/Home/Requests/TaskDetail";
-import { AuthProvider } from "./Context/AuthContext";
-import ProtectedRoute from "./components/ProtectedRoute";
-import LaboralInfo from "./components/Dashboard/SettingsPage/LaboralInfo";
-import BankInfo from "./components/Dashboard/SettingsPage/BankInfo";
-import AboutLili from "./components/Dashboard/SettingsPage/AboutLili";
-import HowItWorks from "./components/Dashboard/SettingsPage/HowItWorks";
-import Guarantees from "./components/Dashboard/SettingsPage/Guarantees";
-import ContactSupport from "./components/Dashboard/SettingsPage/ContactSupport";
-import Terms from "./components/Dashboard/SettingsPage/Terms";
-import RefundPolicy from "./components/Dashboard/SettingsPage/RefundPolicy";
-import PrivacyPolicy from "./components/Dashboard/SettingsPage/PrivacyPolicy";
-import Contact from "./components/Dashboard/SettingsPage/Contact";
-import Form from "./components/form/form";
+import React, { useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import SplashScreen from './components/SplashScreen/SplashScreen';
+import LandingPage from './components/LandingPage/LandingPage';
+import RegisterPage from './components/Register/Register';
+import Login from './components/Login/Login';
+import HomePage from './components/HomePage/HomePage';
+import Profile from './components/Dashboard/Profile/Profile';
+import SettingsPage from './components/Dashboard/SettingsPage/SettingsPage';
+import Requests from './components/Dashboard/Home/Requests/Requests';
+import { AuthProvider } from './Context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import LaboralInfo from './components/Dashboard/SettingsPage/LaboralInfo';
+import BankInfo from './components/Dashboard/SettingsPage/BankInfo';
+import AboutLili from './components/Dashboard/SettingsPage/AboutLili';
+import HowItWorks from './components/Dashboard/SettingsPage/HowItWorks';
+import Guarantees from './components/Dashboard/SettingsPage/Guarantees';
+import ContactSupport from './components/Dashboard/SettingsPage/ContactSupport';
+import Terms from './components/Dashboard/SettingsPage/Terms';
+import RefundPolicy from './components/Dashboard/SettingsPage/RefundPolicy';
+import PrivacyPolicy from './components/Dashboard/SettingsPage/PrivacyPolicy';
+import Contact from './components/Dashboard/SettingsPage/Contact';
+import Form from './components/form/form';
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -33,11 +32,11 @@ const App = () => {
       ) : (
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<RegisterPage />} />
+            <Route path='/' element={<LandingPage />} />
+            <Route path='/login' element={<Login />} />
+            <Route path='/register' element={<RegisterPage />} />
             <Route
-              path="/home"
+              path='/home'
               element={
                 <ProtectedRoute>
                   <HomePage />
@@ -45,23 +44,16 @@ const App = () => {
               }
             />
             <Route
-              path="/requests"
+              path='/requests'
               element={
                 <ProtectedRoute>
                   <Requests />
                 </ProtectedRoute>
               }
             />
+
             <Route
-              path="/details"
-              element={
-                <ProtectedRoute>
-                  <TaskDetail />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/profile"
+              path='/profile'
               element={
                 <ProtectedRoute>
                   <Profile />
@@ -69,7 +61,7 @@ const App = () => {
               }
             />
             <Route
-              path="/settings"
+              path='/settings'
               element={
                 <ProtectedRoute>
                   <SettingsPage />
@@ -77,7 +69,7 @@ const App = () => {
               }
             />
             <Route
-              path="/form"
+              path='/form'
               element={
                 <ProtectedRoute>
                   <Form />
@@ -85,7 +77,7 @@ const App = () => {
               }
             />
             <Route
-              path="/laboral-info"
+              path='/laboral-info'
               element={
                 <ProtectedRoute>
                   <LaboralInfo />
@@ -93,7 +85,7 @@ const App = () => {
               }
             />
             <Route
-              path="/bank-info"
+              path='/bank-info'
               element={
                 <ProtectedRoute>
                   <BankInfo />
@@ -101,7 +93,7 @@ const App = () => {
               }
             />
             <Route
-              path="/about-lili"
+              path='/about-lili'
               element={
                 <ProtectedRoute>
                   <AboutLili />
@@ -109,7 +101,7 @@ const App = () => {
               }
             />
             <Route
-              path="/how-it-works"
+              path='/how-it-works'
               element={
                 <ProtectedRoute>
                   <HowItWorks />
@@ -117,7 +109,7 @@ const App = () => {
               }
             />
             <Route
-              path="/guarantees"
+              path='/guarantees'
               element={
                 <ProtectedRoute>
                   <Guarantees />
@@ -125,7 +117,7 @@ const App = () => {
               }
             />
             <Route
-              path="/contact-support"
+              path='/contact-support'
               element={
                 <ProtectedRoute>
                   <ContactSupport />
@@ -133,7 +125,7 @@ const App = () => {
               }
             />
             <Route
-              path="/terms"
+              path='/terms'
               element={
                 <ProtectedRoute>
                   <Terms />
@@ -141,7 +133,7 @@ const App = () => {
               }
             />
             <Route
-              path="/refund-policy"
+              path='/refund-policy'
               element={
                 <ProtectedRoute>
                   <RefundPolicy />
@@ -149,7 +141,7 @@ const App = () => {
               }
             />
             <Route
-              path="/privacy-policy"
+              path='/privacy-policy'
               element={
                 <ProtectedRoute>
                   <PrivacyPolicy />
@@ -157,7 +149,7 @@ const App = () => {
               }
             />
             <Route
-              path="/contact"
+              path='/contact'
               element={
                 <ProtectedRoute>
                   <Contact />
