@@ -1,21 +1,18 @@
 import { useNavigate } from 'react-router-dom';
-import HeaderUsers from '../Dashboard/Header/HeaderUsers';
-import PromotionUsers from '../Dashboard/Home/Promotion/PromotionUsers';
-import BottomMenu from '../Dashboard/BottomMenu/BottomMenu';
+// import HeaderUsers from '../../Dashboard/Header/HeaderUsers';
+import PromotionUsers from '../../Dashboard/Home/Promotion/PromotionUsers';
+import BottomMenu from '../../Dashboard/BottomMenu/BottomMenu';
 
-const HomePageClient = () => {
+const HomeClient = () => {
   const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-white p-4"> {/* Fondo blanco para toda la página */}
-      <HeaderUsers />
+      
 
       <div className="flex flex-col items-center justify-center bg-gray-100 p-4 rounded-lg mb-4"> {/* Fondo gris para este div */}
         <h1 className="text-4xl font-bold text-gray-800 mb-4">Página Principal</h1>
         <p className="text-lg text-gray-600 mb-8">¡Bienvenido a la aplicación!</p>
         <p className="text-lg text-gray-600 mb-8">Para verificar tu cuenta debes completar el siguiente formulario:</p>
-        <button onClick={() => navigate("/form")} className="btn-promociones bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition w-60">
-          Completar formulario
-        </button>
       </div>
 
       <div className="bg-gray-100 p-4 rounded-lg mb-4"> {/* Fondo gris para este div */}
@@ -23,7 +20,6 @@ const HomePageClient = () => {
       </div>
 
     
-
       {/* Espacio adicional para evitar que el BottomMenu cubra el contenido */}
       <div className="mb-16"></div> {/* Ajusta el valor de mb-16 según la altura del BottomMenu */}
 
@@ -32,4 +28,4 @@ const HomePageClient = () => {
   );
 };
 
-export default HomePageClient;
+export default HomeClient;

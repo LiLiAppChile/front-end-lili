@@ -130,7 +130,7 @@ export const AuthProvider = ({ children }) => {
           setUser(firebaseUser);
           localStorage.setItem("user", JSON.stringify(firebaseUser));
 
-          const userData = await fetchUserData(firebaseUser.uid);
+          // const userData = await fetchUserData(firebaseUser.uid);
 
           if (!userData) {
             throw new Error("Datos de usuario no válidos");
@@ -139,21 +139,25 @@ export const AuthProvider = ({ children }) => {
           if (['/login', '/register'].includes(location.pathname)) {
             navigate('/home');
           }
+          if (['login-client','/register-client'].includes(location.pathname)) {
+            navigate('/home-client');
+          }
+          
         } else {
           setUser(null);
           setUserData(null);
           localStorage.removeItem("user");
           localStorage.removeItem("userData");
 
-          if (!['/login', '/register', '/'].includes(location.pathname)) {
-            navigate('/login');
-          }
+          // if (!['/login', '/register', '/'].includes(location.pathname)) {
+          //   navigate('/login');
+          // }
         }
       } catch (error) {
         console.error("Error en el observer de autenticación:", error);
-        if (!['/login', '/register'].includes(location.pathname)) {
-          navigate('/login');
-        }
+        // if (!['/login', '/register'].includes(location.pathname)) {
+        //   navigate('/login');
+        // }
       } finally {
         setLoading(false);
         setAuthChecked(true);
@@ -163,14 +167,32 @@ export const AuthProvider = ({ children }) => {
     return () => unsubscribe();
   }, [navigate, isLoggingOut, location.pathname, fetchUserData]);
 
+
+
   const login = async (email, password) => {
     try {
       setLoading(true);
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      const userData = await fetchUserData(user.uid);
-      navigate('/home');
-      return userData;
+      const path = location.pathname; 
+  
+     
+      if (['/login', '/register'].includes(path)) {
+        const userData = await fetchUserData(user.uid);
+        navigate('/home');
+        return userData;
+      }
+  
+     
+      if (['/login-client', '/register-client'].includes(path)) {
+        navigate('/home-client');
+        // return userData;
+      }
+  
+      
+      console.warn("Ruta no reconocida para login:", path);
+      navigate('/'); 
+  
     } catch (error) {
       console.error("Error al iniciar sesión:", error.message);
       throw error;
@@ -180,6 +202,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (email, password, userData) => {
+    
     try {
       setLoading(true);
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -226,6 +249,56 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
+
+
+
+  const registerClient = async (email, password,userData) => {
+    try {
+      setLoading(true);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      const token = await user.getIdToken();
+
+      const userDataForBackend = {
+        ...userData,
+        uid: user.uid,
+      };
+
+      let response;
+      try {
+        response = await axios.post(
+          "http://[::1]:3001/clients",
+          userDataForBackend,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } catch (error) {
+
+        await deleteUser(user);
+        const backendMessage = error.response?.data?.message || "Error al registrar en el backend";
+        throw new Error(backendMessage);
+      }
+
+      const responseData = response.data;
+      const newUserData = { ...userDataForBackend, ...responseData.user };
+      setUser(user);
+      setUserData(newUserData);
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("userData", JSON.stringify(newUserData));
+
+      navigate('/home-client');
+      return { success: true, user: newUserData };
+    } catch (error) {
+      console.error("Error en el registro:", error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
 
   const updateUser = async (formData, options = { showLoading: true }) => {
@@ -308,6 +381,7 @@ export const AuthProvider = ({ children }) => {
       authChecked,
       fetchReviews,
       updateProfile,
+      registerClient,
     }}>
       {children}
     </AuthContext.Provider>

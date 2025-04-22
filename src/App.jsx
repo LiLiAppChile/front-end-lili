@@ -22,6 +22,10 @@ import RefundPolicy from "./components/Dashboard/SettingsPage/RefundPolicy";
 import PrivacyPolicy from "./components/Dashboard/SettingsPage/PrivacyPolicy";
 import Contact from "./components/Dashboard/SettingsPage/Contact";
 import Form from "./components/form/form";
+import RegisterPageClient from "./components/Client/RegisterClient/RegisterClient";
+import LandingClient from "./components/Client/LangingClient";
+import LoginClient from "./components/Client/LoginClient/LoginClient";
+import HomeClient from "./components/Client/homeClient/HomeClient";
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -34,8 +38,12 @@ const App = () => {
         <AuthProvider>
           <Routes>
             <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<Login/>} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/client" element={<LandingClient />} />
+            <Route path="/register-client" element={<RegisterPageClient />} />
+            <Route path="/login-client" element={<LoginClient />} />
+            <Route path="/home-client" element={<HomeClient />} />
             <Route
               path="/home"
               element={
