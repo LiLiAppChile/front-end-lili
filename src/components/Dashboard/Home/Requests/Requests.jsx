@@ -1,121 +1,560 @@
-import Navbar from "../../BottomMenu/BottomMenu"
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import Navbar from '../../BottomMenu/BottomMenu';
+import { useState, useEffect } from 'react';
+import Modal from 'react-modal';
+import { useAuth } from '../../../../Context/AuthContext';
 
-// EN ESTE COMPONENTE LA NAVBAR SE DESPLAZA UN POCO A LA DERECHA AL ABRIRLO PORQUE NO HAY SCROLLBAR. QUEDA POR SOLUCIONAR.
+// Configura Modal para accesibilidad
+Modal.setAppElement('#root'); // Asegúrate que esto corresponda al id de tu elemento raíz
+
 const Requests = () => {
-  const navigate = useNavigate();
+  useAuth();
 
-  const [tabActivo, setTabActivo] = useState("pendientes")
+  const [tabActivo, setTabActivo] = useState('pendientes');
+  const [orders, setOrders] = useState([]);
+  const [acceptedOrders, setAcceptedOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [search, setSearch] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const ordersPerPage = 10;
+
+  const bearerToken = import.meta.env.VITE_BEARER_TOKEN;
+
+  // Función para formatear la hora
+  const formatHour = (timestamp) => {
+    if (!timestamp) return 'Hora no disponible';
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  // Función para obtener la imagen según la categoría
+  const getImageForCategory = (category) => {
+    switch (category) {
+      case 'Gasfitería':
+        return '/tipos/Gasfiteria.png';
+      case 'Electricidad':
+        return '/tipos/Electricidad.png';
+      case 'Albañilería':
+        return '/tipos/Albanileria.png';
+      case 'Artefactos':
+        return '/tipos/Artefactos.png';
+      case 'Carpintería':
+        return '/tipos/Carpinteria.png';
+      case 'Cerrajería':
+        return '/tipos/Cerrajeria.png';
+      case 'Climatización':
+        return '/tipos/Climatizacion.png';
+      case 'Control de Plagas':
+        return '/tipos/ControlPlagas.png';
+      case 'Jardinería':
+        return '/tipos/Jardineria.png';
+      case 'Limpieza':
+        return '/tipos/Limpieza.png';
+      case 'Pintura':
+        return '/tipos/Pintura.png';
+      case 'Seguridad':
+        return '/tipos/Seguridad.png';
+      case 'Otros':
+        return '/tipos/Otros.png';
+      default:
+        return null;
+    }
+  };
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await fetch('http://localhost:3001/pedidos', {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${bearerToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setOrders(data);
+      } catch (err) {
+        setError(err.message || 'Error al cargar los pedidos');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, [bearerToken]);
+
+  const filteredOrders =
+    tabActivo === 'pendientes'
+      ? orders.filter((order) =>
+          order.nombreCliente?.toLowerCase().includes(search.toLowerCase())
+        )
+      : acceptedOrders.filter((order) =>
+          order.nombreCliente?.toLowerCase().includes(search.toLowerCase())
+        );
+
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+  const currentOrders = filteredOrders.slice(
+    indexOfFirstOrder,
+    indexOfLastOrder
+  );
+
+  const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const openModal = (order) => {
+    setSelectedOrder(order);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedOrder(null);
+    setIsModalOpen(false);
+  };
+
+  // Añade estas funciones después de closeModal()
+
+  const handleAcceptOrder = async (order) => {
+    try {
+      const updatedOrder = { ...order, status: 'accepted' };
+
+      // Quita la orden de las pendientes
+      setOrders(
+        orders.filter((o) => (o.id || o._id) !== (order.id || order._id))
+      );
+
+      // Añade la orden a las aceptadas
+      setAcceptedOrders([updatedOrder, ...acceptedOrders]);
+
+      // Cierra el modal
+      closeModal();
+
+      // Muestra un mensaje de éxito
+      alert('Solicitud aceptada correctamente');
+    } catch (error) {
+      console.error('Error al aceptar la solicitud:', error);
+      alert('Error al aceptar la solicitud');
+    }
+  };
+
+  const handleRejectOrder = async (order) => {
+    try {
+      setOrders(
+        orders.filter((o) => (o.id || o._id) !== (order.id || order._id))
+      );
+
+      setTabActivo('pendientes');
+
+      closeModal();
+
+      alert('Solicitud rechazada correctamente');
+    } catch (error) {
+      console.error('Error al rechazar la solicitud:', error);
+      alert('Error al rechazar la solicitud');
+    }
+  };
+
+  const getCategoryDescription = (category) => {
+    const descriptions = {
+      Gasfitería:
+        'Servicios de instalación, reparación y mantenimiento de sistemas de agua, gas y desagüe en hogares y edificios.',
+      Electricidad:
+        'Trabajos de instalación, reparación y mejoras en sistemas eléctricos, iluminación y redes eléctricas domiciliarias.',
+      Albañilería:
+        'Servicios de construcción, reparación y remodelación de estructuras de concreto, ladrillos y otros materiales.',
+      Artefactos:
+        'Instalación, mantenimiento y reparación de electrodomésticos y aparatos eléctricos o a gas.',
+      Carpintería:
+        'Fabricación, instalación y reparación de estructuras y muebles de madera.',
+      Cerrajería:
+        'Instalación y reparación de cerraduras, llaves y sistemas de seguridad para puertas y accesos.',
+      Climatización:
+        'Instalación y mantenimiento de sistemas de aire acondicionado, calefacción y ventilación.',
+      'Control de Plagas':
+        'Eliminación y prevención de insectos, roedores y otras plagas en hogares y edificios.',
+      Jardinería:
+        'Diseño, mantenimiento y cuidado de jardines, áreas verdes y plantas.',
+      Limpieza:
+        'Servicios de limpieza profunda, sanitización y organización para hogares y espacios comerciales.',
+      Pintura:
+        'Trabajos de pintura interior y exterior, preparación de superficies y acabados decorativos.',
+      Seguridad:
+        'Instalación y mantenimiento de sistemas de seguridad, alarmas y cámaras de vigilancia.',
+      Otros:
+        'Otros servicios especializados para el hogar y edificios comerciales.',
+    };
+
+    return (
+      descriptions[category] || 'Servicios generales para el hogar y edificios.'
+    );
+  };
 
   return (
     <>
-    <Navbar/>
-    <div className="flex flex-col min-h-screen bg-white overflow-y-scroll">
-      <div className=" p-4 flex items-center gap-2 border-b-2 mb-5 border-gray-200 pb-4">
-        <img src="./src/assets/Vector.png" alt="checkbox" />
-        <h1 className="text-2xl font-bold">Solicitudes</h1>
-      </div>
-
-      <div className="flex border-b">
-        <button
-          className={`flex-1 py-3 text-center relative ${
-            tabActivo === "pendientes" ? "text-purple-600 font-medium" : "text-gray-700"
-          }`}
-          onClick={() => setTabActivo("pendientes")}
+      <Navbar />
+      <div className='flex flex-col min-h-screen bg-white'>
+        {/* Encabezado */}
+        <div className='p-4 border-b-2 border-gray-200'>
+          <h1 className='text-2xl font-bold'>Trabajos</h1>
+        </div>
+        {/* Pestañas */}
+        <div className='flex justify-between border-b'>
+          <button
+            className={`flex-1 py-3 text-center ${
+              tabActivo === 'aceptadas'
+                ? 'text-purple-600 font-medium border-b-2 border-purple-600'
+                : 'text-gray-700'
+            }`}
+            onClick={() => setTabActivo('aceptadas')}
           >
-          Pendientes
-          {tabActivo === "pendientes" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-600"></div>}
-        </button>
-        <button
-          className={`flex-1 py-3 text-center relative ${tabActivo === "aceptadas" ? "font-medium" : "text-gray-700"}`}
-          onClick={() => setTabActivo("aceptadas")}
+            Aceptados
+          </button>
+          <button
+            className={`flex-1 py-3 text-center ${
+              tabActivo === 'pendientes'
+                ? 'text-purple-600 font-medium border-b-2 border-purple-600'
+                : 'text-gray-700'
+            }`}
+            onClick={() => setTabActivo('pendientes')}
           >
-          Aceptadas
-          {tabActivo === "aceptadas" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-black"></div>}
-        </button>
-      </div>
+            Solicitudes
+          </button>
+        </div>
+        {/* Buscador */}
+        <div className='p-4 flex items-center gap-2'>
+          <input
+            type='text'
+            placeholder='Buscar trabajo'
+            className='flex-1 p-2 border rounded-md'
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        {/* Tabla de solicitudes */}
+        <div className='flex flex-col bg-white pb-16'>
+          <div className='h-auto p-4'>
+            <div className='overflow-x-auto'>
+              <table className='w-full border-collapse'>
+                <thead>
+                  <tr className='bg-gray-100 text-left'>
+                    <th className='p-3 text-sm'>Cliente</th>
+                    <th className='p-3 text-sm'>Fecha</th>
+                    <th className='p-3 text-sm'>Hora</th>
+                    <th className='p-3 text-sm'>Tipo</th>
+                    <th className='p-3 text-sm'></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentOrders.map((order, index) => (
+                    <tr
+                      key={order.id || order._id}
+                      className={`cursor-pointer ${
+                        index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                      } hover:bg-purple-100 transition`}
+                      onClick={() => openModal(order)}
+                    >
+                      <td className='p-3 text-sm whitespace-nowrap'>
+                        {order.nombreCliente || 'Cliente'}
+                      </td>
+                      <td className='p-3 text-sm whitespace-nowrap'>
+                        {order.fechaCreacion
+                          ? new Date(order.fechaCreacion).toLocaleDateString()
+                          : 'Fecha no disponible'}
+                      </td>
+                      <td className='p-3 text-sm whitespace-nowrap'>
+                        {formatHour(order.fechaCreacion)}
+                      </td>
+                      <td className='p-3 text-sm whitespace-nowrap'>
+                        {getImageForCategory(order.categoria) ? (
+                          <img
+                            src={getImageForCategory(order.categoria)}
+                            alt={order.categoria}
+                            title={order.categoria}
+                            className='h-8 w-8'
+                          />
+                        ) : (
+                          'Tipo no disponible'
+                        )}
+                      </td>
+                      <td className='p-3 text-right text-sm whitespace-nowrap'>
+                        <span className='text-purple-600'>➔</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
 
-      <div className="p-3 flex justify-end">
-        <button className="text-purple-600 flex items-center gap-1 text-sm">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="lucide lucide-filter"
-            >
-            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-          </svg>
-          Filtrar solicitudes
-        </button>
-      </div>
-
-      <div className="px-4 pb-4 space-y-3">
-            <div className="bg-[#EAECF6] rounded-md p-3">
-              <div className="flex justify-between">
-                <div>
-                  <p className="font-medium">Nombre</p>
-                  <p className="text-sm text-gray-600">Fecha</p>
-                  <p className="text-sm text-gray-600">Comuna</p>
-                  <button 
-                    onClick={() => navigate("/details")} 
-                    className="btn-details bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 border border-blue-500 transition px-2 py-1"
+              {/* Paginación */}
+              {totalPages > 1 && (
+                <div className='flex justify-center items-center mt-4'>
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className={`px-3 py-1 mx-1 rounded-md ${
+                      currentPage === 1
+                        ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                        : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                    }`}
                   >
-                    Ver detalles
+                    &laquo;
+                  </button>
+
+                  {[...Array(totalPages)].map((_, index) => (
+                    <button
+                      key={index + 1}
+                      onClick={() => handlePageChange(index + 1)}
+                      className={`px-3 py-1 mx-1 rounded-md ${
+                        currentPage === index + 1
+                          ? 'bg-purple-600 text-white'
+                          : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                      }`}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className={`px-3 py-1 mx-1 rounded-md ${
+                      currentPage === totalPages
+                        ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                        : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                    }`}
+                  >
+                    &raquo;
                   </button>
                 </div>
-                <div className="flex gap-2 pt-2.5">
-                <button
-                    className="bg-green-500 text-white rounded-full w-10 h-10 flex items-center justify-center"
-                    >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="lucide lucide-check"
-                    >
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                  </button>
-                  <button
-                    className="bg-red-500 text-white rounded-full w-10 h-10 flex items-center justify-center"
-                    >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="lucide lucide-x"
-                      >
-                      <line x1="18" y1="6" x2="6" y2="18" />
-                      <line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
-                  </button>
+              )}
+            </div>
+          </div>
+        </div>
+        {/* Modal */}
+        <Modal
+          isOpen={isModalOpen}
+          onRequestClose={closeModal}
+          contentLabel='Detalles de la solicitud'
+          className='relative bg-white w-full max-w-lg mx-auto my-0 p-0 rounded-lg shadow-xl outline-none overflow-auto'
+          overlayClassName='fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4'
+          style={{
+            content: {
+              maxHeight: '90vh',
+            },
+          }}
+        >
+          {selectedOrder && (
+            <div className='flex flex-col h-full'>
+              <div className='bg-gray-900 text-white p-3'>
+                <p className='text-sm font-light'>Detalle Solicitud</p>
+              </div>
+              {/* Encabezado con flecha y nombre */}
+              <div className='flex items-center p-5 border-b border-gray-200'>
+                <button onClick={closeModal} className='text-purple-700 mr-4'>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    className='h-8 w-8'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    stroke='currentColor'
+                  >
+                    <path
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      strokeWidth={2}
+                      d='M15 19l-7-7 7-7'
+                    />
+                  </svg>
+                </button>
+                <div>
+                  <span className='text-xl font-bold'>
+                    {selectedOrder.nombreCliente || 'Cliente'}{' '}
+                  </span>
+                  <span className='text-gray-400 text-lg'>
+                    (#{selectedOrder.id || selectedOrder._id || '00000'})
+                  </span>
                 </div>
               </div>
+              {/* Información técnica */}
+              <div className='p-5'>
+                <h2 className='text-2xl font-bold mb-4'>Información técnica</h2>
+
+                <div className='border-2 border-blue-300 rounded-lg p-4'>
+                  <div className='grid grid-cols-2 gap-2 mb-4'>
+                    <p className='font-bold'>Cliente:</p>
+                    <p>{selectedOrder.nombreCliente || 'No disponible'}</p>
+
+                    <p className='font-bold'>Comuna:</p>
+                    <p>
+                      {selectedOrder.comuna ||
+                        selectedOrder.datosOriginales?.shipping_address
+                          ?.municipality ||
+                        'No disponible'}
+                    </p>
+
+                    <p className='font-bold'>Fecha:</p>
+                    <p>
+                      {selectedOrder.fechaCreacion
+                        ? new Date(
+                            selectedOrder.fechaCreacion
+                          ).toLocaleDateString()
+                        : 'No disponible'}
+                    </p>
+
+                    <p className='font-bold'>Hora:</p>
+                    <p>{formatHour(selectedOrder.fechaCreacion)}</p>
+
+                    <p className='font-bold'>Pago:</p>
+                    <p>
+                      ${selectedOrder.montoTotal || selectedOrder.total || '0'}
+                    </p>
+                  </div>
+                  <div className='border-t border-gray-300 pt-4 mb-4'>
+                    <div className='flex items-center mb-2 relative'>
+                      <p className='font-bold mr-2'>Especialidad:</p>
+                      <div className='flex items-center'>
+                        <span className='bg-blue-100 px-4 py-1 rounded-lg text-blue-800'>
+                          {selectedOrder.categoria || 'Especialidad'}
+                        </span>
+                        <span
+                          className='ml-2 bg-gray-300 rounded-full w-6 h-6 flex items-center justify-center text-gray-600 text-xs cursor-pointer hover:bg-gray-400'
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevenir que el clic propague al modal principal
+                            setShowTooltip(!showTooltip);
+                          }}
+                        >
+                          i
+                        </span>
+
+                        {/* Tooltip con la descripción */}
+                        {showTooltip && (
+                          <div className='absolute z-10 top-full left-0 mt-2 w-64 p-3 bg-white rounded-lg shadow-lg border border-gray-200'>
+                            <p className='text-sm text-gray-700'>
+                              {getCategoryDescription(selectedOrder.categoria)}
+                            </p>
+                            <div className='absolute -top-2 left-32 w-4 h-4 bg-white transform rotate-45 border-t border-l border-gray-200'></div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className='border-t border-gray-300 pt-4 mb-4'>
+                    <p className='font-bold mb-2'>Detalle:</p>
+                    <ul className='list-disc pl-5 space-y-1'>
+                      {selectedOrder.productos?.length > 0 ? (
+                        selectedOrder.productos.map((producto, index) => (
+                          <li key={index}>{producto.name}</li>
+                        ))
+                      ) : selectedOrder.products?.length > 0 ? (
+                        selectedOrder.products.map((producto, index) => (
+                          <li key={index}>{producto.name}</li>
+                        ))
+                      ) : (
+                        <li>Solicitud de presupuesto personalizado.</li>
+                      )}
+                      {!selectedOrder.productos?.length &&
+                        !selectedOrder.products?.length && (
+                          <li>
+                            {selectedOrder.categoria || ''} para vivienda.
+                          </li>
+                        )}
+                    </ul>
+                  </div>
+                  <div className='border-t border-gray-300 pt-4'>
+                    <p className='font-bold mb-2'>Imágenes:</p>
+                    <div className='flex space-x-2 overflow-x-auto pb-2'>
+                      {selectedOrder.productos &&
+                      selectedOrder.productos.length > 0 ? (
+                        // Mostrar imágenes de productos si están disponibles
+                        selectedOrder.productos.map((producto, index) => (
+                          <div
+                            key={index}
+                            className='w-36 h-36 flex-shrink-0 rounded overflow-hidden'
+                          >
+                            {producto.image ? (
+                              <img
+                                src={producto.image}
+                                alt={producto.name}
+                                className='w-full h-full object-cover'
+                              />
+                            ) : (
+                              <div className='w-full h-full bg-gray-200 flex items-center justify-center'>
+                                <span className='text-gray-400 text-xs'>
+                                  Sin imagen
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        ))
+                      ) : selectedOrder.products &&
+                        selectedOrder.products.length > 0 ? (
+                        // Alternativa si los productos están en selectedOrder.products en lugar de selectedOrder.productos
+                        selectedOrder.products.map((producto, index) => (
+                          <div
+                            key={index}
+                            className='w-36 h-36 flex-shrink-0 rounded overflow-hidden'
+                          >
+                            {producto.image ? (
+                              <img
+                                src={producto.image}
+                                alt={producto.name}
+                                className='w-full h-full object-cover'
+                              />
+                            ) : (
+                              <div className='w-full h-full bg-gray-200 flex items-center justify-center'>
+                                <span className='text-gray-400 text-xs'>
+                                  Sin imagen
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        ))
+                      ) : (
+                        // Placeholders si no hay productos con imágenes
+                        <>
+                          <div className='w-36 h-36 bg-gray-200 rounded flex-shrink-0'></div>
+                          <div className='w-36 h-36 bg-gray-200 rounded flex-shrink-0'></div>
+                          <div className='w-36 h-36 bg-gray-200 rounded flex-shrink-0'></div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* Botones de acción */}
+              <div className='flex mt-auto p-4'>
+                <button
+                  onClick={() => handleRejectOrder(selectedOrder)}
+                  className='flex-1 py-4 text-center border-2 border-orange-700 text-orange-700 rounded-lg mr-2 font-bold'
+                >
+                  Rechazar
+                </button>
+                <button
+                  onClick={() => handleAcceptOrder(selectedOrder)}
+                  className='flex-1 py-4 text-center bg-green-500 text-white rounded-lg font-bold'
+                >
+                  Aceptar
+                </button>
+              </div>
             </div>
+          )}
+        </Modal>
       </div>
-    </div>
     </>
-  )
-}
+  );
+};
 
 export default Requests;
-

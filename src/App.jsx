@@ -80,10 +80,4 @@ const App = () => {
   );
 };
 
-{
-  <ProtectedRoute>
-    <Profile />
-  </ProtectedRoute>
-}
-
 export default App;
