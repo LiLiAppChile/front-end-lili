@@ -15,7 +15,6 @@ const CalendarPage = () => {
     location: "",
     description: "",
   });
-  const [viewMode, setViewMode] = useState("Mensual");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState(new Date().getDate());
 
@@ -163,8 +162,8 @@ const CalendarPage = () => {
                   setSelectedDate(date);
                 }}
                 className={`relative p-2 cursor-pointer rounded-lg ${isSelected
-                    ? "bg-[#cbb4ff] text-white"
-                    : "hover:bg-gray-200 text-black"
+                  ? "bg-[#cbb4ff] text-white"
+                  : "hover:bg-gray-200 text-black"
                   }`}
               >
                 <div>{dia}</div>
@@ -226,24 +225,7 @@ const CalendarPage = () => {
           <h1 className="text-2xl font-bold">Calendario</h1>
         </div>
 
-        {/* Selector de vista */}
-        <div className="px-5 mb-4">
-          <div className="relative w-full max-w-xs">
-            <select
-              value={viewMode}
-              onChange={(e) => setViewMode(e.target.value)}
-              className="appearance-none border border-gray-300 rounded-md p-2 pr-6 text-sm bg-[#eaecf6] text-gray-800 w-full"
-            >
-              <option value="Mensual">Mensual</option>
-              <option value="Semanal">Semanal</option>
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-[#714dbf] text-lg rotate-90">
-              ❯
-            </div>
-          </div>
-        </div>
-
-        {viewMode === "Mensual" && renderMensual()}
+        {renderMensual()}
 
         {/* Modal */}
         {showModal && (

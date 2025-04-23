@@ -3,16 +3,20 @@ import { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { useAuth } from '../../../../Context/AuthContext';
 
-// Configura Modal para accesibilidad
-Modal.setAppElement('#root'); // Asegúrate que esto corresponda al id de tu elemento raíz
+Modal.setAppElement('#root');
 
 const Requests = () => {
-  useAuth();
+  const {
+    fetchOrders,
+    acceptOrder: contextAcceptOrder,
+    rejectOrder: contextRejectOrder,
+    loading: authLoading
+  } = useAuth();
 
   const [tabActivo, setTabActivo] = useState('pendientes');
   const [orders, setOrders] = useState([]);
   const [acceptedOrders, setAcceptedOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -21,68 +25,58 @@ const Requests = () => {
   const [showTooltip, setShowTooltip] = useState(false);
   const ordersPerPage = 10;
 
-  const bearerToken = import.meta.env.VITE_BEARER_TOKEN;
-
-  // Función para formatear la hora
+  // Funciones de utilidad
   const formatHour = (timestamp) => {
     if (!timestamp) return 'Hora no disponible';
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  // Función para obtener la imagen según la categoría
   const getImageForCategory = (category) => {
-    switch (category) {
-      case 'Gasfitería':
-        return '/tipos/Gasfiteria.png';
-      case 'Electricidad':
-        return '/tipos/Electricidad.png';
-      case 'Albañilería':
-        return '/tipos/Albanileria.png';
-      case 'Artefactos':
-        return '/tipos/Artefactos.png';
-      case 'Carpintería':
-        return '/tipos/Carpinteria.png';
-      case 'Cerrajería':
-        return '/tipos/Cerrajeria.png';
-      case 'Climatización':
-        return '/tipos/Climatizacion.png';
-      case 'Control de Plagas':
-        return '/tipos/ControlPlagas.png';
-      case 'Jardinería':
-        return '/tipos/Jardineria.png';
-      case 'Limpieza':
-        return '/tipos/Limpieza.png';
-      case 'Pintura':
-        return '/tipos/Pintura.png';
-      case 'Seguridad':
-        return '/tipos/Seguridad.png';
-      case 'Otros':
-        return '/tipos/Otros.png';
-      default:
-        return null;
-    }
+    const images = {
+      'Gasfitería': '/tipos/Gasfiteria.png',
+      'Electricidad': '/tipos/Electricidad.png',
+      'Albañilería': '/tipos/Albanileria.png',
+      'Artefactos': '/tipos/Artefactos.png',
+      'Carpintería': '/tipos/Carpinteria.png',
+      'Cerrajería': '/tipos/Cerrajeria.png',
+      'Climatización': '/tipos/Climatizacion.png',
+      'Control de Plagas': '/tipos/ControlPlagas.png',
+      'Jardinería': '/tipos/Jardineria.png',
+      'Limpieza': '/tipos/Limpieza.png',
+      'Pintura': '/tipos/Pintura.png',
+      'Seguridad': '/tipos/Seguridad.png',
+      'Otros': '/tipos/Otros.png'
+    };
+    return images[category] || null;
   };
 
+  const getCategoryDescription = (category) => {
+    const descriptions = {
+      'Gasfitería': 'Servicios de instalación, reparación y mantenimiento de sistemas de agua, gas y desagüe en hogares y edificios.',
+      'Electricidad': 'Trabajos de instalación, reparación y mejoras en sistemas eléctricos, iluminación y redes eléctricas domiciliarias.',
+      'Albañilería': 'Servicios de construcción, reparación y remodelación de estructuras de concreto, ladrillos y otros materiales.',
+      'Artefactos': 'Instalación, mantenimiento y reparación de electrodomésticos y aparatos eléctricos o a gas.',
+      'Carpintería': 'Fabricación, instalación y reparación de estructuras y muebles de madera.',
+      'Cerrajería': 'Instalación y reparación de cerraduras, llaves y sistemas de seguridad para puertas y accesos.',
+      'Climatización': 'Instalación y mantenimiento de sistemas de aire acondicionado, calefacción y ventilación.',
+      'Control de Plagas': 'Eliminación y prevención de insectos, roedores y otras plagas en hogares y edificios.',
+      'Jardinería': 'Diseño, mantenimiento y cuidado de jardines, áreas verdes y plantas.',
+      'Limpieza': 'Servicios de limpieza profunda, sanitización y organización para hogares y espacios comerciales.',
+      'Pintura': 'Trabajos de pintura interior y exterior, preparación de superficies y acabados decorativos.',
+      'Seguridad': 'Instalación y mantenimiento de sistemas de seguridad, alarmas y cámaras de vigilancia.',
+      'Otros': 'Otros servicios especializados para el hogar y edificios comerciales.'
+    };
+    return descriptions[category] || 'Servicios generales para el hogar y edificios.';
+  };
+
+  // Efectos
   useEffect(() => {
-    const fetchOrders = async () => {
+    const loadOrders = async () => {
       try {
         setLoading(true);
         setError(null);
-
-        const response = await fetch('http://localhost:3001/pedidos', {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${bearerToken}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
-
-        const data = await response.json();
+        const data = await fetchOrders();
         setOrders(data);
       } catch (err) {
         setError(err.message || 'Error al cargar los pedidos');
@@ -91,29 +85,30 @@ const Requests = () => {
       }
     };
 
-    fetchOrders();
-  }, [bearerToken]);
+    loadOrders();
+  }, [fetchOrders]);
 
-  const filteredOrders =
-    tabActivo === 'pendientes'
-      ? orders.filter((order) =>
-          order.nombreCliente?.toLowerCase().includes(search.toLowerCase())
-        )
-      : acceptedOrders.filter((order) =>
-          order.nombreCliente?.toLowerCase().includes(search.toLowerCase())
-        );
+  const handleAcceptOrder = async (order) => {
+    try {
+      await contextAcceptOrder(order);
+      setOrders(orders.filter(o => (o.id || o._id) !== (order.id || order._id)));
+      setAcceptedOrders([{ ...order, status: 'accepted' }, ...acceptedOrders]);
+      closeModal();
+    } catch (error) {
+      console.error('Error al aceptar la solicitud:', error);
+      setError('Error al aceptar la solicitud');
+    }
+  };
 
-  const indexOfLastOrder = currentPage * ordersPerPage;
-  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-  const currentOrders = filteredOrders.slice(
-    indexOfFirstOrder,
-    indexOfLastOrder
-  );
-
-  const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
+  const handleRejectOrder = async (order) => {
+    try {
+      await contextRejectOrder(order);
+      setOrders(orders.filter(o => (o.id || o._id) !== (order.id || order._id)));
+      closeModal();
+    } catch (error) {
+      console.error('Error al rechazar la solicitud:', error);
+      setError('Error al rechazar la solicitud');
+    }
   };
 
   const openModal = (order) => {
@@ -124,84 +119,22 @@ const Requests = () => {
   const closeModal = () => {
     setSelectedOrder(null);
     setIsModalOpen(false);
+    setShowTooltip(false);
   };
 
-  // Añade estas funciones después de closeModal()
-
-  const handleAcceptOrder = async (order) => {
-    try {
-      const updatedOrder = { ...order, status: 'accepted' };
-
-      // Quita la orden de las pendientes
-      setOrders(
-        orders.filter((o) => (o.id || o._id) !== (order.id || order._id))
-      );
-
-      // Añade la orden a las aceptadas
-      setAcceptedOrders([updatedOrder, ...acceptedOrders]);
-
-      // Cierra el modal
-      closeModal();
-
-      // Muestra un mensaje de éxito
-      alert('Solicitud aceptada correctamente');
-    } catch (error) {
-      console.error('Error al aceptar la solicitud:', error);
-      alert('Error al aceptar la solicitud');
-    }
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
-  const handleRejectOrder = async (order) => {
-    try {
-      setOrders(
-        orders.filter((o) => (o.id || o._id) !== (order.id || order._id))
-      );
+  const filteredOrders = tabActivo === 'pendientes'
+    ? orders.filter(order => order.nombreCliente?.toLowerCase().includes(search.toLowerCase()))
+    : acceptedOrders.filter(order => order.nombreCliente?.toLowerCase().includes(search.toLowerCase()));
 
-      setTabActivo('pendientes');
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+  const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder);
+  const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
 
-      closeModal();
-
-      alert('Solicitud rechazada correctamente');
-    } catch (error) {
-      console.error('Error al rechazar la solicitud:', error);
-      alert('Error al rechazar la solicitud');
-    }
-  };
-
-  const getCategoryDescription = (category) => {
-    const descriptions = {
-      Gasfitería:
-        'Servicios de instalación, reparación y mantenimiento de sistemas de agua, gas y desagüe en hogares y edificios.',
-      Electricidad:
-        'Trabajos de instalación, reparación y mejoras en sistemas eléctricos, iluminación y redes eléctricas domiciliarias.',
-      Albañilería:
-        'Servicios de construcción, reparación y remodelación de estructuras de concreto, ladrillos y otros materiales.',
-      Artefactos:
-        'Instalación, mantenimiento y reparación de electrodomésticos y aparatos eléctricos o a gas.',
-      Carpintería:
-        'Fabricación, instalación y reparación de estructuras y muebles de madera.',
-      Cerrajería:
-        'Instalación y reparación de cerraduras, llaves y sistemas de seguridad para puertas y accesos.',
-      Climatización:
-        'Instalación y mantenimiento de sistemas de aire acondicionado, calefacción y ventilación.',
-      'Control de Plagas':
-        'Eliminación y prevención de insectos, roedores y otras plagas en hogares y edificios.',
-      Jardinería:
-        'Diseño, mantenimiento y cuidado de jardines, áreas verdes y plantas.',
-      Limpieza:
-        'Servicios de limpieza profunda, sanitización y organización para hogares y espacios comerciales.',
-      Pintura:
-        'Trabajos de pintura interior y exterior, preparación de superficies y acabados decorativos.',
-      Seguridad:
-        'Instalación y mantenimiento de sistemas de seguridad, alarmas y cámaras de vigilancia.',
-      Otros:
-        'Otros servicios especializados para el hogar y edificios comerciales.',
-    };
-
-    return (
-      descriptions[category] || 'Servicios generales para el hogar y edificios.'
-    );
-  };
 
   return (
     <>
@@ -214,21 +147,19 @@ const Requests = () => {
         {/* Pestañas */}
         <div className='flex justify-between border-b'>
           <button
-            className={`flex-1 py-3 text-center ${
-              tabActivo === 'aceptadas'
-                ? 'text-purple-600 font-medium border-b-2 border-purple-600'
-                : 'text-gray-700'
-            }`}
+            className={`flex-1 py-3 text-center ${tabActivo === 'aceptadas'
+              ? 'text-purple-600 font-medium border-b-2 border-purple-600'
+              : 'text-gray-700'
+              }`}
             onClick={() => setTabActivo('aceptadas')}
           >
             Aceptados
           </button>
           <button
-            className={`flex-1 py-3 text-center ${
-              tabActivo === 'pendientes'
-                ? 'text-purple-600 font-medium border-b-2 border-purple-600'
-                : 'text-gray-700'
-            }`}
+            className={`flex-1 py-3 text-center ${tabActivo === 'pendientes'
+              ? 'text-purple-600 font-medium border-b-2 border-purple-600'
+              : 'text-gray-700'
+              }`}
             onClick={() => setTabActivo('pendientes')}
           >
             Solicitudes
@@ -262,9 +193,8 @@ const Requests = () => {
                   {currentOrders.map((order, index) => (
                     <tr
                       key={order.id || order._id}
-                      className={`cursor-pointer ${
-                        index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
-                      } hover:bg-purple-100 transition`}
+                      className={`cursor-pointer ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                        } hover:bg-purple-100 transition`}
                       onClick={() => openModal(order)}
                     >
                       <td className='p-3 text-sm whitespace-nowrap'>
@@ -304,11 +234,10 @@ const Requests = () => {
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className={`px-3 py-1 mx-1 rounded-md ${
-                      currentPage === 1
-                        ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                        : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-                    }`}
+                    className={`px-3 py-1 mx-1 rounded-md ${currentPage === 1
+                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                      : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                      }`}
                   >
                     &laquo;
                   </button>
@@ -317,11 +246,10 @@ const Requests = () => {
                     <button
                       key={index + 1}
                       onClick={() => handlePageChange(index + 1)}
-                      className={`px-3 py-1 mx-1 rounded-md ${
-                        currentPage === index + 1
-                          ? 'bg-purple-600 text-white'
-                          : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-                      }`}
+                      className={`px-3 py-1 mx-1 rounded-md ${currentPage === index + 1
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                        }`}
                     >
                       {index + 1}
                     </button>
@@ -330,11 +258,10 @@ const Requests = () => {
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className={`px-3 py-1 mx-1 rounded-md ${
-                      currentPage === totalPages
-                        ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                        : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-                    }`}
+                    className={`px-3 py-1 mx-1 rounded-md ${currentPage === totalPages
+                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                      : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                      }`}
                   >
                     &raquo;
                   </button>
@@ -409,8 +336,8 @@ const Requests = () => {
                     <p>
                       {selectedOrder.fechaCreacion
                         ? new Date(
-                            selectedOrder.fechaCreacion
-                          ).toLocaleDateString()
+                          selectedOrder.fechaCreacion
+                        ).toLocaleDateString()
                         : 'No disponible'}
                     </p>
 
@@ -477,7 +404,7 @@ const Requests = () => {
                     <p className='font-bold mb-2'>Imágenes:</p>
                     <div className='flex space-x-2 overflow-x-auto pb-2'>
                       {selectedOrder.productos &&
-                      selectedOrder.productos.length > 0 ? (
+                        selectedOrder.productos.length > 0 ? (
                         // Mostrar imágenes de productos si están disponibles
                         selectedOrder.productos.map((producto, index) => (
                           <div
