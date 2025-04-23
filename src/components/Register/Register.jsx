@@ -75,9 +75,9 @@ const RegisterPage = () => {
         createdAt: createdAt,
         validUser: false
       });
-      
+
       setShowSuccessPopup(true);
-      
+
     } catch (error) {
       console.error("Error en el registro:", error.message);
       if (error.code === "auth/email-already-in-use") {
@@ -96,15 +96,15 @@ const RegisterPage = () => {
   const handleLater = async () => {
     setShowSuccessPopup(false);
 
-      navigate('/home'); // Redirige a la página principal
+    navigate('/home'); // Redirige a la página principal
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+      <div className="flex flex-col items-center justify-center bg-white min-h-0 px-4 py-10 rounded-lg shadow-md">
         <img src={LogoCasa} alt="Logo" className="w-auto h-16 mx-auto mb-4" />
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Regístrate</h2>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Nombre completo */}
           <div>
@@ -115,9 +115,8 @@ const RegisterPage = () => {
               placeholder="Nombre completo"
               value={formData.name}
               onChange={handleChange}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                errors.name ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:ring-blue-200"
-              }`}
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${errors.name ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:ring-blue-200"
+                }`}
             />
             {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
           </div>
@@ -131,9 +130,8 @@ const RegisterPage = () => {
               placeholder="Correo electrónico"
               value={formData.email}
               onChange={handleChange}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                errors.email ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:ring-blue-200"
-              }`}
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${errors.email ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:ring-blue-200"
+                }`}
             />
             {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
           </div>
@@ -147,9 +145,8 @@ const RegisterPage = () => {
               placeholder="Contraseña"
               value={formData.password}
               onChange={handleChange}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                errors.password ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:ring-blue-200"
-              }`}
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${errors.password ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:ring-blue-200"
+                }`}
             />
             {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password}</p>}
           </div>
@@ -163,9 +160,8 @@ const RegisterPage = () => {
               placeholder="Confirmar contraseña"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                errors.confirmPassword ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:ring-blue-200"
-              }`}
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${errors.confirmPassword ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:ring-blue-200"
+                }`}
             />
             {errors.confirmPassword && <p className="mt-1 text-sm text-red-500">{errors.confirmPassword}</p>}
           </div>
@@ -217,7 +213,7 @@ const RegisterPage = () => {
 
         {/* Popup de éxito */}
         {showSuccessPopup && (
-          <SuccessPopup 
+          <SuccessPopup
             onContinue={handleContinueToForm}
             onLater={handleLater}
           />

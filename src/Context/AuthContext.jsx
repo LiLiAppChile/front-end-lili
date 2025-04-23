@@ -70,7 +70,7 @@ export const AuthProvider = ({ children }) => {
       const uid = currentUser.uid;
       const token = await auth.currentUser?.getIdToken();
 
-      const response = await axios.get(`http://[::1]:3001/reviews/professional/${uid}`, {
+      const response = await axios.get(`http://[::1]:3001/reviews?professionalId=${uid}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Cache-Control": "no-cache"
@@ -257,7 +257,8 @@ export const AuthProvider = ({ children }) => {
         accountType: formData.accountType,
         accountHolderName: formData.accountHolderName,
         accountNumber: Number(formData.accountNumber),
-        siiActivitiesStarted: formData.siiActivitiesStarted
+        siiActivitiesStarted: formData.siiActivitiesStarted,
+        formSubmitted: formData.formSubmitted !== undefined ? formData.formSubmitted : true
       };
 
       const cleanedPayload = Object.fromEntries(
@@ -289,6 +290,133 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+
+  const fetchLightUsers = useCallback(async () => {
+    try {
+      const currentUser = auth.currentUser;
+      const token = await currentUser?.getIdToken(true);
+
+      const response = await axios.get(
+        "http://[::1]:3001/users?role=professional&formSubmitted=true",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error("Error al obtener usuarios ligeros:", error);
+      return [];
+    }
+  }, []);
+
+  const fetchLightUsersAll = useCallback(async () => {
+    try {
+      const currentUser = auth.currentUser;
+      const token = await currentUser?.getIdToken(true);
+
+      const response = await axios.get(
+        "http://[::1]:3001/users",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error("Error al obtener usuarios ligeros:", error);
+      return [];
+    }
+  }, []);
+
+
+  const fetchSubmissions = useCallback(async () => {
+    try {
+      const currentUser = auth.currentUser;
+      const token = await currentUser?.getIdToken(true);
+
+      const response = await axios.get("http://[::1]:3001/users?role=professional&formSubmitted=false", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error("Error al obtener postulaciones:", error);
+      return [];
+    }
+  }, []);
+
+  const fetchUserDetails = useCallback(async (uid) => {
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      const response = await fetch(`http://[::1]:3001/users/${uid}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Cache-Control": "no-cache"
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al obtener los datos del usuario");
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+      throw error;
+    }
+  }, []);
+
+  const fetchUsersReviews = useCallback(async (uid) => {
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      const response = await axios.get(`http://[::1]:3001/reviews?professionalId=${uid}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Cache-Control": "no-cache"
+        },
+      });
+
+      const data = response.data;
+
+      console.log("Response de reseñas:", data);
+
+      return data;
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+      return [];
+    }
+  }, []);
+
+  const updateUserStatus = useCallback(async (uid, status) => {
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      const response = await axios.patch(
+        `http://[::1]:3001/users/${uid}`,
+        { status },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            "Cache-Control": "no-cache"
+          },
+        }
+      );
+
+      console.log("Usuario actualizado:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error al actualizar el estado del usuario:", error);
+      throw error;
+    }
+  }, []);
+
+
   if (!authChecked) {
     return (
       <LoadingSpinner />
@@ -308,6 +436,12 @@ export const AuthProvider = ({ children }) => {
       authChecked,
       fetchReviews,
       updateProfile,
+      fetchSubmissions,
+      fetchLightUsers,
+      fetchLightUsersAll,
+      fetchUserDetails,
+      fetchUsersReviews,
+      updateUserStatus,
     }}>
       {children}
     </AuthContext.Provider>
