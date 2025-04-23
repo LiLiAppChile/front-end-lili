@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { BellIcon } from '@heroicons/react/24/outline';
-import { useAuth } from '../../../Context/AuthContext';
+import React, { useState } from "react";
+import { BellIcon } from "@heroicons/react/24/outline";
+import { useAuth } from "../../../Context/AuthContext";
 
 const HeaderUsers = () => {
   const { userData } = useAuth();
@@ -12,7 +12,9 @@ const HeaderUsers = () => {
 
   return (
     <div className="flex justify-between items-center border-b-2 mb-5 border-gray-200 pb-4">
-      <h1 className="text-2xl font-bold">Hola, {userData?.name || 'Usuario'}</h1>
+      <h1 className="text-2xl font-bold">
+        Hola, {userData?.name || "Usuario"}
+      </h1>
 
       <div className="relative">
         <button onClick={toggleNotifications} className="focus:outline-none">
@@ -29,8 +31,12 @@ const HeaderUsers = () => {
                 Notificaciones
               </h2>
               <ul>
-                <li className="py-2 border-b border-gray-200">Notificación 1</li>
-                <li className="py-2 border-b border-gray-200">Notificación 2</li>
+                <li className="py-2 border-b border-gray-200">
+                  Notificación 1
+                </li>
+                <li className="py-2 border-b border-gray-200">
+                  Notificación 2
+                </li>
                 <li className="py-2">Notificación 3</li>
               </ul>
             </div>

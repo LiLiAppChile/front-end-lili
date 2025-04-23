@@ -18,7 +18,9 @@ const Login = () => {
       await login(email, password);
       navigate("/home");
     } catch (error) {
-      setError(error.message || "Correo o contraseña incorrectos. Inténtalo de nuevo.");
+      setError(
+        error.message || "Correo o contraseña incorrectos. Inténtalo de nuevo.",
+      );
     }
   };
 
@@ -58,10 +60,15 @@ const Login = () => {
             />
           </div>
           <div className="text-center">
-            <button type="submit" className="btn-login bg-[#714dbf] text-white px-4 py-3 rounded-lg hover:bg-[#5a3c9f] transition">
+            <button
+              type="submit"
+              className="btn-login bg-[#714dbf] text-white px-4 py-3 rounded-lg hover:bg-[#5a3c9f] transition"
+            >
               Ingresar
             </button>
-            <span className="inline-block text-[var(--text-primary)] underline justify-center p-4">¿Olvidaste tu contraseña?</span>
+            <span className="inline-block text-[var(--text-primary)] underline justify-center p-4">
+              ¿Olvidaste tu contraseña?
+            </span>
           </div>
         </form>
 

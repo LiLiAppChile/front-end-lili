@@ -1,20 +1,20 @@
-import { useState } from 'react';
-import { uploadToCloudinary } from './Services/cloudinary';
+import { useState } from "react";
+import { uploadToCloudinary } from "./Services/cloudinary";
 
 export const DocumentUploader = ({
   fieldName,
   label,
   required = false,
   onUploadComplete,
-  accept = 'image/*,.pdf',
+  accept = "image/*,.pdf",
   maxSizeMB = 5,
-  preview = false
+  preview = false,
 }) => {
   const [uploadState, setUploadState] = useState({
     uploading: false,
     progress: 0,
-    error: '',
-    previewUrl: null
+    error: "",
+    previewUrl: null,
   });
 
   const handleFileChange = async (e) => {
@@ -27,18 +27,18 @@ export const DocumentUploader = ({
         uploading: false,
         progress: 0,
         error: `El archivo excede el tamaño máximo de ${maxSizeMB}MB`,
-        previewUrl: null
+        previewUrl: null,
       });
       return;
     }
 
     // Mostrar previsualización si es imagen
-    if (preview && file.type.startsWith('image/')) {
+    if (preview && file.type.startsWith("image/")) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        setUploadState(prev => ({
+        setUploadState((prev) => ({
           ...prev,
-          previewUrl: event.target.result
+          previewUrl: event.target.result,
         }));
       };
       reader.readAsDataURL(file);
@@ -48,11 +48,11 @@ export const DocumentUploader = ({
   };
 
   const handleFileUpload = async (file) => {
-    setUploadState(prev => ({
+    setUploadState((prev) => ({
       ...prev,
       uploading: true,
       progress: 0,
-      error: ''
+      error: "",
     }));
 
     try {
@@ -60,24 +60,24 @@ export const DocumentUploader = ({
         file,
         fieldName,
         (progress) => {
-          setUploadState(prev => ({
+          setUploadState((prev) => ({
             ...prev,
-            progress
+            progress,
           }));
-        }
+        },
       );
 
       onUploadComplete(url, publicId);
     } catch (error) {
-      setUploadState(prev => ({
+      setUploadState((prev) => ({
         ...prev,
-        error: error.message || 'Error al subir archivo',
-        previewUrl: null
+        error: error.message || "Error al subir archivo",
+        previewUrl: null,
       }));
     } finally {
-      setUploadState(prev => ({
+      setUploadState((prev) => ({
         ...prev,
-        uploading: false
+        uploading: false,
       }));
     }
   };
@@ -101,10 +101,11 @@ export const DocumentUploader = ({
         <div className="flex items-center gap-2">
           <label
             htmlFor={fieldName}
-            className={`cursor-pointer bg-white py-2 px-4 border border-gray-300 rounded-md text-sm font-medium ${uploadState.uploading
-                ? 'opacity-50 cursor-not-allowed'
-                : 'hover:bg-gray-50'
-              }`}
+            className={`cursor-pointer bg-white py-2 px-4 border border-gray-300 rounded-md text-sm font-medium ${
+              uploadState.uploading
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-gray-50"
+            }`}
           >
             Seleccionar Archivo
           </label>

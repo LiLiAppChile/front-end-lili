@@ -11,7 +11,7 @@ const ProtectedRoute = ({ children }) => {
       <div className="flex justify-center items-center h-screen">
         <LoadingSpinner />
       </div>
-    )
+    );
   }
 
   if (!user) {

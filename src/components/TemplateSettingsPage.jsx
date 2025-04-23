@@ -21,9 +21,7 @@ const TemplateSettingsPage = ({ title, children }) => {
       <div className="border-b border-[#d1d5db] mb-6"></div>
 
       {/* Contenido de la página */}
-      <div className="space-y-4">
-        {children}
-      </div>
+      <div className="space-y-4">{children}</div>
     </div>
   );
 };

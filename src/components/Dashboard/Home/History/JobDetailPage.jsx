@@ -178,7 +178,7 @@ const JobDetailPage = () => {
             </span>
             <span
               className={`inline-block px-3 py-1 ${getSpecialtyBadgeColor(
-                item.especialidad
+                item.especialidad,
               )} rounded-full text-xs font-medium`} // Clases dinámicas para la píldora
             >
               {item.especialidad}

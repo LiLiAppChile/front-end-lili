@@ -10,7 +10,7 @@ const RegisterPage = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    acceptTerms: false
+    acceptTerms: false,
   });
 
   const [errors, setErrors] = useState({});
@@ -23,7 +23,7 @@ const RegisterPage = () => {
     const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [name]: type === "checkbox" ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     });
     setErrors({ ...errors, [name]: "" });
   };
@@ -73,15 +73,16 @@ const RegisterPage = () => {
         name: formData.name,
         email: formData.email,
         createdAt: createdAt,
-        validUser: false
+        validUser: false,
       });
-      
+
       setShowSuccessPopup(true);
-      
     } catch (error) {
       console.error("Error en el registro:", error.message);
       if (error.code === "auth/email-already-in-use") {
-        setFirebaseError("Este correo ya está registrado. ¿Ya tienes una cuenta?");
+        setFirebaseError(
+          "Este correo ya está registrado. ¿Ya tienes una cuenta?",
+        );
       } else {
         setFirebaseError("Error en el registro. Inténtalo de nuevo.");
       }
@@ -96,19 +97,23 @@ const RegisterPage = () => {
   const handleLater = async () => {
     setShowSuccessPopup(false);
 
-      navigate('/home'); // Redirige a la página principal
+    navigate("/home"); // Redirige a la página principal
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <img src={LogoCasa} alt="Logo" className="w-auto h-16 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Regístrate</h2>
-        
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+          Regístrate
+        </h2>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Nombre completo */}
           <div>
-            <label className="block mb-1 font-medium text-gray-700">Nombre completo</label>
+            <label className="block mb-1 font-medium text-gray-700">
+              Nombre completo
+            </label>
             <input
               type="text"
               name="name"
@@ -116,15 +121,21 @@ const RegisterPage = () => {
               value={formData.name}
               onChange={handleChange}
               className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                errors.name ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:ring-blue-200"
+                errors.name
+                  ? "border-red-500 focus:ring-red-200"
+                  : "border-gray-300 focus:ring-blue-200"
               }`}
             />
-            {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
+            {errors.name && (
+              <p className="mt-1 text-sm text-red-500">{errors.name}</p>
+            )}
           </div>
 
           {/* Correo electrónico */}
           <div>
-            <label className="block mb-1 font-medium text-gray-700">Correo electrónico</label>
+            <label className="block mb-1 font-medium text-gray-700">
+              Correo electrónico
+            </label>
             <input
               type="email"
               name="email"
@@ -132,15 +143,21 @@ const RegisterPage = () => {
               value={formData.email}
               onChange={handleChange}
               className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                errors.email ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:ring-blue-200"
+                errors.email
+                  ? "border-red-500 focus:ring-red-200"
+                  : "border-gray-300 focus:ring-blue-200"
               }`}
             />
-            {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+            )}
           </div>
 
           {/* Contraseña */}
           <div>
-            <label className="block mb-1 font-medium text-gray-700">Contraseña</label>
+            <label className="block mb-1 font-medium text-gray-700">
+              Contraseña
+            </label>
             <input
               type="password"
               name="password"
@@ -148,15 +165,21 @@ const RegisterPage = () => {
               value={formData.password}
               onChange={handleChange}
               className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                errors.password ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:ring-blue-200"
+                errors.password
+                  ? "border-red-500 focus:ring-red-200"
+                  : "border-gray-300 focus:ring-blue-200"
               }`}
             />
-            {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password}</p>}
+            {errors.password && (
+              <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+            )}
           </div>
 
           {/* Confirmar contraseña */}
           <div>
-            <label className="block mb-1 font-medium text-gray-700">Confirmar contraseña</label>
+            <label className="block mb-1 font-medium text-gray-700">
+              Confirmar contraseña
+            </label>
             <input
               type="password"
               name="confirmPassword"
@@ -164,10 +187,16 @@ const RegisterPage = () => {
               value={formData.confirmPassword}
               onChange={handleChange}
               className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                errors.confirmPassword ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:ring-blue-200"
+                errors.confirmPassword
+                  ? "border-red-500 focus:ring-red-200"
+                  : "border-gray-300 focus:ring-blue-200"
               }`}
             />
-            {errors.confirmPassword && <p className="mt-1 text-sm text-red-500">{errors.confirmPassword}</p>}
+            {errors.confirmPassword && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.confirmPassword}
+              </p>
+            )}
           </div>
 
           {/* Términos y condiciones */}
@@ -184,12 +213,17 @@ const RegisterPage = () => {
             </div>
             <label htmlFor="acceptTerms" className="ml-2 text-sm">
               He leído y acepto los{" "}
-              <Link to="/terminos" className="underline text-[#714dbf] hover:text-[#5a3da3]">
+              <Link
+                to="/terminos"
+                className="underline text-[#714dbf] hover:text-[#5a3da3]"
+              >
                 Términos y Condiciones
               </Link>
             </label>
           </div>
-          {errors.acceptTerms && <p className="mt-1 text-sm text-red-500">{errors.acceptTerms}</p>}
+          {errors.acceptTerms && (
+            <p className="mt-1 text-sm text-red-500">{errors.acceptTerms}</p>
+          )}
 
           {/* Mensaje de error de Firebase */}
           {firebaseError && (
@@ -209,7 +243,10 @@ const RegisterPage = () => {
           {/* Enlace a inicio de sesión */}
           <div className="text-center text-sm text-gray-600">
             ¿Ya tienes una cuenta?{" "}
-            <Link to="/login" className="text-[#714dbf] hover:underline font-medium">
+            <Link
+              to="/login"
+              className="text-[#714dbf] hover:underline font-medium"
+            >
               Inicia sesión
             </Link>
           </div>
@@ -217,7 +254,7 @@ const RegisterPage = () => {
 
         {/* Popup de éxito */}
         {showSuccessPopup && (
-          <SuccessPopup 
+          <SuccessPopup
             onContinue={handleContinueToForm}
             onLater={handleLater}
           />

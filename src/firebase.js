@@ -10,7 +10,7 @@ const firebaseConfig = {
   storageBucket: "liliapp-fe07b.firebasestorage.app",
   messagingSenderId: "161501442887",
   appId: "1:161501442887:web:200e05c71678d657bad262",
-  measurementId: "G-XXEMHGCLTH"
+  measurementId: "G-XXEMHGCLTH",
 };
 
 // Inicializa Firebase

@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { auth } from "../firebase";
 import {
@@ -6,7 +12,7 @@ import {
   createUserWithEmailAndPassword,
   deleteUser,
   onAuthStateChanged,
-  signOut
+  signOut,
 } from "firebase/auth";
 import axios from "axios";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -40,29 +46,32 @@ export const AuthProvider = ({ children }) => {
     }
   }, [navigate]);
 
-  const fetchUserData = useCallback(async (uid) => {
-    try {
-      const token = await auth.currentUser?.getIdToken();
-      const response = await fetch(`http://[::1]:3001/users/${uid}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Cache-Control": "no-cache"
-        },
-      });
+  const fetchUserData = useCallback(
+    async (uid) => {
+      try {
+        const token = await auth.currentUser?.getIdToken();
+        const response = await fetch(`http://[::1]:3001/users/${uid}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Cache-Control": "no-cache",
+          },
+        });
 
-      if (!response.ok) {
-        throw new Error("Error al obtener los datos del usuario");
+        if (!response.ok) {
+          throw new Error("Error al obtener los datos del usuario");
+        }
+        const data = await response.json();
+        setUserData(data);
+        localStorage.setItem("userData", JSON.stringify(data));
+        return data;
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        await logout();
+        throw error;
       }
-      const data = await response.json();
-      setUserData(data);
-      localStorage.setItem("userData", JSON.stringify(data));
-      return data;
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      await logout();
-      throw error;
-    }
-  }, [logout]);
+    },
+    [logout],
+  );
 
   const fetchReviews = useCallback(async () => {
     try {
@@ -70,12 +79,15 @@ export const AuthProvider = ({ children }) => {
       const uid = currentUser.uid;
       const token = await auth.currentUser?.getIdToken();
 
-      const response = await axios.get(`http://[::1]:3001/reviews/professional/${uid}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Cache-Control": "no-cache"
+      const response = await axios.get(
+        `http://[::1]:3001/reviews/professional/${uid}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Cache-Control": "no-cache",
+          },
         },
-      });
+      );
 
       const data = response.data;
 
@@ -92,11 +104,13 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       const currentUser = auth.currentUser;
-      if (!currentUser) throw new Error('Usuario no autenticado');
+      if (!currentUser) throw new Error("Usuario no autenticado");
 
       const token = await currentUser.getIdToken(true);
       const cleanedPayload = Object.fromEntries(
-        Object.entries(profileData).filter(([_, value]) => value !== null && value !== undefined)
+        Object.entries(profileData).filter(
+          ([_, value]) => value !== null && value !== undefined,
+        ),
       );
 
       const response = await axios.patch(
@@ -106,11 +120,11 @@ export const AuthProvider = ({ children }) => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       const updatedUser = response.data;
-      setUserData(prev => ({ ...prev, ...updatedUser }));
+      setUserData((prev) => ({ ...prev, ...updatedUser }));
       localStorage.setItem("userData", JSON.stringify(updatedUser));
       return { success: true, user: updatedUser };
     } catch (error) {
@@ -136,8 +150,8 @@ export const AuthProvider = ({ children }) => {
             throw new Error("Datos de usuario no válidos");
           }
 
-          if (['/login', '/register'].includes(location.pathname)) {
-            navigate('/home');
+          if (["/login", "/register"].includes(location.pathname)) {
+            navigate("/home");
           }
         } else {
           setUser(null);
@@ -145,14 +159,14 @@ export const AuthProvider = ({ children }) => {
           localStorage.removeItem("user");
           localStorage.removeItem("userData");
 
-          if (!['/login', '/register', '/'].includes(location.pathname)) {
-            navigate('/login');
+          if (!["/login", "/register", "/"].includes(location.pathname)) {
+            navigate("/login");
           }
         }
       } catch (error) {
         console.error("Error en el observer de autenticación:", error);
-        if (!['/login', '/register'].includes(location.pathname)) {
-          navigate('/login');
+        if (!["/login", "/register"].includes(location.pathname)) {
+          navigate("/login");
         }
       } finally {
         setLoading(false);
@@ -166,10 +180,14 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       setLoading(true);
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
       const user = userCredential.user;
       const userData = await fetchUserData(user.uid);
-      navigate('/home');
+      navigate("/home");
       return userData;
     } catch (error) {
       console.error("Error al iniciar sesión:", error.message);
@@ -182,14 +200,18 @@ export const AuthProvider = ({ children }) => {
   const register = async (email, password, userData) => {
     try {
       setLoading(true);
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
       const user = userCredential.user;
       const token = await user.getIdToken();
 
       const userDataForBackend = {
         ...userData,
         uid: user.uid,
-        validUser: true
+        validUser: true,
       };
 
       let response;
@@ -201,12 +223,12 @@ export const AuthProvider = ({ children }) => {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
       } catch (error) {
-
         await deleteUser(user);
-        const backendMessage = error.response?.data?.message || "Error al registrar en el backend";
+        const backendMessage =
+          error.response?.data?.message || "Error al registrar en el backend";
         throw new Error(backendMessage);
       }
 
@@ -217,7 +239,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("userData", JSON.stringify(newUserData));
 
-      navigate('/home');
+      navigate("/home");
       return { success: true, user: newUserData };
     } catch (error) {
       console.error("Error en el registro:", error);
@@ -227,7 +249,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-
   const updateUser = async (formData, options = { showLoading: true }) => {
     try {
       if (options.showLoading) {
@@ -235,7 +256,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       const currentUser = auth.currentUser;
-      if (!currentUser) throw new Error('Usuario no autenticado');
+      if (!currentUser) throw new Error("Usuario no autenticado");
 
       const uid = currentUser.uid;
       const token = await currentUser.getIdToken(true);
@@ -249,19 +270,29 @@ export const AuthProvider = ({ children }) => {
         siiRegistered: formData.siiRegistered,
         hasTools: formData.hasTools,
         ownTransportation: formData.ownTransportation,
-        identityCardFront: formData.identityCardFront?.url ? { url: formData.identityCardFront.url } : null,
-        identityCardBack: formData.identityCardBack?.url ? { url: formData.identityCardBack.url } : null,
-        backgroundCertificate: formData.backgroundCertificate?.url ? { url: formData.backgroundCertificate.url } : null,
-        additionalCertificate: formData.additionalCertificate?.url ? { url: formData.additionalCertificate.url } : null,
+        identityCardFront: formData.identityCardFront?.url
+          ? { url: formData.identityCardFront.url }
+          : null,
+        identityCardBack: formData.identityCardBack?.url
+          ? { url: formData.identityCardBack.url }
+          : null,
+        backgroundCertificate: formData.backgroundCertificate?.url
+          ? { url: formData.backgroundCertificate.url }
+          : null,
+        additionalCertificate: formData.additionalCertificate?.url
+          ? { url: formData.additionalCertificate.url }
+          : null,
         bankName: formData.bankName,
         accountType: formData.accountType,
         accountHolderName: formData.accountHolderName,
         accountNumber: Number(formData.accountNumber),
-        siiActivitiesStarted: formData.siiActivitiesStarted
+        siiActivitiesStarted: formData.siiActivitiesStarted,
       };
 
       const cleanedPayload = Object.fromEntries(
-        Object.entries(payload).filter(([_, value]) => value !== null && value !== undefined)
+        Object.entries(payload).filter(
+          ([_, value]) => value !== null && value !== undefined,
+        ),
       );
 
       const response = await axios.patch(
@@ -271,16 +302,15 @@ export const AuthProvider = ({ children }) => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       const responseData = response.data;
       setUserData(responseData.user);
       localStorage.setItem("userData", JSON.stringify(responseData.user));
       return { success: true, user: responseData.user };
-
     } catch (error) {
-      console.error('Error al actualizar usuario:', error);
+      console.error("Error al actualizar usuario:", error);
       throw error;
     } finally {
       if (options.showLoading) {
@@ -290,25 +320,25 @@ export const AuthProvider = ({ children }) => {
   };
 
   if (!authChecked) {
-    return (
-      <LoadingSpinner />
-    );
+    return <LoadingSpinner />;
   }
 
   return (
-    <AuthContext.Provider value={{
-      user,
-      userData,
-      login,
-      register,
-      logout,
-      loading,
-      fetchUserData,
-      updateUser,
-      authChecked,
-      fetchReviews,
-      updateProfile,
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        userData,
+        login,
+        register,
+        logout,
+        loading,
+        fetchUserData,
+        updateUser,
+        authChecked,
+        fetchReviews,
+        updateProfile,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
