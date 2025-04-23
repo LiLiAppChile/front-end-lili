@@ -22,6 +22,16 @@ import RefundPolicy from "./components/Dashboard/SettingsPage/RefundPolicy";
 import PrivacyPolicy from "./components/Dashboard/SettingsPage/PrivacyPolicy";
 import Contact from "./components/Dashboard/SettingsPage/Contact";
 import Form from "./components/form/form";
+import CalendarPage from "./components/Dashboard/Home/Calendar/CalendarPage";
+import HomePageSupport from "./components/SupportDashboard/SupportHomePage/HomeSupport";
+import FormSubmission from "./components/SupportDashboard/FormSubmissions/FormSubmissions";
+import UsersRecord from "./components/SupportDashboard/UsersRecord/UsersRecord";
+import SupportProfile from "./components/SupportDashboard/SupportProfile/SupportProfile";
+import SupportRequests from "./components/SupportDashboard/FormSubmissions/Requests";
+import ProfessionalDetail from "./components/SupportDashboard/FormSubmissions/RequestDetails";
+import RegisteredUsers from "./components/SupportDashboard/UsersRecord/RegisteredUsers";
+import QuotesList from "./components/SupportDashboard/Quotes/QuotesList";
+import UserProfileAdminView from "./components/SupportDashboard/UsersRecord/UserProfileAdminView";
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -53,6 +63,16 @@ const App = () => {
             <Route path="/refund-policy" element={<ProtectedRoute><RefundPolicy /></ProtectedRoute>} />
             <Route path="/privacy-policy" element={<ProtectedRoute><PrivacyPolicy /></ProtectedRoute>} />
             <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
+            <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
+            {/* Rutas de soporte */}
+            <Route path="/admin/home" element={<ProtectedRoute><HomePageSupport /></ProtectedRoute>} /> {/* Página de soporte */}
+            <Route path="/admin/postulaciones" element={<ProtectedRoute><SupportRequests /></ProtectedRoute>} /> {/* Página de postulaciones */}
+            <Route path="/admin/postulaciones/detalles/:uid" element={<ProtectedRoute><ProfessionalDetail /></ProtectedRoute>} /> {/* Página de postulaciones */}
+            <Route path="/admin/presupuestos" element={<ProtectedRoute><QuotesList /></ProtectedRoute>} /> {/* Página de presupuestos */}
+            <Route path="/admin/users-record" element={<ProtectedRoute><RegisteredUsers /></ProtectedRoute>} /> {/* Página de lista de registro de usuarios*/}
+            <Route path="/admin/users-record/details/:uid" element={<ProtectedRoute><UserProfileAdminView /></ProtectedRoute>} /> {/* Página de detalles de usuarios */}
+            <Route path="/admin/perfil" element={<ProtectedRoute><SupportProfile /></ProtectedRoute>} /> {/* Página de perfil de soporte */}
+
           </Routes>
         </AuthProvider>
       )}

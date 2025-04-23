@@ -1,62 +1,58 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Cog6ToothIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
+import { useParams, useNavigate } from 'react-router-dom';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
-import Navbar from "../BottomMenu/BottomMenu";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft, faFileAlt } from "@fortawesome/free-solid-svg-icons";
+import BottomMenuAdmin from "../SupportBottomMenu/SupportBottomMenu";
 import UserPlaceholder from "../../../assets/user.jpeg";
 import LoadingSpinner from "../../LoadingSpinner";
-import EditProfilePopup from './EditProfilePopup';
 import { useAuth } from '../../../Context/AuthContext';
 
-const Profile = () => {
-    const [showEditPopup, setShowEditPopup] = useState(false);
-    const { userData, fetchReviews } = useAuth();
+const UserProfileAdminView = () => {
+    const { uid } = useParams();
     const navigate = useNavigate();
+    const { fetchUserDetails, fetchUsersReviews } = useAuth();
     const [isLoading, setIsLoading] = useState(true);
+    const [profile, setProfile] = useState(null);
     const [reviews, setReviews] = useState([]);
     const [reviewsLoading, setReviewsLoading] = useState(true);
     const [visibleReviewsCount, setVisibleReviewsCount] = useState(5);
 
-    const [profile, setProfile] = useState({
-        name: "Cargando...",
-        email: "",
-        phone: "",
-        specialties: [],
-        profilePicture: "",
-        rut: "",
-        commune: "",
-        personalDescription: ""
-    });
-
-    const loadReviews = useCallback(async () => {
+    const loadProfileData = useCallback(async () => {
+        setIsLoading(true);
         setReviewsLoading(true);
+
         try {
-            const response = await fetchReviews(userData.id);
-            console.log('API Response:', response);
-            setReviews(response.data || response || []);
+            const [profileData, reviewsData] = await Promise.all([
+                fetchUserDetails(uid),
+                fetchUsersReviews(uid)
+            ]);
+
+            setProfile({
+                ...profileData,
+                profilePicture: profileData.profilePicture || UserPlaceholder
+            });
+            setReviews(reviewsData || []);
         } catch (error) {
-            console.error("Error loading reviews:", error);
-            setReviews([]);
+            console.error("Error loading profile:", error);
+            navigate('/admin/users-record', {
+                replace: true,
+                state: { error: "No se pudo cargar el perfil del usuario" }
+            });
         } finally {
+            setIsLoading(false);
             setReviewsLoading(false);
         }
-    }, [userData?.id, fetchReviews]);
+    }, [uid, fetchUserDetails, fetchUsersReviews, navigate]);
 
     useEffect(() => {
-        if (userData) {
-            setProfile(prev => ({
-                ...prev,
-                ...userData,
-                specialties: userData.specialties || []
-            }));
-            setIsLoading(false);
-            loadReviews();
-        } else {
-            setIsLoading(true);
+        if (uid) {
+            loadProfileData();
         }
-    }, [userData, loadReviews]);
+    }, [uid, loadProfileData]);
 
     const formatDate = (dateString) => {
+        if (!dateString) return 'Fecha no disponible';
         const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
         return new Date(dateString).toLocaleDateString('es-CL', options);
     };
@@ -71,13 +67,17 @@ const Profile = () => {
         return (total / reviews.length).toFixed(1);
     };
 
+    const handleViewForm = () => {
+        navigate(`/admin/postulaciones/detalles/${uid}`);
+    };
+
     const displayedReviews = reviews.slice(0, visibleReviewsCount);
     const hasMoreReviews = visibleReviewsCount < reviews.length;
 
-    if (isLoading) {
+    if (isLoading || !profile) {
         return (
             <>
-                <Navbar />
+                <BottomMenuAdmin />
                 <section className='bg-white min-h-screen'>
                     <div className="flex justify-center items-center h-64">
                         <LoadingSpinner />
@@ -90,26 +90,19 @@ const Profile = () => {
 
     return (
         <>
-            <Navbar />
-            <section className='bg-white min-h-screen'>
+            <BottomMenuAdmin />
+            <section className='bg-white min-h-screen pb-20'>
+                {/* Encabezado */}
                 <div className="border-b-2 border-gray-200 mb-5 pb-4 py-5 px-5">
-                    <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-3">
-                            <img
-                                src="./src/assets/profile.png"
-                                alt="profileIcon"
-                            />
-                            <h1 className="text-2xl font-bold">Perfil</h1>
-                        </div>
-                        <button
-                            className="icons-menu"
-                            onClick={() => navigate('/settings')}
-                        >
-                            <Cog6ToothIcon className="w-6 h-6 cursor-pointer text-gray-600 hover:text-indigo-500 transition" />
+                    <div className="flex items-center gap-3">
+                        <button className="mr-2 cursor-pointer" onClick={() => navigate(-1)}>
+                            <FontAwesomeIcon icon={faChevronLeft} className="h-6 w-6 text-[#714DBF]" />
                         </button>
+                        <h1 className="text-2xl font-bold">Perfil del Profesional</h1>
                     </div>
                 </div>
 
+                {/* Tarjeta de perfil */}
                 <div className="bg-[#eaecf6] rounded-lg mx-5 p-4 shadow-md">
                     <div className="flex items-start gap-3 mb-4">
                         <div className="rounded-full overflow-hidden w-20 h-20">
@@ -121,30 +114,34 @@ const Profile = () => {
                         </div>
 
                         <div className="flex-1">
-                            <div className="flex justify-between items-start p-1">
-                                <div className="flex-1">
-                                    <h2 className="text-lg font-medium text-left">
-                                        {profile.name || "Nombre no disponible"}
-                                    </h2>
+                            <div className="p-1">
+                                <h2 className="text-lg font-medium text-left">
+                                    {profile.name || 'Nombre no disponible'}
+                                </h2>
+                                {reviews.length > 0 && (
                                     <div className='flex items-center justify-left mt-2'>
                                         <p className="text-gray-800 font-bold mr-1">{calculateAverageRating()}</p>
-                                        <StarIconSolid
-                                            className={`w-5 h-5 text-[#ffb900]`}
-                                        />
+                                        <StarIconSolid className="w-5 h-5 text-[#ffb900]" />
                                         <span className="mx-1 text-gray-500">•</span>
                                         <p className="text-gray-600 text-sm">{reviews.length} reseñas</p>
                                     </div>
-                                </div>
-                                <img
-                                    src="./src/assets/editPen.png"
-                                    alt="editProfile"
-                                    className="w-6 h-6 cursor-pointer text-gray-600 hover:text-indigo-500 transition"
-                                    onClick={() => setShowEditPopup(true)}
-                                />
+                                )}
                             </div>
                         </div>
                     </div>
 
+                    {/* Botón Ver Formulario */}
+                    <div className="mb-4">
+                        <button
+                            onClick={handleViewForm}
+                            className="flex items-center justify-center gap-2 w-full bg-white text-[#714DBF] border border-[#714DBF] py-2 px-4 rounded-lg font-medium hover:bg-[#714DBF] hover:text-white transition-colors"
+                        >
+                            <FontAwesomeIcon icon={faFileAlt} />
+                            Ver Formulario de Postulación
+                        </button>
+                    </div>
+
+                    {/* Especialidades */}
                     <div className='flex flex-wrap gap-2 mb-3'>
                         {profile.specialties?.length > 0 ? (
                             profile.specialties.map((specialty, index) => (
@@ -162,40 +159,44 @@ const Profile = () => {
 
                     <div className="border-t border-gray-300 my-3"></div>
 
-                    <div className="bg-[#eaecf6] rounded-lg p-1">
-                        <div className="space-y-1">
-                            <div className="flex items-center">
-                                <span className="font-semibold text-gray-700 w-24">Comuna:</span>
-                                <span className="text-gray-600">{profile.commune || "No proporcionado"}</span>
-                            </div>
-                            <div className="flex items-center">
-                                <span className="font-semibold text-gray-700 w-24">Número:</span>
-                                <span className="text-gray-600">{profile.phone || "No proporcionado"}</span>
-                            </div>
-                            <div className="flex items-center">
-                                <span className="font-semibold text-gray-700 w-24">Correo:</span>
-                                <span className="text-gray-600">{profile.email || "No proporcionado"}</span>
-                            </div>
+                    {/* Información personal */}
+                    <div className="space-y-2">
+                        <div className="flex items-center">
+                            <span className="font-semibold text-gray-700 w-24">RUT:</span>
+                            <span className="text-gray-600">{profile.rut || 'No disponible'}</span>
                         </div>
-                        {profile.personalDescription && (
-                            <div className="mt-4">
-                                <p className="text-gray-600">{profile.personalDescription}</p>
-                            </div>
-                        )}
+                        <div className="flex items-center">
+                            <span className="font-semibold text-gray-700 w-24">Comuna:</span>
+                            <span className="text-gray-600">{profile.commune || 'No disponible'}</span>
+                        </div>
+                        <div className="flex items-center">
+                            <span className="font-semibold text-gray-700 w-24">Teléfono:</span>
+                            <span className="text-gray-600">{profile.phone || 'No disponible'}</span>
+                        </div>
+                        <div className="flex items-center">
+                            <span className="font-semibold text-gray-700 w-24">Correo:</span>
+                            <span className="text-gray-600">{profile.email || 'No disponible'}</span>
+                        </div>
                     </div>
+
+                    {/* Descripción personal */}
+                    {profile.personalDescription && (
+                        <div className="mt-4">
+                            <p className="text-gray-600">{profile.personalDescription}</p>
+                        </div>
+                    )}
                 </div>
 
-                {/* Reviews Section */}
+                {/* Sección de reseñas */}
                 <div className='mt-6 mb-20 px-5'>
                     <div className='flex justify-between items-center mb-4'>
                         <h1 className="text-xl font-bold">Reseñas</h1>
-                        {reviews.length > 0 && (
+                        {reviews.length > 0 && hasMoreReviews && (
                             <button
                                 className="text-[#714dbf] font-semibold underline"
                                 onClick={handleSeeMore}
-                                disabled={!hasMoreReviews}
                             >
-                                {hasMoreReviews ? "Ver más" : "No hay más reseñas"}
+                                Ver más
                             </button>
                         )}
                     </div>
@@ -220,18 +221,12 @@ const Profile = () => {
                                                 className='rounded-full w-12 h-12'
                                             />
                                             <div>
-                                                <p className='font-[500]'>Cliente</p>
+                                                <p className='font-[500]'>{review.reviewer || 'Cliente anónimo'}</p>
                                                 <div className='flex items-center space-x-1'>
-                                                    {[...Array(review.rating)].map((_, i) => (
+                                                    {[...Array(5)].map((_, i) => (
                                                         <StarIconSolid
                                                             key={i}
-                                                            className="w-4 h-4 text-amber-400"
-                                                        />
-                                                    ))}
-                                                    {[...Array(5 - review.rating)].map((_, i) => (
-                                                        <StarIconSolid
-                                                            key={i + review.rating}
-                                                            className="w-4 h-4 text-gray-300"
+                                                            className={`w-4 h-4 ${i < review.rating ? 'text-amber-400' : 'text-gray-300'}`}
                                                         />
                                                     ))}
                                                 </div>
@@ -242,28 +237,16 @@ const Profile = () => {
                                         </span>
                                     </div>
                                     <p className='mt-3 text-gray-600 text-sm'>
-                                        {review.comment}
+                                        {review.comment || 'Sin comentario'}
                                     </p>
                                 </div>
                             ))}
                         </div>
                     )}
                 </div>
-
-                {showEditPopup && (
-                    <EditProfilePopup
-                        onCancel={() => setShowEditPopup(false)}
-                        initialData={{
-                            phone: userData?.phone || '',
-                            email: userData?.email || '',
-                            district: userData?.district || '',
-                            profileImage: userData?.profileImage || '',
-                        }}
-                    />
-                )}
             </section>
         </>
     );
 };
 
-export default Profile;
+export default UserProfileAdminView;
