@@ -88,11 +88,6 @@ const RegisterPageClient = () => {
     }
   };
 
-  // const handleContinueToForm = () => {
-  //   setShowSuccessPopup(false);
-  //   navigate("/form");
-  // };
-
   const handleLater = async () => {
     setShowSuccessPopup(false);
 

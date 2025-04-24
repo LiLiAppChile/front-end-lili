@@ -433,7 +433,9 @@ export default function FormularioPostulacion() {
         bankName: formData.banco,
         accountType: formData.tipoCuenta,
         accountHolderName: formData.nombreTitular,
-        accountNumber: formData.numeroCuenta
+        accountNumber: formData.numeroCuenta,
+
+        formSubmitted: true,
       };
 
       setSubmitting(true);

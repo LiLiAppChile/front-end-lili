@@ -70,7 +70,7 @@ export const AuthProvider = ({ children }) => {
       const uid = currentUser.uid;
       const token = await auth.currentUser?.getIdToken();
 
-      const response = await axios.get(`http://[::1]:3001/reviews/professional/${uid}`, {
+      const response = await axios.get(`http://[::1]:3001/reviews?professionalId=${uid}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Cache-Control": "no-cache"
@@ -205,6 +205,7 @@ export const AuthProvider = ({ children }) => {
     
     try {
       setLoading(true);
+
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       const token = await user.getIdToken();
@@ -215,36 +216,65 @@ export const AuthProvider = ({ children }) => {
         validUser: true
       };
 
-      let response;
-      try {
-        response = await axios.post(
-          "http://[::1]:3001/users",
-          userDataForBackend,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+      await axios.post(
+        "http://[::1]:3001/users",
+        userDataForBackend,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
           }
-        );
-      } catch (error) {
+        }
+      );
 
-        await deleteUser(user);
-        const backendMessage = error.response?.data?.message || "Error al registrar en el backend";
-        throw new Error(backendMessage);
+      const MAX_ATTEMPTS = 3;
+      const RETRY_DELAY = 300;
+      let userDetails;
+      let lastError;
+
+      for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+        try {
+          const { data } = await axios.get(
+            `http://[::1]:3001/users/${user.uid}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            }
+          );
+          userDetails = data;
+          break;
+        } catch (err) {
+          lastError = err;
+          if (attempt < MAX_ATTEMPTS - 1) {
+            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+          }
+        }
       }
 
-      const responseData = response.data;
-      const newUserData = { ...userDataForBackend, ...responseData.user };
+      if (!userDetails) {
+        throw lastError || new Error("No se pudieron obtener los datos del usuario");
+      }
+
       setUser(user);
-      setUserData(newUserData);
+      setUserData(userDetails);
       localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("userData", JSON.stringify(newUserData));
+      localStorage.setItem("userData", JSON.stringify(userDetails));
 
       navigate('/home');
-      return { success: true, user: newUserData };
-    } catch (error) {
-      console.error("Error en el registro:", error);
-      throw error;
+      return { success: true, user: userDetails };
+
+    } catch (err) {
+      console.error("Error en el registro:", err);
+
+      if (auth.currentUser) {
+        try {
+          await deleteUser(auth.currentUser);
+        } catch (deleteErr) {
+          console.error("Error al limpiar usuario:", deleteErr);
+        }
+      }
+
+      throw err;
     } finally {
       setLoading(false);
     }
@@ -285,9 +315,9 @@ export const AuthProvider = ({ children }) => {
       const responseData = response.data;
       const newUserData = { ...userDataForBackend, ...responseData.user };
       setUser(user);
-      setUserData(newUserData);
+      setUserData(userDetails);
       localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("userData", JSON.stringify(newUserData));
+      localStorage.setItem("userData", JSON.stringify(userDetails));
 
       navigate('/home-client');
       return { success: true, user: newUserData };
@@ -330,7 +360,8 @@ export const AuthProvider = ({ children }) => {
         accountType: formData.accountType,
         accountHolderName: formData.accountHolderName,
         accountNumber: Number(formData.accountNumber),
-        siiActivitiesStarted: formData.siiActivitiesStarted
+        siiActivitiesStarted: formData.siiActivitiesStarted,
+        formSubmitted: formData.formSubmitted !== undefined ? formData.formSubmitted : true
       };
 
       const cleanedPayload = Object.fromEntries(
@@ -362,6 +393,198 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+
+  const fetchLightUsers = useCallback(async () => {
+    try {
+      const currentUser = auth.currentUser;
+      const token = await currentUser?.getIdToken(true);
+
+      const response = await axios.get(
+        "http://[::1]:3001/users?role=professional&formSubmitted=true",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error("Error al obtener usuarios ligeros:", error);
+      return [];
+    }
+  }, []);
+
+  const fetchLightUsersAll = useCallback(async () => {
+    try {
+      const currentUser = auth.currentUser;
+      const token = await currentUser?.getIdToken(true);
+
+      const response = await axios.get(
+        "http://[::1]:3001/users",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error("Error al obtener usuarios ligeros:", error);
+      return [];
+    }
+  }, []);
+
+
+  const fetchSubmissions = useCallback(async () => {
+    try {
+      const currentUser = auth.currentUser;
+      const token = await currentUser?.getIdToken(true);
+
+      const response = await axios.get("http://[::1]:3001/users?role=professional&formSubmitted=false", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error("Error al obtener postulaciones:", error);
+      return [];
+    }
+  }, []);
+
+  const fetchUserDetails = useCallback(async (uid) => {
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      const response = await fetch(`http://[::1]:3001/users/${uid}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Cache-Control": "no-cache"
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al obtener los datos del usuario");
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+      throw error;
+    }
+  }, []);
+
+  const fetchUsersReviews = useCallback(async (uid) => {
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      const response = await axios.get(`http://[::1]:3001/reviews?professionalId=${uid}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Cache-Control": "no-cache"
+        },
+      });
+
+      const data = response.data;
+
+      console.log("Response de reseñas:", data);
+
+      return data;
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+      return [];
+    }
+  }, []);
+
+  const updateUserStatus = useCallback(async (uid, status) => {
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      const response = await axios.patch(
+        `http://[::1]:3001/users/${uid}`,
+        { status },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            "Cache-Control": "no-cache"
+          },
+        }
+      );
+
+      console.log("Usuario actualizado:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error al actualizar el estado del usuario:", error);
+      throw error;
+    }
+  }, []);
+
+  const fetchOrders = async () => {
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      const response = await fetch('http://localhost:3001/pedidos', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener pedidos:', error);
+      throw error;
+    }
+  };
+
+  const acceptOrder = async (order) => {
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      const response = await fetch(`http://localhost:3001/pedidos/${order.id || order._id}/accept`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error al aceptar pedido:', error);
+      throw error;
+    }
+  };
+
+  const rejectOrder = async (order) => {
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      const response = await fetch(`http://localhost:3001/pedidos/${order.id || order._id}/reject`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error al rechazar pedido:', error);
+      throw error;
+    }
+  };
+
   if (!authChecked) {
     return (
       <LoadingSpinner />
@@ -381,6 +604,15 @@ export const AuthProvider = ({ children }) => {
       authChecked,
       fetchReviews,
       updateProfile,
+      fetchSubmissions,
+      fetchLightUsers,
+      fetchLightUsersAll,
+      fetchUserDetails,
+      fetchUsersReviews,
+      updateUserStatus,
+      fetchOrders,
+      acceptOrder,
+      rejectOrder,
       registerClient,
     }}>
       {children}
