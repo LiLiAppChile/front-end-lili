@@ -17,7 +17,7 @@ const RegisterPageClient = () => {
   const [firebaseError, setFirebaseError] = useState("");
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const { registerClient } = useAuth();
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -91,7 +91,7 @@ const RegisterPageClient = () => {
   const handleLater = async () => {
     setShowSuccessPopup(false);
 
-      // navigate('/home'); // Redirige a la página principal
+      navigate('/client/home'); // Redirige a la página principal
   };
 
   return (
@@ -204,7 +204,7 @@ const RegisterPageClient = () => {
           {/* Enlace a inicio de sesión */}
           <div className="text-center text-sm text-gray-600">
             ¿Ya tienes una cuenta?{" "}
-            <Link to="/login-client" className="text-[#714dbf] hover:underline font-medium">
+            <Link to="/client/login" className="text-[#714dbf] hover:underline font-medium">
               Inicia sesión
             </Link>
           </div>

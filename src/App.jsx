@@ -36,7 +36,9 @@ import JobDetailPage from "./components/Dashboard/Home/History/JobDetailPage";
 import RegisterPageClient from "./components/Client/RegisterClient/RegisterClient";
 import LandingClient from "./components/Client/LangingClient";
 import LoginClient from "./components/Client/LoginClient/LoginClient";
-import HomeClient from "./components/Client/homeClient/HomeClient";
+import HomeClient from "./components/Client/HomeClient/HomeClient";
+import ClientProfile from "./components/Client/Profile/ClientProfile";
+import ClientRequests from "./components/Client/Request/RequestClient";
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -80,9 +82,11 @@ const App = () => {
             <Route path="/admin/perfil" element={<ProtectedRoute><SupportProfile /></ProtectedRoute>} /> {/* Página de perfil de soporte */}
             {/* Rutas de cliente */}
             <Route path="/client" element={<LandingClient />} /> {/* Página de inicio de cliente */}
-            <Route path="/register-client" element={<RegisterPageClient />} /> {/* Página de registro de cliente */}
-            <Route path="/login-client" element={<LoginClient />} /> {/* Página de inicio de sesión de cliente */}
-            <Route path="/home-client" element={<HomeClient />} /> {/* Página principal de cliente */}
+            <Route path="/client/register" element={<RegisterPageClient />} /> {/* Página de registro de cliente */}
+            <Route path="/client/login" element={<LoginClient />} /> {/* Página de inicio de sesión de cliente */}
+            <Route path="/client/home" element={<HomeClient />} /> {/* Página principal de cliente */}
+            <Route path="/client/profile" element={<ClientProfile />} /> {/* Página de perfil de cliente */}
+            <Route path="/client/requests" element={<ClientRequests />} /> {/* Página de solicitudes de cliente */}
           </Routes>
         </AuthProvider>
       )}

@@ -4,8 +4,10 @@ import PromotionUsers from '../Dashboard/Home/Promotion/PromotionUsers';
 import BottomMenu from '../Dashboard/BottomMenu/BottomMenu';
 import TrainingUsers from '../Dashboard/Home/Training/TrainingUsers';
 
+
 const HomePageClient = () => {
   const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-white p-4"> {/* Fondo blanco para toda la página */}
       <HeaderUsers />

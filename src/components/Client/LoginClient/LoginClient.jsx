@@ -16,7 +16,7 @@ const LoginClient = () => {
 
     try {
       await login(email, password);
-      navigate("/home-client");
+      navigate("/client/home");
     } catch (error) {
       setError(error.message || "Correo o contraseña incorrectos. Inténtalo de nuevo.");
     }
@@ -67,7 +67,7 @@ const LoginClient = () => {
 
         <p className="text-center mt-4">
           ¿No tienes una cuenta?{" "}
-          <Link to="/register-client" className="underline">
+          <Link to="/client/register" className="underline">
             Regístrate
           </Link>
         </p>

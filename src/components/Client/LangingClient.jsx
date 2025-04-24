@@ -14,14 +14,14 @@ const LandingClient = () => {
 
         <div className="flex flex-col items-center space-y-4 w-64 mt-22">
           <button
-            onClick={() => navigate("/login-client")}
+            onClick={() => navigate("/client/login")}
             className="btn-register bg-white py-3 px-4 rounded-lg w-full border border-gray-300 hover:bg-gray-300 transition"
           >
             Inicia sesión
           </button>
 
           <button
-            onClick={() => navigate("/register-client")}
+            onClick={() => navigate("/client/register")}
             className="btn-login bg-white py-3 px-4 rounded-lg w-full border border-gray-300 hover:bg-gray-300 transition"
           >
             Regístrate
