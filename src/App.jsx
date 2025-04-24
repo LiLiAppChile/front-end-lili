@@ -21,7 +21,6 @@ import RefundPolicy from "./components/Dashboard/SettingsPage/RefundPolicy";
 import PrivacyPolicy from "./components/Dashboard/SettingsPage/PrivacyPolicy";
 import Contact from "./components/Dashboard/SettingsPage/Contact";
 import Form from "./components/form/form";
-import CalendarPage from "./components/Dashboard/Home/Calendar/CalendarPage";
 import HomePageSupport from "./components/SupportDashboard/SupportHomePage/HomeSupport";
 import FormSubmission from "./components/SupportDashboard/FormSubmissions/FormSubmissions";
 import UsersRecord from "./components/SupportDashboard/UsersRecord/UsersRecord";
@@ -31,6 +30,9 @@ import ProfessionalDetail from "./components/SupportDashboard/FormSubmissions/Re
 import RegisteredUsers from "./components/SupportDashboard/UsersRecord/RegisteredUsers";
 import QuotesList from "./components/SupportDashboard/Quotes/QuotesList";
 import UserProfileAdminView from "./components/SupportDashboard/UsersRecord/UserProfileAdminView";
+import CalendarPage from "./components/Dashboard/Home/Calendar/CalendarPage";
+import HistoryPage from "./components/Dashboard/Home/History/HistoryPage";
+import JobDetailPage from "./components/Dashboard/Home/History/JobDetailPage";
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -62,6 +64,8 @@ const App = () => {
             <Route path="/privacy-policy" element={<ProtectedRoute><PrivacyPolicy /></ProtectedRoute>} />
             <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
             <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
+            <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} /> {/* Página de historial */}
+            <Route path="/history/job-detail/:jobId" element={<ProtectedRoute><JobDetailPage /></ProtectedRoute>} /> {/* Página de detalles del trabajo */}
             {/* Rutas de soporte */}
             <Route path="/admin/home" element={<ProtectedRoute><HomePageSupport /></ProtectedRoute>} /> {/* Página de soporte */}
             <Route path="/admin/postulaciones" element={<ProtectedRoute><SupportRequests /></ProtectedRoute>} /> {/* Página de postulaciones */}
