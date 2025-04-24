@@ -8,7 +8,6 @@ import HomePage from "./components/HomePage/HomePage";
 import Profile from "./components/Dashboard/Profile/Profile";
 import SettingsPage from "./components/Dashboard/SettingsPage/SettingsPage";
 import Requests from "./components/Dashboard/Home/Requests/Requests";
-import TaskDetail from "./components/Dashboard/Home/Requests/TaskDetail";
 import { AuthProvider } from "./Context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LaboralInfo from "./components/Dashboard/SettingsPage/LaboralInfo";
@@ -22,6 +21,18 @@ import RefundPolicy from "./components/Dashboard/SettingsPage/RefundPolicy";
 import PrivacyPolicy from "./components/Dashboard/SettingsPage/PrivacyPolicy";
 import Contact from "./components/Dashboard/SettingsPage/Contact";
 import Form from "./components/form/form";
+import HomePageSupport from "./components/SupportDashboard/SupportHomePage/HomeSupport";
+import FormSubmission from "./components/SupportDashboard/FormSubmissions/FormSubmissions";
+import UsersRecord from "./components/SupportDashboard/UsersRecord/UsersRecord";
+import SupportProfile from "./components/SupportDashboard/SupportProfile/SupportProfile";
+import SupportRequests from "./components/SupportDashboard/FormSubmissions/Requests";
+import ProfessionalDetail from "./components/SupportDashboard/FormSubmissions/RequestDetails";
+import RegisteredUsers from "./components/SupportDashboard/UsersRecord/RegisteredUsers";
+import QuotesList from "./components/SupportDashboard/Quotes/QuotesList";
+import UserProfileAdminView from "./components/SupportDashboard/UsersRecord/UserProfileAdminView";
+import CalendarPage from "./components/Dashboard/Home/Calendar/CalendarPage";
+import HistoryPage from "./components/Dashboard/Home/History/HistoryPage";
+import JobDetailPage from "./components/Dashboard/Home/History/JobDetailPage";
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -33,137 +44,37 @@ const App = () => {
       ) : (
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route
-              path="/home"
-              element={
-                <ProtectedRoute>
-                  <HomePage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/requests"
-              element={
-                <ProtectedRoute>
-                  <Requests />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/details"
-              element={
-                <ProtectedRoute>
-                  <TaskDetail />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/settings"
-              element={
-                <ProtectedRoute>
-                  <SettingsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/form"
-              element={
-                <ProtectedRoute>
-                  <Form />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/laboral-info"
-              element={
-                <ProtectedRoute>
-                  <LaboralInfo />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/bank-info"
-              element={
-                <ProtectedRoute>
-                  <BankInfo />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/about-lili"
-              element={
-                <ProtectedRoute>
-                  <AboutLili />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/how-it-works"
-              element={
-                <ProtectedRoute>
-                  <HowItWorks />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/guarantees"
-              element={
-                <ProtectedRoute>
-                  <Guarantees />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/contact-support"
-              element={
-                <ProtectedRoute>
-                  <ContactSupport />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/terms"
-              element={
-                <ProtectedRoute>
-                  <Terms />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/refund-policy"
-              element={
-                <ProtectedRoute>
-                  <RefundPolicy />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/privacy-policy"
-              element={
-                <ProtectedRoute>
-                  <PrivacyPolicy />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/contact"
-              element={
-                <ProtectedRoute>
-                  <Contact />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/" element={<LandingPage />} /> {/* Página de inicio */}
+            <Route path="/login" element={<Login />} /> {/* Página de inicio de sesión */}
+            <Route path="/register" element={<RegisterPage />} /> {/* Página de registro */}
+            <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} /> {/* Página principal (dashboard) */}
+            <Route path="/requests" element={<ProtectedRoute><Requests /></ProtectedRoute>} /> {/* Página Solicitudes */}
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} /> {/* Página Perfil */}
+            <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} /> {/* Página de configuración */}
+            <Route path="/form" element={<ProtectedRoute><Form /></ProtectedRoute>} /> {/* Página de formulario */}
+            {/* Rutas de configuración */}
+            <Route path="/laboral-info" element={<ProtectedRoute><LaboralInfo /></ProtectedRoute>} />
+            <Route path="/bank-info" element={<ProtectedRoute><BankInfo /></ProtectedRoute>} />
+            <Route path="/about-lili" element={<ProtectedRoute><AboutLili /></ProtectedRoute>} />
+            <Route path="/how-it-works" element={<ProtectedRoute><HowItWorks /></ProtectedRoute>} />
+            <Route path="/guarantees" element={<ProtectedRoute><Guarantees /></ProtectedRoute>} />
+            <Route path="/contact-support" element={<ProtectedRoute><ContactSupport /></ProtectedRoute>} /> {/* Cambiado */}
+            <Route path="/terms" element={<ProtectedRoute><Terms /></ProtectedRoute>} />
+            <Route path="/refund-policy" element={<ProtectedRoute><RefundPolicy /></ProtectedRoute>} />
+            <Route path="/privacy-policy" element={<ProtectedRoute><PrivacyPolicy /></ProtectedRoute>} />
+            <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
+            <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
+            <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} /> {/* Página de historial */}
+            <Route path="/history/job-detail/:jobId" element={<ProtectedRoute><JobDetailPage /></ProtectedRoute>} /> {/* Página de detalles del trabajo */}
+            {/* Rutas de soporte */}
+            <Route path="/admin/home" element={<ProtectedRoute><HomePageSupport /></ProtectedRoute>} /> {/* Página de soporte */}
+            <Route path="/admin/postulaciones" element={<ProtectedRoute><SupportRequests /></ProtectedRoute>} /> {/* Página de postulaciones */}
+            <Route path="/admin/postulaciones/detalles/:uid" element={<ProtectedRoute><ProfessionalDetail /></ProtectedRoute>} /> {/* Página de postulaciones */}
+            <Route path="/admin/presupuestos" element={<ProtectedRoute><QuotesList /></ProtectedRoute>} /> {/* Página de presupuestos */}
+            <Route path="/admin/users-record" element={<ProtectedRoute><RegisteredUsers /></ProtectedRoute>} /> {/* Página de lista de registro de usuarios*/}
+            <Route path="/admin/users-record/details/:uid" element={<ProtectedRoute><UserProfileAdminView /></ProtectedRoute>} /> {/* Página de detalles de usuarios */}
+            <Route path="/admin/perfil" element={<ProtectedRoute><SupportProfile /></ProtectedRoute>} /> {/* Página de perfil de soporte */}
+
           </Routes>
         </AuthProvider>
       )}

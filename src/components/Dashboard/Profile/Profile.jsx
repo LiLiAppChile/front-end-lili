@@ -32,7 +32,8 @@ const Profile = () => {
         setReviewsLoading(true);
         try {
             const response = await fetchReviews(userData.id);
-            setReviews(response.data);
+            console.log('API Response:', response);
+            setReviews(response.data || response || []);
         } catch (error) {
             console.error("Error loading reviews:", error);
             setReviews([]);
