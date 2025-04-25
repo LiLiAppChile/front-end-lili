@@ -7,7 +7,7 @@ const LoginClient = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { login } = useAuth();
+  const { clientLogin } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -15,7 +15,7 @@ const LoginClient = () => {
     setError("");
 
     try {
-      await login(email, password);
+      await clientLogin(email, password);
       navigate("/client/home");
     } catch (error) {
       setError(error.message || "Correo o contraseña incorrectos. Inténtalo de nuevo.");

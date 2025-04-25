@@ -13,6 +13,8 @@ const ClientRequests = () => {
     loading: authLoading
   } = useAuth();
 
+
+
   const [tabActivo, setTabActivo] = useState('pendientes');
   const [orders, setOrders] = useState([]);
   const [acceptedOrders, setAcceptedOrders] = useState([]);
@@ -142,28 +144,10 @@ const ClientRequests = () => {
       <div className='flex flex-col min-h-screen bg-white'>
         {/* Encabezado */}
         <div className='p-4 border-b-2 border-gray-200'>
-          <h1 className='text-2xl font-bold'>Trabajos</h1>
+          <h1 className='text-2xl font-bold'>Mis Pedidos</h1>
         </div>
         {/* Pestañas */}
         <div className='flex justify-between border-b'>
-          <button
-            className={`flex-1 py-3 text-center ${tabActivo === 'aceptadas'
-              ? 'text-purple-600 font-medium border-b-2 border-purple-600'
-              : 'text-gray-700'
-              }`}
-            onClick={() => setTabActivo('aceptadas')}
-          >
-            Aceptados
-          </button>
-          <button
-            className={`flex-1 py-3 text-center ${tabActivo === 'pendientes'
-              ? 'text-purple-600 font-medium border-b-2 border-purple-600'
-              : 'text-gray-700'
-              }`}
-            onClick={() => setTabActivo('pendientes')}
-          >
-            Solicitudes
-          </button>
         </div>
         {/* Buscador */}
         <div className='p-4 flex items-center gap-2'>

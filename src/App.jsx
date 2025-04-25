@@ -36,7 +36,7 @@ import JobDetailPage from "./components/Dashboard/Home/History/JobDetailPage";
 import RegisterPageClient from "./components/Client/RegisterClient/RegisterClient";
 import LandingClient from "./components/Client/LangingClient";
 import LoginClient from "./components/Client/LoginClient/LoginClient";
-import HomeClient from "./components/Client/HomeClient/HomeClient";
+import HomeClient from "./components/Client/homeClient/HomeClient";
 import ClientProfile from "./components/Client/Profile/ClientProfile";
 import ClientRequests from "./components/Client/Request/RequestClient";
 

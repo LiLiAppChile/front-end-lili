@@ -64,6 +64,31 @@ export const AuthProvider = ({ children }) => {
     }
   }, [logout]);
 
+  const fetchClientData = useCallback(async (uid) => {
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      const response = await fetch(`http://[::1]:3001/clients/${uid}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Cache-Control": "no-cache"
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al obtener los datos del usuario");
+      }
+      const data = await response.json();
+      setUserData(data);
+      localStorage.setItem("userData", JSON.stringify(data));
+      return data;
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      await logout();
+      throw error;
+    }
+  }, [logout]);
+
+
   const fetchReviews = useCallback(async () => {
     try {
       const currentUser = auth.currentUser;
@@ -130,17 +155,18 @@ export const AuthProvider = ({ children }) => {
           setUser(firebaseUser);
           localStorage.setItem("user", JSON.stringify(firebaseUser));
 
+
           // const userData = await fetchUserData(firebaseUser.uid);
 
-          if (!userData) {
-            throw new Error("Datos de usuario no válidos");
-          }
+          // if (!userData) {
+          //   throw new Error("Datos de usuario no válidos");
+          // }
 
           if (['/login', '/register'].includes(location.pathname)) {
             navigate('/home');
           }
-          if (['login-client','/register-client'].includes(location.pathname)) {
-            navigate('/home-client');
+          if (['client/login','/client/register'].includes(location.pathname)) {
+            navigate('/client/home');
           }
           
         } else {
@@ -174,25 +200,25 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      const path = location.pathname; 
-  
-     
-      if (['/login', '/register'].includes(path)) {
-        const userData = await fetchUserData(user.uid);
-        navigate('/home');
-        return userData;
-      }
-  
-     
-      if (['/login-client', '/register-client'].includes(path)) {
-        navigate('/home-client');
-        // return userData;
-      }
-  
-      
-      console.warn("Ruta no reconocida para login:", path);
-      navigate('/'); 
-  
+      const userData = await fetchUserData(user.uid);
+      navigate('/home');
+      return userData;
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error.message);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const clientLogin = async (email, password) => {
+    try {
+      setLoading(true);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      const userData = await fetchClientData(user.uid);
+      navigate('/home/client');
+      return userData;
     } catch (error) {
       console.error("Error al iniciar sesión:", error.message);
       throw error;
@@ -202,7 +228,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (email, password, userData) => {
-    
     try {
       setLoading(true);
 
@@ -279,7 +304,6 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
-
 
 
   const registerClient = async (email, password,userData) => {
@@ -614,6 +638,8 @@ export const AuthProvider = ({ children }) => {
       acceptOrder,
       rejectOrder,
       registerClient,
+      clientLogin,
+      fetchClientData,
     }}>
       {children}
     </AuthContext.Provider>
