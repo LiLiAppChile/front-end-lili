@@ -2,15 +2,18 @@ import Navbar from '../../BottomMenu/BottomMenu';
 import { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { useAuth } from '../../../../Context/AuthContext';
+import { getAuth } from 'firebase/auth';
 
 Modal.setAppElement('#root');
+
+const auth = getAuth();
 
 const Requests = () => {
   const {
     fetchOrders,
     acceptOrder: contextAcceptOrder,
     rejectOrder: contextRejectOrder,
-    loading: authLoading
+    loading: authLoading,
   } = useAuth();
 
   const [tabActivo, setTabActivo] = useState('pendientes');
@@ -23,7 +26,13 @@ const Requests = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [isProcessingAction, setIsProcessingAction] = useState(false);
   const ordersPerPage = 10;
+
+  // Estados para el modal de confirmación
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [confirmActionType, setConfirmActionType] = useState(null);
+  const [confirmMessage, setConfirmMessage] = useState('');
 
   // Funciones de utilidad
   const formatHour = (timestamp) => {
@@ -34,40 +43,55 @@ const Requests = () => {
 
   const getImageForCategory = (category) => {
     const images = {
-      'Gasfitería': '/tipos/Gasfiteria.png',
-      'Electricidad': '/tipos/Electricidad.png',
-      'Albañilería': '/tipos/Albanileria.png',
-      'Artefactos': '/tipos/Artefactos.png',
-      'Carpintería': '/tipos/Carpinteria.png',
-      'Cerrajería': '/tipos/Cerrajeria.png',
-      'Climatización': '/tipos/Climatizacion.png',
+      Gasfitería: '/tipos/Gasfiteria.png',
+      Electricidad: '/tipos/Electricidad.png',
+      Albañilería: '/tipos/Albanileria.png',
+      Artefactos: '/tipos/Artefactos.png',
+      Carpintería: '/tipos/Carpinteria.png',
+      Cerrajería: '/tipos/Cerrajeria.png',
+      Climatización: '/tipos/Climatizacion.png',
       'Control de Plagas': '/tipos/ControlPlagas.png',
-      'Jardinería': '/tipos/Jardineria.png',
-      'Limpieza': '/tipos/Limpieza.png',
-      'Pintura': '/tipos/Pintura.png',
-      'Seguridad': '/tipos/Seguridad.png',
-      'Otros': '/tipos/Otros.png'
+      Jardinería: '/tipos/Jardineria.png',
+      Limpieza: '/tipos/Limpieza.png',
+      Pintura: '/tipos/Pintura.png',
+      Seguridad: '/tipos/Seguridad.png',
+      Otros: '/tipos/Otros.png',
     };
     return images[category] || null;
   };
 
   const getCategoryDescription = (category) => {
     const descriptions = {
-      'Gasfitería': 'Servicios de instalación, reparación y mantenimiento de sistemas de agua, gas y desagüe en hogares y edificios.',
-      'Electricidad': 'Trabajos de instalación, reparación y mejoras en sistemas eléctricos, iluminación y redes eléctricas domiciliarias.',
-      'Albañilería': 'Servicios de construcción, reparación y remodelación de estructuras de concreto, ladrillos y otros materiales.',
-      'Artefactos': 'Instalación, mantenimiento y reparación de electrodomésticos y aparatos eléctricos o a gas.',
-      'Carpintería': 'Fabricación, instalación y reparación de estructuras y muebles de madera.',
-      'Cerrajería': 'Instalación y reparación de cerraduras, llaves y sistemas de seguridad para puertas y accesos.',
-      'Climatización': 'Instalación y mantenimiento de sistemas de aire acondicionado, calefacción y ventilación.',
-      'Control de Plagas': 'Eliminación y prevención de insectos, roedores y otras plagas en hogares y edificios.',
-      'Jardinería': 'Diseño, mantenimiento y cuidado de jardines, áreas verdes y plantas.',
-      'Limpieza': 'Servicios de limpieza profunda, sanitización y organización para hogares y espacios comerciales.',
-      'Pintura': 'Trabajos de pintura interior y exterior, preparación de superficies y acabados decorativos.',
-      'Seguridad': 'Instalación y mantenimiento de sistemas de seguridad, alarmas y cámaras de vigilancia.',
-      'Otros': 'Otros servicios especializados para el hogar y edificios comerciales.'
+      Gasfitería:
+        'Servicios de instalación, reparación y mantenimiento de sistemas de agua, gas y desagüe en hogares y edificios.',
+      Electricidad:
+        'Trabajos de instalación, reparación y mejoras en sistemas eléctricos, iluminación y redes eléctricas domiciliarias.',
+      Albañilería:
+        'Servicios de construcción, reparación y remodelación de estructuras de concreto, ladrillos y otros materiales.',
+      Artefactos:
+        'Instalación, mantenimiento y reparación de electrodomésticos y aparatos eléctricos o a gas.',
+      Carpintería:
+        'Fabricación, instalación y reparación de estructuras y muebles de madera.',
+      Cerrajería:
+        'Instalación y reparación de cerraduras, llaves y sistemas de seguridad para puertas y accesos.',
+      Climatización:
+        'Instalación y mantenimiento de sistemas de aire acondicionado, calefacción y ventilación.',
+      'Control de Plagas':
+        'Eliminación y prevención de insectos, roedores y otras plagas en hogares y edificios.',
+      Jardinería:
+        'Diseño, mantenimiento y cuidado de jardines, áreas verdes y plantas.',
+      Limpieza:
+        'Servicios de limpieza profunda, sanitización y organización para hogares y espacios comerciales.',
+      Pintura:
+        'Trabajos de pintura interior y exterior, preparación de superficies y acabados decorativos.',
+      Seguridad:
+        'Instalación y mantenimiento de sistemas de seguridad, alarmas y cámaras de vigilancia.',
+      Otros:
+        'Otros servicios especializados para el hogar y edificios comerciales.',
     };
-    return descriptions[category] || 'Servicios generales para el hogar y edificios.';
+    return (
+      descriptions[category] || 'Servicios generales para el hogar y edificios.'
+    );
   };
 
   // Efectos
@@ -76,8 +100,17 @@ const Requests = () => {
       try {
         setLoading(true);
         setError(null);
+
         const data = await fetchOrders();
-        setOrders(data);
+
+        // Filtrar por el valor de "tomado"
+        const pendingOrders = data.filter((order) => order.tomado === 'no');
+        const acceptedOrdersList = data.filter(
+          (order) => order.tomado === 'si'
+        );
+
+        setOrders(pendingOrders);
+        setAcceptedOrders(acceptedOrdersList);
       } catch (err) {
         setError(err.message || 'Error al cargar los pedidos');
       } finally {
@@ -88,27 +121,258 @@ const Requests = () => {
     loadOrders();
   }, [fetchOrders]);
 
+  // Actualización en la función handleAcceptOrder: reemplazar el punto final de la API
   const handleAcceptOrder = async (order) => {
     try {
-      await contextAcceptOrder(order);
-      setOrders(orders.filter(o => (o.id || o._id) !== (order.id || order._id)));
-      setAcceptedOrders([{ ...order, status: 'accepted' }, ...acceptedOrders]);
+      // 1. Primera pantalla de carga del programa
+      setIsProcessingAction(true);
+      setLoading(true);
+
+      // 2. Cierra el modal inmediatamente
       closeModal();
+
+      // Check
+      if (order.tomado === 'si') {
+        // El pedido ya fue aceptado, actualizar la interfaz de usuario y cambio de pestaña
+        console.log('La orden ya estaba marcada como tomada');
+
+        // Asegúrese de que se elimine de pendientes y se agregue a aceptados.
+        setOrders(
+          orders.filter((o) => (o.id || o._id) !== (order.id || order._id))
+        );
+
+        if (
+          !acceptedOrders.some(
+            (o) => (o.id || o._id) === (order.id || order._id)
+          )
+        ) {
+          setAcceptedOrders([
+            { ...order, status: 'accepted', tomado: 'si' },
+            ...acceptedOrders,
+          ]);
+        }
+
+        // Cambiar a pesteña de aceptadas
+        setTimeout(() => {
+          setTabActivo('aceptadas');
+          setIsProcessingAction(false);
+          setLoading(false);
+        }, 1000);
+        return;
+      }
+
+      // 3. Procesar la orden en segundo plano
+      try {
+        // Intentar primero con el método de contexto
+        await contextAcceptOrder(order);
+      } catch (contextError) {
+        console.log(
+          'Error en contextAcceptOrder, intentando directamente con API:',
+          contextError
+        );
+
+        // Si el método de contexto falla, intenta la llamada directa a la API
+        const token = await auth.currentUser?.getIdToken();
+        if (!token) {
+          throw new Error('No se pudo obtener el token de autenticación');
+        }
+
+        const response = await fetch(
+          `http://localhost:3001/pedidos/${order.id || order._id}/tomar`,
+          {
+            method: 'PATCH',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (!response.ok) {
+          // Si la respuesta tiene contenido, intenta analizarlo para obtener mejores mensajes de error
+          const errorText = await response.text();
+          let errorMessage = `Error al aceptar: ${response.status} ${response.statusText}`;
+
+          try {
+            const errorJson = JSON.parse(errorText);
+            if (errorJson.message) {
+              // Esto probablemente sea el mensaje "ya tiene el campo tomado en sí"
+              // Si indica que la orden ya está tomada, podemos continuar
+              if (
+                errorJson.message.includes('ya tiene el campo "tomado" en "si"')
+              ) {
+                console.log('La orden ya estaba marcada como tomada');
+              } else {
+                errorMessage += ` - ${errorJson.message}`;
+                throw new Error(errorMessage);
+              }
+            } else {
+              throw new Error(errorMessage);
+            }
+          } catch {
+            throw new Error(errorMessage);
+          }
+        }
+      }
+
+      // Preparar la orden actualizada
+      setOrders(
+        orders.filter((o) => (o.id || o._id) !== (order.id || order._id))
+      );
+
+      setAcceptedOrders([
+        { ...order, status: 'accepted', tomado: 'si' },
+        ...acceptedOrders,
+      ]);
+
+      // 4. Cambiar a la pestaña de aceptadas con un ligero retraso para una mejor experiencia de usuario
+      setTimeout(() => {
+        setTabActivo('aceptadas');
+        setIsProcessingAction(false);
+        setLoading(false);
+      }, 1000);
     } catch (error) {
       console.error('Error al aceptar la solicitud:', error);
-      setError('Error al aceptar la solicitud');
+      setError('Error al aceptar la solicitud: ' + error.message);
+      setIsProcessingAction(false);
+      setLoading(false);
     }
   };
 
   const handleRejectOrder = async (order) => {
     try {
-      await contextRejectOrder(order);
-      setOrders(orders.filter(o => (o.id || o._id) !== (order.id || order._id)));
+      // 1. Primera pantalla de carga del programa
+      setIsProcessingAction(true);
+      setLoading(true);
+
+      // 2. Cierra el modal inmediatamente
       closeModal();
+
+      // Check
+      if (order.tomado === 'no') {
+        console.log('La orden ya estaba desmarcada como no tomada');
+
+        // Asegúrese de que se elimine de aceptadas y se agregue a pendientes.
+        setAcceptedOrders(
+          acceptedOrders.filter(
+            (o) => (o.id || o._id) !== (order.id || order._id)
+          )
+        );
+
+        // Agregue a pedidos pendientes (solo si no está ya allí)
+        if (!orders.some((o) => (o.id || o._id) === (order.id || order._id))) {
+          setOrders((currentOrders) => [
+            ...currentOrders,
+            { ...order, tomado: 'no' },
+          ]);
+        }
+
+        // Cambiar a pesteña de pendientes
+        setTimeout(() => {
+          setTabActivo('pendientes');
+          setIsProcessingAction(false);
+          setLoading(false);
+        }, 1000);
+        return;
+      }
+
+      // 3. Procesar la orden en segundo plano
+      try {
+        // Intentar primero con el método de contexto
+        await contextRejectOrder(order);
+      } catch (contextError) {
+        console.log(
+          'Error en contextRejectOrder, intentando directamente con API:',
+          contextError
+        );
+
+        // Si el método de contexto falla, intenta la llamada directa a la API
+        const token = await auth.currentUser?.getIdToken();
+        if (!token) {
+          throw new Error('No se pudo obtener el token de autenticación');
+        }
+
+        const response = await fetch(
+          `http://localhost:3001/pedidos/${order.id || order._id}/desmarcar`,
+          {
+            method: 'PATCH',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (!response.ok) {
+          // Si la respuesta tiene contenido, intenta analizarlo para obtener mejores mensajes de error
+          const errorText = await response.text();
+          let errorMessage = `Error al rechazar: ${response.status} ${response.statusText}`;
+
+          try {
+            const errorJson = JSON.parse(errorText);
+            if (errorJson.message) {
+              // Esto probablemente sea el mensaje "ya tiene el campo tomado en no"
+              // Si indica que la orden ya está desmarcada, podemos continuar
+              if (
+                errorJson.message.includes('ya tiene el campo "tomado" en "no"')
+              ) {
+                console.log('La orden ya estaba desmarcada como no tomada');
+              } else {
+                errorMessage += ` - ${errorJson.message}`;
+                throw new Error(errorMessage);
+              }
+            } else {
+              throw new Error(errorMessage);
+            }
+          } catch {
+            throw new Error(errorMessage);
+          }
+        }
+      }
+
+      // Preparar la orden actualizada
+      const updatedOrder = { ...order, tomado: 'no' };
+
+      // Eliminar de aceptadas
+      setAcceptedOrders(
+        acceptedOrders.filter(
+          (o) => (o.id || o._id) !== (order.id || order._id)
+        )
+      );
+
+      // Agregar a pendientes (solo si no está ya allí)
+      setOrders((currentOrders) => {
+        const exists = currentOrders.some(
+          (o) => (o.id || o._id) === (order.id || order._id)
+        );
+        if (!exists) {
+          return [...currentOrders, updatedOrder];
+        }
+        return currentOrders;
+      });
+
+      // 4. Cambiar a la pestaña de pendientes con un ligero retraso para una mejor experiencia de usuario
+      setTimeout(() => {
+        setTabActivo('pendientes');
+        setIsProcessingAction(false);
+        setLoading(false);
+      }, 1000);
     } catch (error) {
       console.error('Error al rechazar la solicitud:', error);
-      setError('Error al rechazar la solicitud');
+      setError('Error al rechazar la solicitud: ' + error.message);
+      setIsProcessingAction(false);
+      setLoading(false);
     }
+  };
+
+  const handleConfirmAccept = async () => {
+    setConfirmModalOpen(false);
+    await handleAcceptOrder(selectedOrder);
+  };
+
+  const handleConfirmReject = async () => {
+    setConfirmModalOpen(false);
+    await handleRejectOrder(selectedOrder);
   };
 
   const openModal = (order) => {
@@ -126,15 +390,34 @@ const Requests = () => {
     setCurrentPage(pageNumber);
   };
 
-  const filteredOrders = tabActivo === 'pendientes'
-    ? orders.filter(order => order.nombreCliente?.toLowerCase().includes(search.toLowerCase()))
-    : acceptedOrders.filter(order => order.nombreCliente?.toLowerCase().includes(search.toLowerCase()));
+  const filteredOrders =
+    tabActivo === 'pendientes'
+      ? orders.filter((order) =>
+          order.nombreCliente?.toLowerCase().includes(search.toLowerCase())
+        )
+      : acceptedOrders.filter((order) =>
+          order.nombreCliente?.toLowerCase().includes(search.toLowerCase())
+        );
 
   const indexOfLastOrder = currentPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-  const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder);
+  const currentOrders = filteredOrders.slice(
+    indexOfFirstOrder,
+    indexOfLastOrder
+  );
   const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
 
+  // Determinar si la orden actual es aceptada o pendiente
+  const isOrderAccepted = selectedOrder?.tomado === 'si';
+
+  if (isProcessingAction) {
+    return (
+      <div className='fixed inset-0 bg-white flex flex-col items-center justify-center z-50'>
+        <div className='w-16 h-16 border-t-4 border-purple-500 border-solid rounded-full animate-spin mb-4'></div>
+        <p className='text-xl'>Procesando solicitud...</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -147,19 +430,21 @@ const Requests = () => {
         {/* Pestañas */}
         <div className='flex justify-between border-b'>
           <button
-            className={`flex-1 py-3 text-center ${tabActivo === 'aceptadas'
-              ? 'text-purple-600 font-medium border-b-2 border-purple-600'
-              : 'text-gray-700'
-              }`}
+            className={`flex-1 py-3 text-center ${
+              tabActivo === 'aceptadas'
+                ? 'text-purple-600 font-medium border-b-2 border-purple-600'
+                : 'text-gray-700'
+            }`}
             onClick={() => setTabActivo('aceptadas')}
           >
             Aceptados
           </button>
           <button
-            className={`flex-1 py-3 text-center ${tabActivo === 'pendientes'
-              ? 'text-purple-600 font-medium border-b-2 border-purple-600'
-              : 'text-gray-700'
-              }`}
+            className={`flex-1 py-3 text-center ${
+              tabActivo === 'pendientes'
+                ? 'text-purple-600 font-medium border-b-2 border-purple-600'
+                : 'text-gray-700'
+            }`}
             onClick={() => setTabActivo('pendientes')}
           >
             Solicitudes
@@ -193,8 +478,9 @@ const Requests = () => {
                   {currentOrders.map((order, index) => (
                     <tr
                       key={order.id || order._id}
-                      className={`cursor-pointer ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
-                        } hover:bg-purple-100 transition`}
+                      className={`cursor-pointer ${
+                        index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                      } hover:bg-purple-100 transition`}
                       onClick={() => openModal(order)}
                     >
                       <td className='p-3 text-sm whitespace-nowrap'>
@@ -234,10 +520,11 @@ const Requests = () => {
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className={`px-3 py-1 mx-1 rounded-md ${currentPage === 1
-                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                      : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-                      }`}
+                    className={`px-3 py-1 mx-1 rounded-md ${
+                      currentPage === 1
+                        ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                        : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                    }`}
                   >
                     &laquo;
                   </button>
@@ -246,10 +533,11 @@ const Requests = () => {
                     <button
                       key={index + 1}
                       onClick={() => handlePageChange(index + 1)}
-                      className={`px-3 py-1 mx-1 rounded-md ${currentPage === index + 1
-                        ? 'bg-purple-600 text-white'
-                        : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-                        }`}
+                      className={`px-3 py-1 mx-1 rounded-md ${
+                        currentPage === index + 1
+                          ? 'bg-purple-600 text-white'
+                          : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                      }`}
                     >
                       {index + 1}
                     </button>
@@ -258,10 +546,11 @@ const Requests = () => {
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className={`px-3 py-1 mx-1 rounded-md ${currentPage === totalPages
-                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                      : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-                      }`}
+                    className={`px-3 py-1 mx-1 rounded-md ${
+                      currentPage === totalPages
+                        ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                        : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                    }`}
                   >
                     &raquo;
                   </button>
@@ -270,7 +559,8 @@ const Requests = () => {
             </div>
           </div>
         </div>
-        {/* Modal */}
+
+        {/* Modal principal */}
         <Modal
           isOpen={isModalOpen}
           onRequestClose={closeModal}
@@ -336,8 +626,8 @@ const Requests = () => {
                     <p>
                       {selectedOrder.fechaCreacion
                         ? new Date(
-                          selectedOrder.fechaCreacion
-                        ).toLocaleDateString()
+                            selectedOrder.fechaCreacion
+                          ).toLocaleDateString()
                         : 'No disponible'}
                     </p>
 
@@ -359,7 +649,7 @@ const Requests = () => {
                         <span
                           className='ml-2 bg-gray-300 rounded-full w-6 h-6 flex items-center justify-center text-gray-600 text-xs cursor-pointer hover:bg-gray-400'
                           onClick={(e) => {
-                            e.stopPropagation(); // Prevenir que el clic propague al modal principal
+                            e.stopPropagation();
                             setShowTooltip(!showTooltip);
                           }}
                         >
@@ -404,8 +694,7 @@ const Requests = () => {
                     <p className='font-bold mb-2'>Imágenes:</p>
                     <div className='flex space-x-2 overflow-x-auto pb-2'>
                       {selectedOrder.productos &&
-                        selectedOrder.productos.length > 0 ? (
-                        // Mostrar imágenes de productos si están disponibles
+                      selectedOrder.productos.length > 0 ? (
                         selectedOrder.productos.map((producto, index) => (
                           <div
                             key={index}
@@ -428,7 +717,6 @@ const Requests = () => {
                         ))
                       ) : selectedOrder.products &&
                         selectedOrder.products.length > 0 ? (
-                        // Alternativa si los productos están en selectedOrder.products en lugar de selectedOrder.productos
                         selectedOrder.products.map((producto, index) => (
                           <div
                             key={index}
@@ -450,7 +738,6 @@ const Requests = () => {
                           </div>
                         ))
                       ) : (
-                        // Placeholders si no hay productos con imágenes
                         <>
                           <div className='w-36 h-36 bg-gray-200 rounded flex-shrink-0'></div>
                           <div className='w-36 h-36 bg-gray-200 rounded flex-shrink-0'></div>
@@ -461,23 +748,82 @@ const Requests = () => {
                   </div>
                 </div>
               </div>
-              {/* Botones de acción */}
+              {/* Botones de acción - mostrar según el tab activo */}
               <div className='flex mt-auto p-4'>
-                <button
-                  onClick={() => handleRejectOrder(selectedOrder)}
-                  className='flex-1 py-4 text-center border-2 border-orange-700 text-orange-700 rounded-lg mr-2 font-bold'
-                >
-                  Rechazar
-                </button>
-                <button
-                  onClick={() => handleAcceptOrder(selectedOrder)}
-                  className='flex-1 py-4 text-center bg-green-500 text-white rounded-lg font-bold'
-                >
-                  Aceptar
-                </button>
+                {isOrderAccepted ? (
+                  // Para órdenes ya aceptadas, solo mostrar botón de rechazar
+                  <button
+                    onClick={() => {
+                      setConfirmActionType('reject');
+                      setConfirmMessage(
+                        '¿Estás seguro de que quieres rechazar esta solicitud?'
+                      );
+                      setConfirmModalOpen(true);
+                    }}
+                    className='flex-1 py-4 text-center border-2 border-orange-700 text-orange-700 rounded-lg font-bold'
+                    disabled={loading}
+                  >
+                    {loading ? 'Procesando...' : 'Rechazar'}
+                  </button>
+                ) : (
+                  // Para órdenes pendientes, solo mostrar botón de aceptar
+                  <button
+                    onClick={() => {
+                      setConfirmActionType('accept');
+                      setConfirmMessage(
+                        '¿Estás seguro de que quieres aceptar esta solicitud?'
+                      );
+                      setConfirmModalOpen(true);
+                    }}
+                    className='flex-1 py-4 text-center bg-green-500 text-white rounded-lg font-bold'
+                    disabled={loading}
+                  >
+                    {loading ? 'Procesando...' : 'Aceptar'}
+                  </button>
+                )}
               </div>
             </div>
           )}
+        </Modal>
+
+        {/* Modal de confirmación */}
+        <Modal
+          isOpen={confirmModalOpen}
+          onRequestClose={() => setConfirmModalOpen(false)}
+          contentLabel='Confirmar acción'
+          className='relative bg-white w-full max-w-md mx-auto my-0 p-0 rounded-lg shadow-xl outline-none'
+          overlayClassName='fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4'
+        >
+          <div className='p-6'>
+            <h2 className='text-xl font-bold mb-4'>Confirmar</h2>
+            <p className='mb-6'>{confirmMessage}</p>
+            <div className='flex justify-end space-x-4'>
+              <button
+                onClick={() => setConfirmModalOpen(false)}
+                className='px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100'
+                disabled={loading}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  if (confirmActionType === 'accept') {
+                    handleConfirmAccept();
+                  } else if (confirmActionType === 'reject') {
+                    handleConfirmReject();
+                  }
+                }}
+                className={`px-4 py-2 rounded-md text-white ${
+                  confirmActionType === 'accept'
+                    ? 'bg-green-500'
+                    : 'bg-orange-600'
+                }`}
+                disabled={loading}
+              >
+                {loading ? 'Procesando...' : 'Confirmar'}
+              </button>
+            </div>
+          </div>
         </Modal>
       </div>
     </>

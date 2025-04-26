@@ -6,12 +6,7 @@ import { useAuth } from '../../../Context/AuthContext';
 Modal.setAppElement('#root');
 
 const ClientRequests = () => {
-  const {
-    fetchOrders,
-    acceptOrder: contextAcceptOrder,
-    rejectOrder: contextRejectOrder,
-    loading: authLoading
-  } = useAuth();
+  const {fetchOrders} = useAuth();
 
 
 
@@ -102,16 +97,16 @@ const ClientRequests = () => {
 //     }
 //   };
 
-  const handleRejectOrder = async (order) => {
-    try {
-      await contextRejectOrder(order);
-      setOrders(orders.filter(o => (o.id || o._id) !== (order.id || order._id)));
-      closeModal();
-    } catch (error) {
-      console.error('Error al rechazar la solicitud:', error);
-      setError('Error al rechazar la solicitud');
-    }
-  };
+  // const handleRejectOrder = async (order) => {
+  //   try {
+  //     await contextRejectOrder(order);
+  //     setOrders(orders.filter(o => (o.id || o._id) !== (order.id || order._id)));
+  //     closeModal();
+  //   } catch (error) {
+  //     console.error('Error al rechazar la solicitud:', error);
+  //     setError('Error al rechazar la solicitud');
+  //   }
+  // };
 
   const openModal = (order) => {
     setSelectedOrder(order);
@@ -145,9 +140,6 @@ const ClientRequests = () => {
         {/* Encabezado */}
         <div className='p-4 border-b-2 border-gray-200'>
           <h1 className='text-2xl font-bold'>Mis Pedidos</h1>
-        </div>
-        {/* Pestañas */}
-        <div className='flex justify-between border-b'>
         </div>
         {/* Buscador */}
         <div className='p-4 flex items-center gap-2'>
@@ -444,21 +436,6 @@ const ClientRequests = () => {
                     </div>
                   </div>
                 </div>
-              </div>
-              {/* Botones de acción */}
-              <div className='flex mt-auto p-4'>
-                <button
-                  onClick={() => handleRejectOrder(selectedOrder)}
-                  className='flex-1 py-4 text-center border-2 border-orange-700 text-orange-700 rounded-lg mr-2 font-bold'
-                >
-                  Rechazar
-                </button>
-                <button
-                  onClick={() => handleAcceptOrder(selectedOrder)}
-                  className='flex-1 py-4 text-center bg-green-500 text-white rounded-lg font-bold'
-                >
-                  Aceptar
-                </button>
               </div>
             </div>
           )}
