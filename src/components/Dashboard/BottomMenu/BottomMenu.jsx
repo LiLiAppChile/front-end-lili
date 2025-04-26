@@ -48,9 +48,9 @@ const BottomMenu = () => {
         >
           <div className="h-5 w-5 flex items-center justify-center">
             {activeIcon === '/requests' ? (
-              <img src="./src/assets/checkboxSolid.png" alt="checkboxSolid" className="h-5 w-5 object-contain" />
+              <img src="./src/assets/trabajosSolid.png" alt="trabajosSolid" className="h-5 w-5 object-contain" />
             ) : (
-              <img src="./src/assets/checkboxWhite.png" alt="checkboxSolid" className="h-5 w-5 object-contain" />
+              <img src="./src/assets/trabajos.png" alt="trabajosIcon" className="h-5 w-5 object-contain" />
             )}
           </div>
           {activeIcon === '/requests' && <div className="h-0.5 w-6 bg-white mt-1"></div>}

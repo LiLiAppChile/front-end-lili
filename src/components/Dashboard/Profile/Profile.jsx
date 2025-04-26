@@ -214,11 +214,23 @@ const Profile = () => {
                                 <div key={review.id} className='border-b border-gray-300 pb-4 mb-4 last:border-0 last:mb-0 last:pb-0'>
                                     <div className='flex justify-between items-start'>
                                         <div className='flex items-center space-x-3'>
-                                            <img
-                                                src={UserPlaceholder}
-                                                alt="reviewer"
-                                                className='rounded-full w-12 h-12'
-                                            />
+                                            {/* Contenedor para la imagen con proporciones fijas */}
+                                            <div className='relative w-10 h-10 flex-shrink-0 rounded-full overflow-hidden'>
+                                                <img
+                                                    src={review.user?.profilePicture || UserPlaceholder}
+                                                    alt="reviewer"
+                                                    className='absolute w-full h-full object-cover'
+                                                    style={{
+                                                        top: '50%',
+                                                        left: '50%',
+                                                        transform: 'translate(-50%, -50%)'
+                                                    }}
+                                                    onError={(e) => {
+                                                        e.target.onerror = null;
+                                                        e.target.src = UserPlaceholder;
+                                                    }}
+                                                />
+                                            </div>
                                             <div>
                                                 <p className='font-[500]'>Cliente</p>
                                                 <div className='flex items-center space-x-1'>
@@ -256,8 +268,8 @@ const Profile = () => {
                         initialData={{
                             phone: userData?.phone || '',
                             email: userData?.email || '',
-                            district: userData?.district || '',
-                            profileImage: userData?.profileImage || '',
+                            commune: userData?.commune || '',
+                            profilePicture: userData?.profilePicture || '',
                         }}
                     />
                 )}
