@@ -10,7 +10,7 @@ import { useAuth } from '../../../Context/AuthContext';
 
 const ClientProfile = () => {
     const [showEditPopup, setShowEditPopup] = useState(false);
-    const { userData} = useAuth();
+    const { userData } = useAuth();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
 
@@ -39,7 +39,7 @@ const ClientProfile = () => {
         }
     }, [userData]);
 
-   
+
     if (isLoading) {
         return (
             <>
@@ -62,7 +62,7 @@ const ClientProfile = () => {
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-3">
                             <img
-                                src="./src/assets/profile.png"
+                                src="/src/assets/profile.png"
                                 alt="profileIcon"
                             />
                             <h1 className="text-2xl font-bold">Perfil</h1>
@@ -92,10 +92,10 @@ const ClientProfile = () => {
                                     <h2 className="text-lg font-medium text-left">
                                         {profile.name || "Nombre no disponible"}
                                     </h2>
-                                    
+
                                 </div>
                                 <img
-                                    src="./src/assets/editPen.png"
+                                    src="/src/assets/editPen.png"
                                     alt="editProfile"
                                     className="w-6 h-6 cursor-pointer text-gray-600 hover:text-indigo-500 transition"
                                     onClick={() => setShowEditPopup(true)}
@@ -144,7 +144,7 @@ const ClientProfile = () => {
                     </div>
                 </div>
 
-            
+
                 {showEditPopup && (
                     <EditProfilePopup
                         onCancel={() => setShowEditPopup(false)}

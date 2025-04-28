@@ -6,9 +6,7 @@ import { useAuth } from '../../../Context/AuthContext';
 Modal.setAppElement('#root');
 
 const ClientRequests = () => {
-  const {fetchOrders} = useAuth();
-
-
+  const {fetchClientsOrders} = useAuth();
 
   const [tabActivo, setTabActivo] = useState('pendientes');
   const [orders, setOrders] = useState([]);
@@ -73,7 +71,7 @@ const ClientRequests = () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await fetchOrders();
+        const data = await fetchClientsOrders();
         setOrders(data);
       } catch (err) {
         setError(err.message || 'Error al cargar los pedidos');
@@ -83,30 +81,9 @@ const ClientRequests = () => {
     };
 
     loadOrders();
-  }, [fetchOrders]);
+  }, [fetchClientsOrders]);
 
-//   const handleAcceptOrder = async (order) => {
-//     try {
-//       await contextAcceptOrder(order);
-//       setOrders(orders.filter(o => (o.id || o._id) !== (order.id || order._id)));
-//       setAcceptedOrders([{ ...order, status: 'accepted' }, ...acceptedOrders]);
-//       closeModal();
-//     } catch (error) {
-//       console.error('Error al aceptar la solicitud:', error);
-//       setError('Error al aceptar la solicitud');
-//     }
-//   };
-
-  // const handleRejectOrder = async (order) => {
-  //   try {
-  //     await contextRejectOrder(order);
-  //     setOrders(orders.filter(o => (o.id || o._id) !== (order.id || order._id)));
-  //     closeModal();
-  //   } catch (error) {
-  //     console.error('Error al rechazar la solicitud:', error);
-  //     setError('Error al rechazar la solicitud');
-  //   }
-  // };
+  console.log(orders);
 
   const openModal = (order) => {
     setSelectedOrder(order);
@@ -122,6 +99,7 @@ const ClientRequests = () => {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+
 
   const filteredOrders = tabActivo === 'pendientes'
     ? orders.filter(order => order.nombreCliente?.toLowerCase().includes(search.toLowerCase()))

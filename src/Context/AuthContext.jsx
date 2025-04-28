@@ -37,7 +37,14 @@ export const AuthProvider = ({ children }) => {
       setUserData(null);
       localStorage.removeItem('user');
       localStorage.removeItem('userData');
-      navigate('/login');
+
+      if (location.pathname === '/home') {
+        navigate('/login');
+      }
+      if (location.pathname === '/client/home') {
+        navigate('/client/login');
+      }
+
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
     } finally {
@@ -167,12 +174,15 @@ export const AuthProvider = ({ children }) => {
           setUser(firebaseUser);
           localStorage.setItem('user', JSON.stringify(firebaseUser));
 
-
-          // const userData = await fetchUserData(firebaseUser.uid);
-
-          // if (!userData) {
-          //   throw new Error("Datos de usuario no válidos");
-          // }
+          if (['/client/home', '/client/profile'].includes(location.pathname)) {
+            const userData = await fetchClientData(firebaseUser.uid);
+            return userData;
+          }
+  
+          if (['/home', '/profile'].includes(location.pathname)) {
+            const userData = await fetchUserData(firebaseUser.uid);
+            return userData;
+          }
 
           if (['/login', '/register'].includes(location.pathname)) {
             navigate('/home');
@@ -186,16 +196,10 @@ export const AuthProvider = ({ children }) => {
           setUserData(null);
           localStorage.removeItem('user');
           localStorage.removeItem('userData');
-
-          // if (!['/login', '/register', '/'].includes(location.pathname)) {
-          //   navigate('/login');
-          // }
         }
       } catch (error) {
         console.error("Error en el observer de autenticación:", error);
-        // if (!['/login', '/register'].includes(location.pathname)) {
-        //   navigate('/login');
-        // }
+
       } finally {
         setLoading(false);
         setAuthChecked(true);
@@ -203,7 +207,7 @@ export const AuthProvider = ({ children }) => {
     });
 
     return () => unsubscribe();
-  }, [navigate, isLoggingOut, location.pathname, fetchUserData]);
+  }, [navigate, isLoggingOut, location.pathname, fetchUserData, fetchClientData]);
 
 
 
@@ -323,54 +327,85 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-
-  const registerClient = async (email, password,userData) => {
+  // Función de registro para clientes
+  const registerClient = async (email, password, userData) => {
     try {
       setLoading(true);
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
       const token = await user.getIdToken();
 
       const userDataForBackend = {
         ...userData,
         uid: user.uid,
+        validUser: true,
       };
 
-      let response;
-      try {
-        response = await axios.post(
-          "http://[::1]:3001/clients",
-          userDataForBackend,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-      } catch (error) {
+      await axios.post('http://[::1]:3001/clients', userDataForBackend, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-        await deleteUser(user);
-        const backendMessage = error.response?.data?.message || "Error al registrar en el backend";
-        throw new Error(backendMessage);
+      const MAX_ATTEMPTS = 3;
+      const RETRY_DELAY = 300;
+      let userDetails;
+      let lastError;
+
+      for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+        try {
+          const { data } = await axios.get(
+            `http://[::1]:3001/clients/${user.uid}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          userDetails = data;
+          break;
+        } catch (err) {
+          lastError = err;
+          if (attempt < MAX_ATTEMPTS - 1) {
+            await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
+          }
+        }
       }
 
-      const responseData = response.data;
-      const newUserData = { ...userDataForBackend, ...responseData.user };
+      if (!userDetails) {
+        throw (
+          lastError || new Error('No se pudieron obtener los datos del usuario')
+        );
+      }
+
       setUser(user);
       setUserData(userDetails);
-      localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("userData", JSON.stringify(userDetails));
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('userData', JSON.stringify(userDetails));
 
-      navigate('/home-client');
-      return { success: true, user: newUserData };
-    } catch (error) {
-      console.error("Error en el registro:", error);
-      throw error;
+      navigate('/home');
+      return { success: true, user: userDetails };
+    } catch (err) {
+      console.error('Error en el registro:', err);
+
+      if (auth.currentUser) {
+        try {
+          await deleteUser(auth.currentUser);
+        } catch (deleteErr) {
+          console.error('Error al limpiar usuario:', deleteErr);
+        }
+      }
+
+      throw err;
     } finally {
       setLoading(false);
     }
   };
-
 
 
   const updateUser = async (formData, options = { showLoading: true }) => {
@@ -595,10 +630,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const fetchByClientsOrders = async () => {
+  const fetchClientsOrders = async () => {
     try {
       const token = await auth.currentUser?.getIdToken();
-      const response = await fetch('http://localhost:3001/pedidos', {
+      const useremail = auth.currentUser?.email;
+      const response = await fetch(`http://localhost:3001/pedidos?email=${useremail}`, {
+      // const response = await fetch('http://localhost:3001/pedidos', {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -606,11 +643,13 @@ export const AuthProvider = ({ children }) => {
         },
       });
 
+
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
       }
-
+      
       return await response.json();
+
     } catch (error) {
       console.error('Error al obtener pedidos:', error);
       throw error;
@@ -702,6 +741,7 @@ export const AuthProvider = ({ children }) => {
       registerClient,
       clientLogin,
       fetchClientData,
+      fetchClientsOrders,
     }}>
       {children}
     </AuthContext.Provider>
