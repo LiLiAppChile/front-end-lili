@@ -388,7 +388,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('userData', JSON.stringify(userDetails));
 
-      navigate('/home');
+      navigate('/client/home');
       return { success: true, user: userDetails };
     } catch (err) {
       console.error('Error en el registro:', err);
@@ -633,9 +633,8 @@ export const AuthProvider = ({ children }) => {
   const fetchClientsOrders = async () => {
     try {
       const token = await auth.currentUser?.getIdToken();
-      const useremail = auth.currentUser?.email;
-      const response = await fetch(`http://localhost:3001/pedidos?email=${useremail}`, {
-      // const response = await fetch('http://localhost:3001/pedidos', {
+      const email = auth.currentUser.email;
+      const response = await fetch('http://localhost:3001/pedidos', {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -643,6 +642,7 @@ export const AuthProvider = ({ children }) => {
         },
       });
 
+      const filteredOrders = response.filter( order => order.clientEmail === email );
 
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
