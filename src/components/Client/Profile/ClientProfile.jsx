@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Cog6ToothIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
@@ -19,7 +19,6 @@ const ClientProfile = () => {
         name: "Cargando...",
         email: "",
         phone: "",
-        specialties: [],
         profilePicture: "",
         rut: "",
         commune: "",
@@ -102,21 +101,6 @@ const ClientProfile = () => {
                                 />
                             </div>
                         </div>
-                    </div>
-
-                    <div className='flex flex-wrap gap-2 mb-3'>
-                        {profile.specialties?.length > 0 ? (
-                            profile.specialties.map((specialty, index) => (
-                                <p
-                                    key={index}
-                                    className='bg-white rounded-lg py-1 px-4 text-indigo-600 hover:bg-indigo-100 transition font-bold cursor-pointer text-sm shadow'
-                                >
-                                    {specialty}
-                                </p>
-                            ))
-                        ) : (
-                            <p className="text-gray-500 italic text-sm">Sin especialidades registradas</p>
-                        )}
                     </div>
 
                     <div className="border-t border-gray-300 my-3"></div>

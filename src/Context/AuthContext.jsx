@@ -64,19 +64,19 @@ export const AuthProvider = ({ children }) => {
           },
         });
 
-      if (!response.ok) {
-        throw new Error("Error al obtener los datos del usuario");
+        if (!response.ok) {
+          throw new Error("Error al obtener los datos del usuario");
+        }
+        const data = await response.json();
+        setUserData(data);
+        localStorage.setItem("userData", JSON.stringify(data));
+        return data;
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        await logout();
+        throw error;
       }
-      const data = await response.json();
-      setUserData(data);
-      localStorage.setItem("userData", JSON.stringify(data));
-      return data;
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      await logout();
-      throw error;
-    }
-  }, [logout]);
+    }, [logout]);
 
   const fetchClientData = useCallback(async (uid) => {
     try {
@@ -178,7 +178,7 @@ export const AuthProvider = ({ children }) => {
             const userData = await fetchClientData(firebaseUser.uid);
             return userData;
           }
-  
+
           if (['/home', '/profile'].includes(location.pathname)) {
             const userData = await fetchUserData(firebaseUser.uid);
             return userData;
@@ -187,10 +187,10 @@ export const AuthProvider = ({ children }) => {
           if (['/login', '/register'].includes(location.pathname)) {
             navigate('/home');
           }
-          if (['client/login','/client/register'].includes(location.pathname)) {
+          if (['client/login', '/client/register'].includes(location.pathname)) {
             navigate('/client/home');
           }
-          
+
         } else {
           setUser(null);
           setUserData(null);
@@ -633,7 +633,7 @@ export const AuthProvider = ({ children }) => {
   const fetchClientsOrders = async () => {
     try {
       const token = await auth.currentUser?.getIdToken();
-      const email = auth.currentUser.email;
+      const email = auth.currentUser?.email;
       const response = await fetch('http://localhost:3001/pedidos', {
         method: 'GET',
         headers: {
@@ -642,13 +642,13 @@ export const AuthProvider = ({ children }) => {
         },
       });
 
-      const filteredOrders = response.filter( order => order.clientEmail === email );
-
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
       }
-      
-      return await response.json();
+
+      const orders = await response.json()
+      const ordersClient = orders.filter((order) => order.emailCliente === email);
+      return await ordersClient;
 
     } catch (error) {
       console.error('Error al obtener pedidos:', error);

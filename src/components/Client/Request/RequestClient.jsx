@@ -2,16 +2,13 @@ import Navbar from '../ClientBottomMenu/BottomMenuClient';
 import { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { useAuth } from '../../../Context/AuthContext';
-import { auth } from '../../../firebase';
+
 
 Modal.setAppElement('#root');
 
 const ClientRequests = () => {
   const {fetchClientsOrders} = useAuth();
-
-  const [tabActivo, setTabActivo] = useState('pendientes');
   const [orders, setOrders] = useState([]);
-  const [acceptedOrders, setAcceptedOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
@@ -101,12 +98,7 @@ const ClientRequests = () => {
     setCurrentPage(pageNumber);
   };
 
-  const email = auth.currentUser.email
-  const filteredOrders = orders.filter(order =>  order.emailCliente === email);
-
-  // const filteredOrders = tabActivo === 'pendientes'
-  //   ? orders.filter(order => order.nombreCliente?.toLowerCase().includes(search.toLowerCase()))
-  //   : acceptedOrders.filter(order => order.nombreCliente?.toLowerCase().includes(search.toLowerCase()));
+  const filteredOrders = orders
 
   const indexOfLastOrder = currentPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
