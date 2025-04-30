@@ -28,11 +28,12 @@ import SupportProfile from "./components/SupportDashboard/SupportProfile/Support
 import SupportRequests from "./components/SupportDashboard/FormSubmissions/Requests";
 import ProfessionalDetail from "./components/SupportDashboard/FormSubmissions/RequestDetails";
 import RegisteredUsers from "./components/SupportDashboard/UsersRecord/RegisteredUsers";
-import QuotesList from "./components/SupportDashboard/Quotes/QuotesList";
+import QuotesList from "./components/SupportDashboard/Quotes/Quotes";
 import UserProfileAdminView from "./components/SupportDashboard/UsersRecord/UserProfileAdminView";
 import CalendarPage from "./components/Dashboard/Home/Calendar/CalendarPage";
 import HistoryPage from "./components/Dashboard/Home/History/HistoryPage";
 import JobDetailPage from "./components/Dashboard/Home/History/JobDetailPage";
+import Promotion1 from "./components/Dashboard/Home/Promotion/Promotion1";
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -72,6 +73,7 @@ const App = () => {
 
             {/* Rutas de Professional */}
             <Route path="/home" element={<ProtectedRoute allowedRoles={['professional']}><HomePage /></ProtectedRoute>} />
+            <Route path="/promotion1" element={<ProtectedRoute allowedRoles={['professional']}><Promotion1 /></ProtectedRoute>} />
             <Route path="/history/detail/:id" element={<ProtectedRoute allowedRoles={['professional']}><JobDetailPage /></ProtectedRoute>} />
             <Route path="/requests" element={<ProtectedRoute allowedRoles={['professional']}><Requests /></ProtectedRoute>} />
             <Route path="/calendar" element={<ProtectedRoute allowedRoles={['professional']}><CalendarPage /></ProtectedRoute>} />
@@ -87,6 +89,7 @@ const App = () => {
             <Route path="/admin/users-record" element={<ProtectedRoute allowedRoles={['admin']}><RegisteredUsers /></ProtectedRoute>} />
             <Route path="/admin/users-record/details/:uid" element={<ProtectedRoute allowedRoles={['admin']}><UserProfileAdminView /></ProtectedRoute>} />
             <Route path="/admin/perfil" element={<ProtectedRoute allowedRoles={['admin']}><SupportProfile /></ProtectedRoute>} />
+            <Route path="/admin/perfil/settings" element={<ProtectedRoute allowedRoles={['admin']}><SettingsPage /></ProtectedRoute>} />
 
             {/* Rutas compartidas */}
             <Route path="/settings" element={<ProtectedRoute allowedRoles={['admin', 'professional', 'client']}><SettingsPage /></ProtectedRoute>} />
