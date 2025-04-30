@@ -6,11 +6,14 @@ import editPen from "@/assets/editPen.png";
 import LoadingSpinner from "../../LoadingSpinner";
 import EditProfilePopup from './SupportEditProfilePopup';
 import { useAuth } from '../../../Context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 
 const SupportProfile = () => {
     const [showEditPopup, setShowEditPopup] = useState(false);
     const { userData } = useAuth();
     const [isLoading, setIsLoading] = useState(true);
+    const navigate = useNavigate();
 
     const [profile, setProfile] = useState({
         name: "Cargando...",
@@ -58,6 +61,12 @@ const SupportProfile = () => {
                             />
                             <h1 className="text-2xl font-bold">Perfil</h1>
                         </div>
+                        <button
+                            className="icons-menu"
+                            onClick={() => navigate('/settings')}
+                        >
+                            <Cog6ToothIcon className="w-6 h-6 cursor-pointer text-gray-600 hover:text-indigo-500 transition" />
+                        </button>
                     </div>
                 </div>
 

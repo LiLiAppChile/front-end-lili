@@ -31,7 +31,7 @@ const Icons = {
     Otros: OtrosIcon,
 
     // Estados de Pago
-    acceppted: IconPaidComplete,
+    accepted: IconPaidComplete,
     paid: IconPaidComplete,
     pending: IconPendingComplete,
     canceled: IconCanceled,

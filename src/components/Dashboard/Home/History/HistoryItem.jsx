@@ -39,7 +39,7 @@ const getIconDetails = (type, value) => {
                 case "paid":
                     return { icon: Icons.paid };
                 case "accepted":
-                    return { icon: Icons.acceppted };
+                    return { icon: Icons.accepted };
                 case "canceled":
                     return { icon: Icons.canceled };
                 default:

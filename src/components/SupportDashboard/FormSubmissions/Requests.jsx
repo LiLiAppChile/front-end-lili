@@ -81,7 +81,7 @@ const SupportRequests = () => {
                     <img
                         src={Icons[areas[0]] || Icons.default}
                         alt={areas[0]}
-                        className="h-7 w-7 object-contain"
+                        className="w-6 object-contain"
                     />
                     {areas.length > 1 && (
                         <div className="absolute -bottom-1 -right-1 flex items-center justify-center">
@@ -173,7 +173,7 @@ const SupportRequests = () => {
                                                     src={getImageForStatus(p.estado)}
                                                     alt={p.estado}
                                                     title={p.estado}
-                                                    className='h-6 w-6 object-contain'
+                                                    className='w-5 object-contain'
                                                 />
                                             </div>
                                             <div className='flex justify-end'>

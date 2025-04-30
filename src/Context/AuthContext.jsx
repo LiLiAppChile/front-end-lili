@@ -213,7 +213,7 @@ export const AuthProvider = ({ children }) => {
       const userDataForBackend = {
         ...userData,
         uid: user.uid,
-        validUser: true,
+        validUser: true
       };
 
       await axios.post('http://[::1]:3001/users', userDataForBackend, {
@@ -226,7 +226,7 @@ export const AuthProvider = ({ children }) => {
       const RETRY_DELAY = 300;
       let userDetails;
       let lastError;
-
+      console.log(userDataForBackend)
       for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
         try {
           const { data } = await axios.get(
