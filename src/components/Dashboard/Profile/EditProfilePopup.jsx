@@ -7,19 +7,41 @@ import { uploadToCloudinary } from '../../../components/Cloudinary/Services/uplo
 
 const EditProfilePopup = ({ onCancel, initialData }) => {
     const { updateProfile } = useAuth();
+
+    // Normalizamos los datos iniciales
+    const normalizeProfilePicture = (profilePicture) => {
+        if (!profilePicture) {
+            return {
+                file: null,
+                url: null,
+                name: '',
+                uploading: false,
+                uploaded: false,
+                error: null
+            };
+        }
+
+        if (typeof profilePicture === 'string') {
+            return {
+                file: null,
+                url: profilePicture,
+                name: '',
+                uploading: false,
+                uploaded: true,
+                error: null
+            };
+        }
+
+        return profilePicture;
+    };
+
     const [formData, setFormData] = useState({
         phone: initialData.phone || '',
         email: initialData.email || '',
-        comuna: initialData.commune || '',
-        profileImage: initialData.profileImage || {
-            file: null,
-            url: null,
-            name: '',
-            uploading: false,
-            uploaded: false,
-            error: null
-        }
+        commune: initialData.commune || '',
+        profilePicture: normalizeProfilePicture(initialData.profilePicture)
     });
+
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -32,11 +54,14 @@ const EditProfilePopup = ({ onCancel, initialData }) => {
         const file = event.target.files[0];
         if (!file) return;
 
+        // Creamos una URL temporal para mostrar la imagen seleccionada
+        const previewUrl = URL.createObjectURL(file);
+
         setFormData(prev => ({
             ...prev,
-            profileImage: {
+            profilePicture: {
                 file: file,
-                url: null,
+                url: previewUrl, // Mostramos preview inmediato
                 name: file.name,
                 uploading: true,
                 uploaded: false,
@@ -46,22 +71,30 @@ const EditProfilePopup = ({ onCancel, initialData }) => {
 
         try {
             const result = await uploadToCloudinary(file);
+
+            // Liberamos la URL temporal
+            URL.revokeObjectURL(previewUrl);
+
             setFormData(prev => ({
                 ...prev,
-                profileImage: {
+                profilePicture: {
                     file: null,
-                    url: result.url,
+                    url: result.url, // URL permanente de Cloudinary
                     name: file.name,
                     uploading: false,
                     uploaded: true,
                     error: null
                 }
             }));
-        } catch {
+        } catch (error) {
+            // Liberamos la URL temporal en caso de error
+            URL.revokeObjectURL(previewUrl);
+
             setFormData(prev => ({
                 ...prev,
-                profileImage: {
-                    ...prev.profileImage,
+                profilePicture: {
+                    ...prev.profilePicture,
+                    url: null, // Eliminamos el preview
                     uploading: false,
                     uploaded: false,
                     error: 'Error al subir la imagen'
@@ -70,10 +103,11 @@ const EditProfilePopup = ({ onCancel, initialData }) => {
         }
     };
 
+
     const validateForm = () => {
         const phoneRegex = /^\+\d{10,15}$/;
 
-        if (!formData.phone.trim() || !formData.comuna.trim()) {
+        if (!formData.phone.trim() || !formData.commune.trim()) {
             setError('Todos los campos son obligatorios');
             return false;
         }
@@ -96,8 +130,8 @@ const EditProfilePopup = ({ onCancel, initialData }) => {
         try {
             const dataToSend = {
                 phone: formData.phone,
-                commune: formData.comuna,
-                ...(formData.profileImage.url && { profilePicture: formData.profileImage.url })
+                commune: formData.commune,
+                ...(formData.profilePicture.url && { profilePicture: formData.profilePicture.url })
             };
 
             const result = await updateProfile(dataToSend);
@@ -128,11 +162,15 @@ const EditProfilePopup = ({ onCancel, initialData }) => {
                 {/* Foto de perfil */}
                 <div className="flex flex-col items-center mb-4">
                     <div className="w-24 h-24 rounded-full bg-gray-200 mb-2 overflow-hidden">
-                        {formData.profileImage.url ? (
+                        {formData.profilePicture.url ? (
                             <img
-                                src={formData.profileImage.url}
+                                src={formData.profilePicture.url}
                                 alt="Foto de perfil"
                                 className="w-full h-full object-cover"
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = ''; // Manejo de error si la imagen no carga
+                                }}
                             />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -152,11 +190,11 @@ const EditProfilePopup = ({ onCancel, initialData }) => {
                             <FiPaperclip className="mr-1" />
                             Cambiar foto
                         </label>
-                        {formData.profileImage.uploading && (
+                        {formData.profilePicture.uploading && (
                             <p className="text-xs text-yellow-600 absolute -bottom-5 left-0 right-0 text-center">Subiendo...</p>
                         )}
-                        {formData.profileImage.error && (
-                            <p className="text-xs text-red-600 absolute -bottom-5 left-0 right-0 text-center">{formData.profileImage.error}</p>
+                        {formData.profilePicture.error && (
+                            <p className="text-xs text-red-600 absolute -bottom-5 left-0 right-0 text-center">{formData.profilePicture.error}</p>
                         )}
                     </div>
                 </div>
@@ -181,8 +219,8 @@ const EditProfilePopup = ({ onCancel, initialData }) => {
                             <label className="block text-sm font-medium text-gray-700 mb-1">Comuna</label>
                             <input
                                 type="text"
-                                name="comuna"
-                                value={formData.comuna}
+                                name="commune"
+                                value={formData.commune}
                                 onChange={handleInputChange}
                                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#714dbf] focus:border-[#714dbf]"
                                 placeholder="Ingresa tu comuna"
@@ -233,8 +271,8 @@ EditProfilePopup.propTypes = {
     initialData: PropTypes.shape({
         phone: PropTypes.string,
         email: PropTypes.string,
-        comuna: PropTypes.string,
-        profileImage: PropTypes.oneOfType([
+        commune: PropTypes.string,
+        profilePicture: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.shape({
                 url: PropTypes.string,
@@ -251,8 +289,8 @@ EditProfilePopup.defaultProps = {
     initialData: {
         phone: '',
         email: '',
-        comuna: '',
-        profileImage: '',
+        commune: '',
+        profilePicture: '',
     },
 };
 

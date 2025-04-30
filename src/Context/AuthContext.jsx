@@ -263,7 +263,7 @@ export const AuthProvider = ({ children }) => {
       const userDataForBackend = {
         ...userData,
         uid: user.uid,
-        validUser: true,
+        validUser: true
       };
 
       await axios.post('http://[::1]:3001/users', userDataForBackend, {
@@ -276,7 +276,7 @@ export const AuthProvider = ({ children }) => {
       const RETRY_DELAY = 300;
       let userDetails;
       let lastError;
-
+      console.log(userDataForBackend)
       for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
         try {
           const { data } = await axios.get(
@@ -327,86 +327,167 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Función de registro para clientes
-  const registerClient = async (email, password, userData) => {
-    try {
-      setLoading(true);
+  // // Función de registro para clientes
+  // const registerClient = async (email, password, userData) => {
+  //   try {
+  //     setLoading(true);
 
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = userCredential.user;
-      const token = await user.getIdToken();
+  //     const userCredential = await createUserWithEmailAndPassword(
+  //       auth,
+  //       email,
+  //       password
+  //     );
+  //     const user = userCredential.user;
+  //     const token = await user.getIdToken();
 
-      const userDataForBackend = {
-        ...userData,
-        uid: user.uid,
-        validUser: true,
-      };
+  //     const userDataForBackend = {
+  //       ...userData,
+  //       uid: user.uid,
+  //       validUser: true,
+  //     };
 
-      await axios.post('http://[::1]:3001/clients', userDataForBackend, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  //     await axios.post('http://[::1]:3001/clients', userDataForBackend, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
 
-      const MAX_ATTEMPTS = 3;
-      const RETRY_DELAY = 300;
-      let userDetails;
-      let lastError;
+  //     const MAX_ATTEMPTS = 3;
+  //     const RETRY_DELAY = 300;
+  //     let userDetails;
+  //     let lastError;
 
-      for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-        try {
-          const { data } = await axios.get(
-            `http://[::1]:3001/clients/${user.uid}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
+  //     for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+  //       try {
+  //         const { data } = await axios.get(
+  //           `http://[::1]:3001/clients/${user.uid}`,
+  //           {
+  //             headers: {
+  //               Authorization: `Bearer ${token}`,
+  //             },
+  //           }
+  //         );
+  //         userDetails = data;
+  //         break;
+  //       } catch (err) {
+  //         lastError = err;
+  //         if (attempt < MAX_ATTEMPTS - 1) {
+  //           await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
+  //         }
+  //       }
+  //     }
+
+  //     if (!userDetails) {
+  //       throw (
+  //         lastError || new Error('No se pudieron obtener los datos del usuario')
+  //       );
+  //     }
+
+  //     setUser(user);
+  //     setUserData(userDetails);
+  //     localStorage.setItem('user', JSON.stringify(user));
+  //     localStorage.setItem('userData', JSON.stringify(userDetails));
+
+  //     navigate('/client/home');
+  //     return { success: true, user: userDetails };
+  //   } catch (err) {
+  //     console.error('Error en el registro:', err);
+
+  //     if (auth.currentUser) {
+  //       try {
+  //         await deleteUser(auth.currentUser);
+  //       } catch (deleteErr) {
+  //         console.error('Error al limpiar usuario:', deleteErr);
+  //       }
+  //     }
+
+  //     throw err;
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+    // Función de registro
+    const registerClient = async (email, password, userData) => {
+      try {
+        setLoading(true);
+  
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        const user = userCredential.user;
+        const token = await user.getIdToken();
+  
+        const userDataForBackend = {
+          ...userData,
+          uid: user.uid,
+          validUser: true,
+          role: 'client'
+        };
+  
+        await axios.post('http://[::1]:3001/users', userDataForBackend, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        const MAX_ATTEMPTS = 3;
+        const RETRY_DELAY = 300;
+        let userDetails;
+        let lastError;
+        console.log(userDataForBackend)
+        for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+          try {
+            const { data } = await axios.get(
+              `http://[::1]:3001/users/${user.uid}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+            userDetails = data;
+            break;
+          } catch (err) {
+            lastError = err;
+            if (attempt < MAX_ATTEMPTS - 1) {
+              await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
             }
-          );
-          userDetails = data;
-          break;
-        } catch (err) {
-          lastError = err;
-          if (attempt < MAX_ATTEMPTS - 1) {
-            await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
           }
         }
-      }
-
-      if (!userDetails) {
-        throw (
-          lastError || new Error('No se pudieron obtener los datos del usuario')
-        );
-      }
-
-      setUser(user);
-      setUserData(userDetails);
-      localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('userData', JSON.stringify(userDetails));
-
-      navigate('/client/home');
-      return { success: true, user: userDetails };
-    } catch (err) {
-      console.error('Error en el registro:', err);
-
-      if (auth.currentUser) {
-        try {
-          await deleteUser(auth.currentUser);
-        } catch (deleteErr) {
-          console.error('Error al limpiar usuario:', deleteErr);
+  
+        if (!userDetails) {
+          throw (
+            lastError || new Error('No se pudieron obtener los datos del usuario')
+          );
         }
+  
+        setUser(user);
+        setUserData(userDetails);
+        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('userData', JSON.stringify(userDetails));
+  
+        navigate('/home');
+        return { success: true, user: userDetails };
+      } catch (err) {
+        console.error('Error en el registro:', err);
+  
+        if (auth.currentUser) {
+          try {
+            await deleteUser(auth.currentUser);
+          } catch (deleteErr) {
+            console.error('Error al limpiar usuario:', deleteErr);
+          }
+        }
+  
+        throw err;
+      } finally {
+        setLoading(false);
       }
-
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
+    };
+  
 
   const updateUser = async (formData, options = { showLoading: true }) => {
     try {

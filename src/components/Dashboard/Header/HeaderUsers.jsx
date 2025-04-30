@@ -29,9 +29,8 @@ const HeaderUsers = () => {
                 Notificaciones
               </h2>
               <ul>
-                <li className="py-2 border-b border-gray-200">Notificación 1</li>
-                <li className="py-2 border-b border-gray-200">Notificación 2</li>
-                <li className="py-2">Notificación 3</li>
+                <li className="py-2 border-b border-gray-200"><strong>¡Bienvenido a LiLi! </strong>Completa el formulario. Serás notificado cuando tu cuenta sea arpobada.</li>
+                <li className="py-2 border-b border-gray-200"><strong>¡Tu cuenta ha sido aprobada! </strong>Ya puedes aceptar trabajos.</li>
               </ul>
             </div>
           </div>

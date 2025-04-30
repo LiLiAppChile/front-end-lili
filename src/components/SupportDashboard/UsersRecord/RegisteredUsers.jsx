@@ -14,7 +14,7 @@ const RegisteredUsers = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
-    const [filterStatus, setFilterStatus] = useState('aprobado');
+    const [filterStatus, setFilterStatus] = useState('accepted');
     const [currentPage, setCurrentPage] = useState(1);
     const usersPerPage = 8;
 
@@ -29,7 +29,7 @@ const RegisteredUsers = () => {
                     name: user.name || 'Sin nombre',
                     rut: user.rut || 'Sin RUT',
                     specialties: user.specialties || [],
-                    estado: user.validUser ? 'aprobado' : 'rechazado',
+                    estado: user.status || 'rejected',
                     email: user.email || '',
                     phone: user.phone || ''
                 }));
@@ -52,7 +52,7 @@ const RegisteredUsers = () => {
             (user.rut && user.rut.toLowerCase().includes(term)) ||
             (user.specialties && user.specialties.some(s => s.toLowerCase().includes(term)))
         );
-        const matchesStatus = filterStatus === 'todos' || user.estado === filterStatus;
+        const matchesStatus = filterStatus === 'all' || user.estado === filterStatus;
         return matchesSearch && matchesStatus;
     });
 
@@ -101,10 +101,10 @@ const RegisteredUsers = () => {
                         onChange={(e) => setFilterStatus(e.target.value)}
                         className='w-full rounded-md p-2 text-sm border border-gray-300'
                     >
-                        <option value='todos'>Ver todos</option>
-                        <option value='aprobado'>Aprobados</option>
-                        <option value='pendiente'>Pendientes</option>
-                        <option value='rechazado'>Rechazados</option>
+                        <option value='all'>Ver todos</option>
+                        <option value='accepted'>Aprobados</option>
+                        <option value='pending'>Pendientes</option>
+                        <option value='rejected'>Rechazados</option>
                     </select>
 
                     <div className='relative'>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../../Context/AuthContext';
 import {
   HomeIcon as HomeIconSolid,
   UserIcon as UserIconSolid,
@@ -18,19 +19,30 @@ import {
 const BottomMenu = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { userData } = useAuth();
   const [activeIcon, setActiveIcon] = useState(location.pathname);
 
+  const hasFullAccess = userData?.formSubmitted && userData?.status === 'accepted';
+
   const handleNavigation = (path) => {
+    if ((path === '/requests' || path === '/history' || path === '/calendar') && !hasFullAccess) {
+      return;
+    }
     navigate(path);
     setActiveIcon(path);
+  };
+
+  const isButtonDisabled = (path) => {
+    return (path === '/requests' || path === '/history' || path === '/calendar') && !hasFullAccess;
   };
 
   return (
     <div className="bottom-menu bg-[#714dbf] w-full fixed bottom-0 z-50 rounded-t-xl">
       <div className="flex justify-around items-center py-2">
         <button
-          className="icons-menu flex flex-col items-center w-full h-10"
+          className={`icons-menu flex flex-col items-center w-full h-10 ${isButtonDisabled('/home') ? 'opacity-50' : ''}`}
           onClick={() => handleNavigation('/home')}
+          disabled={isButtonDisabled('/home')}
         >
           <div className="h-5 w-5 flex items-center justify-center">
             {activeIcon === '/home' ? (
@@ -43,42 +55,45 @@ const BottomMenu = () => {
         </button>
 
         <button
-          className="icons-menu flex flex-col items-center w-full h-10"
+          className={`icons-menu flex flex-col items-center w-full h-10 ${!hasFullAccess ? 'opacity-50' : ''}`}
           onClick={() => handleNavigation('/requests')}
+          disabled={!hasFullAccess}
         >
           <div className="h-5 w-5 flex items-center justify-center">
             {activeIcon === '/requests' ? (
-              <img src="./src/assets/checkboxSolid.png" alt="checkboxSolid" className="h-5 w-5 object-contain" />
+              <img src="./src/assets/trabajosSolid.png" alt="trabajosSolid" className="h-5 w-5 object-contain" />
             ) : (
-              <img src="./src/assets/checkboxWhite.png" alt="checkboxSolid" className="h-5 w-5 object-contain" />
+              <img src="./src/assets/trabajos.png" alt="trabajosIcon" className={`h-5 w-5 object-contain ${!hasFullAccess ? 'opacity-50' : ''}`} />
             )}
           </div>
           {activeIcon === '/requests' && <div className="h-0.5 w-6 bg-white mt-1"></div>}
         </button>
 
         <button
-          className="icons-menu flex flex-col items-center w-full h-10"
+          className={`icons-menu flex flex-col items-center w-full h-10 ${!hasFullAccess ? 'opacity-50' : ''}`}
           onClick={() => handleNavigation('/history')}
+          disabled={!hasFullAccess}
         >
           <div className="h-6 w-6 flex items-center justify-center">
             {activeIcon === '/history' ? (
-              <BookOpenIconSolid className="h-full w-full text-white" />
+              <BookOpenIconSolid className={`h-full w-full ${!hasFullAccess ? 'text-gray-300' : 'text-white'}`} />
             ) : (
-              <BookOpenIconOutline className="h-full w-full text-white" />
+              <BookOpenIconOutline className={`h-full w-full ${!hasFullAccess ? 'text-gray-300' : 'text-white'}`} />
             )}
           </div>
           {activeIcon === '/history' && <div className="h-0.5 w-6 bg-white mt-1"></div>}
         </button>
 
         <button
-          className="icons-menu flex flex-col items-center w-full h-10"
+          className={`icons-menu flex flex-col items-center w-full h-10 ${!hasFullAccess ? 'opacity-50' : ''}`}
           onClick={() => handleNavigation('/calendar')}
+          disabled={!hasFullAccess}
         >
           <div className="h-6 w-6 flex items-center justify-center">
             {activeIcon === '/calendar' ? (
-              <CalendarIconSolid className="h-full w-full text-white" />
+              <CalendarIconSolid className={`h-full w-full ${!hasFullAccess ? 'text-gray-300' : 'text-white'}`} />
             ) : (
-              <CalendarIconOutline className="h-full w-full text-white" />
+              <CalendarIconOutline className={`h-full w-full ${!hasFullAccess ? 'text-gray-300' : 'text-white'}`} />
             )}
           </div>
           {activeIcon === '/calendar' && <div className="h-0.5 w-6 bg-white mt-1"></div>}

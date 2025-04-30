@@ -39,7 +39,7 @@ const getIconDetails = (type, value) => {
                 case "paid":
                     return { icon: Icons.paid };
                 case "accepted":
-                    return { icon: Icons.acceppted };
+                    return { icon: Icons.accepted };
                 case "canceled":
                     return { icon: Icons.canceled };
                 default:
@@ -54,7 +54,7 @@ const HistoryItem = ({ item }) => {
     const navigate = useNavigate();
     const handleItemClick = (id) => {
         console.log(`Navigating to details for item ${id}`);
-        navigate(`/historial/detalle/${id}`); // Navega a la ruta de detalle con el ID
+        navigate(`/history/detail/${id}`); // Navega a la ruta de detalle con el ID
     };
 
     const typeDetails = getIconDetails("especialidad", item.especialidad);

@@ -18,7 +18,7 @@ const PaymentHistoryItem = ({ item }) => {
     // Navegar a la vista de detalle (que ahora mostrará info del trabajo/pago)
     const handleItemClick = (id) => {
         console.log(`Navigating to details for payment/job ${id}`);
-        navigate(`/historial/detalle/${id}`); // Usamos la misma ruta de detalle
+        navigate(`/history/detail/${id}`); // Usamos la misma ruta de detalle
     };
 
     return (
