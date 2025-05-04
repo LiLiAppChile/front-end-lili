@@ -7,6 +7,7 @@ import { getAuth } from 'firebase/auth';
 Modal.setAppElement('#root');
 
 const auth = getAuth();
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Requests = () => {
   const {
@@ -196,7 +197,7 @@ const Requests = () => {
         }
 
         const response = await fetch(
-          `http://localhost:3001/pedidos/${order.id || order._id}/tomar`,
+          `${API_URL}/pedidos/${order.id || order._id}/tomar`,
           {
             method: 'PATCH',
             headers: {
@@ -336,7 +337,7 @@ const Requests = () => {
         }
 
         const response = await fetch(
-          `http://localhost:3001/pedidos/${order.id || order._id}/desmarcar`,
+          `${API_URL}/pedidos/${order.id || order._id}/desmarcar`,
           {
             method: 'PATCH',
             headers: {
@@ -448,11 +449,11 @@ const Requests = () => {
   const filteredOrders =
     tabActivo === 'pendientes'
       ? orders.filter((order) =>
-          order.nombreCliente?.toLowerCase().includes(search.toLowerCase())
-        )
+        order.nombreCliente?.toLowerCase().includes(search.toLowerCase())
+      )
       : acceptedOrders.filter((order) =>
-          order.nombreCliente?.toLowerCase().includes(search.toLowerCase())
-        );
+        order.nombreCliente?.toLowerCase().includes(search.toLowerCase())
+      );
 
   const indexOfLastOrder = currentPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
@@ -485,21 +486,19 @@ const Requests = () => {
         {/* Pestañas */}
         <div className='flex justify-between border-b'>
           <button
-            className={`flex-1 py-3 text-center ${
-              tabActivo === 'aceptadas'
-                ? 'text-purple-600 font-medium border-b-2 border-purple-600'
-                : 'text-gray-700'
-            }`}
+            className={`flex-1 py-3 text-center ${tabActivo === 'aceptadas'
+              ? 'text-purple-600 font-medium border-b-2 border-purple-600'
+              : 'text-gray-700'
+              }`}
             onClick={() => setTabActivo('aceptadas')}
           >
             Aceptados
           </button>
           <button
-            className={`flex-1 py-3 text-center ${
-              tabActivo === 'pendientes'
-                ? 'text-purple-600 font-medium border-b-2 border-purple-600'
-                : 'text-gray-700'
-            }`}
+            className={`flex-1 py-3 text-center ${tabActivo === 'pendientes'
+              ? 'text-purple-600 font-medium border-b-2 border-purple-600'
+              : 'text-gray-700'
+              }`}
             onClick={() => setTabActivo('pendientes')}
           >
             Solicitudes
@@ -539,9 +538,8 @@ const Requests = () => {
                     {currentOrders.map((order, index) => (
                       <tr
                         key={order.id || order._id}
-                        className={`cursor-pointer ${
-                          index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
-                        } hover:bg-purple-100 transition`}
+                        className={`cursor-pointer ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                          } hover:bg-purple-100 transition`}
                         onClick={() => openModal(order)}
                       >
                         <td className='p-3 text-sm whitespace-nowrap'>
@@ -591,11 +589,10 @@ const Requests = () => {
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className={`px-3 py-1 mx-1 rounded-md ${
-                      currentPage === 1
-                        ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                        : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-                    }`}
+                    className={`px-3 py-1 mx-1 rounded-md ${currentPage === 1
+                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                      : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                      }`}
                   >
                     &laquo;
                   </button>
@@ -606,11 +603,10 @@ const Requests = () => {
                       <button
                         key={index + 1}
                         onClick={() => handlePageChange(index + 1)}
-                        className={`px-3 py-1 mx-1 rounded-md ${
-                          currentPage === index + 1
-                            ? 'bg-purple-600 text-white'
-                            : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-                        }`}
+                        className={`px-3 py-1 mx-1 rounded-md ${currentPage === index + 1
+                          ? 'bg-purple-600 text-white'
+                          : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                          }`}
                       >
                         {index + 1}
                       </button>
@@ -621,11 +617,10 @@ const Requests = () => {
                       {/* Primera página siempre visible */}
                       <button
                         onClick={() => handlePageChange(1)}
-                        className={`px-3 py-1 mx-1 rounded-md ${
-                          currentPage === 1
-                            ? 'bg-purple-600 text-white'
-                            : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-                        }`}
+                        className={`px-3 py-1 mx-1 rounded-md ${currentPage === 1
+                          ? 'bg-purple-600 text-white'
+                          : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                          }`}
                       >
                         1
                       </button>
@@ -642,11 +637,10 @@ const Requests = () => {
                               <button
                                 key={pageNum}
                                 onClick={() => handlePageChange(pageNum)}
-                                className={`px-3 py-1 mx-1 rounded-md ${
-                                  currentPage === pageNum
-                                    ? 'bg-purple-600 text-white'
-                                    : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-                                }`}
+                                className={`px-3 py-1 mx-1 rounded-md ${currentPage === pageNum
+                                  ? 'bg-purple-600 text-white'
+                                  : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                                  }`}
                               >
                                 {pageNum}
                               </button>
@@ -664,11 +658,10 @@ const Requests = () => {
                       {/* Última página siempre visible */}
                       <button
                         onClick={() => handlePageChange(totalPages)}
-                        className={`px-3 py-1 mx-1 rounded-md ${
-                          currentPage === totalPages
-                            ? 'bg-purple-600 text-white'
-                            : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-                        }`}
+                        className={`px-3 py-1 mx-1 rounded-md ${currentPage === totalPages
+                          ? 'bg-purple-600 text-white'
+                          : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                          }`}
                       >
                         {totalPages}
                       </button>
@@ -678,11 +671,10 @@ const Requests = () => {
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className={`px-3 py-1 mx-1 rounded-md ${
-                      currentPage === totalPages
-                        ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                        : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-                    }`}
+                    className={`px-3 py-1 mx-1 rounded-md ${currentPage === totalPages
+                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                      : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                      }`}
                   >
                     &raquo;
                   </button>
@@ -758,8 +750,8 @@ const Requests = () => {
                     <p>
                       {selectedOrder.fechaCreacion
                         ? new Date(
-                            selectedOrder.fechaCreacion
-                          ).toLocaleDateString()
+                          selectedOrder.fechaCreacion
+                        ).toLocaleDateString()
                         : 'No disponible'}
                     </p>
 
@@ -826,7 +818,7 @@ const Requests = () => {
                     <p className='font-bold mb-2'>Imágenes:</p>
                     <div className='flex space-x-2 overflow-x-auto pb-2'>
                       {selectedOrder.productos &&
-                      selectedOrder.productos.length > 0 ? (
+                        selectedOrder.productos.length > 0 ? (
                         selectedOrder.productos.map((producto, index) => (
                           <div
                             key={index}
@@ -893,11 +885,10 @@ const Requests = () => {
                       );
                       setConfirmModalOpen(true);
                     }}
-                    className={`flex-1 py-4 text-center border-2 border-orange-700 text-orange-700 rounded-lg font-bold ${
-                      loading || isProcessingAction
-                        ? 'opacity-50 cursor-not-allowed'
-                        : ''
-                    }`}
+                    className={`flex-1 py-4 text-center border-2 border-orange-700 text-orange-700 rounded-lg font-bold ${loading || isProcessingAction
+                      ? 'opacity-50 cursor-not-allowed'
+                      : ''
+                      }`}
                     disabled={loading || isProcessingAction}
                   >
                     {loading ? 'Procesando...' : 'Rechazar'}
@@ -913,11 +904,10 @@ const Requests = () => {
                       );
                       setConfirmModalOpen(true);
                     }}
-                    className={`flex-1 py-4 text-center border-2 border-orange-700 text-orange-700 rounded-lg font-bold ${
-                      loading || isProcessingAction
-                        ? 'opacity-50 cursor-not-allowed'
-                        : ''
-                    }`}
+                    className={`flex-1 py-4 text-center border-2 border-orange-700 text-orange-700 rounded-lg font-bold ${loading || isProcessingAction
+                      ? 'opacity-50 cursor-not-allowed'
+                      : ''
+                      }`}
                     disabled={loading || isProcessingAction}
                   >
                     {loading ? 'Procesando...' : 'Aceptar'}
@@ -955,11 +945,10 @@ const Requests = () => {
                     handleConfirmReject();
                   }
                 }}
-                className={`px-4 py-2 rounded-md text-white ${
-                  confirmActionType === 'accept'
-                    ? 'bg-green-500'
-                    : 'bg-orange-600'
-                }`}
+                className={`px-4 py-2 rounded-md text-white ${confirmActionType === 'accept'
+                  ? 'bg-green-500'
+                  : 'bg-orange-600'
+                  }`}
                 disabled={loading}
               >
                 {loading ? 'Procesando...' : 'Confirmar'}

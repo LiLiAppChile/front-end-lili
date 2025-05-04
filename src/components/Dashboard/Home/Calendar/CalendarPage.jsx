@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import BottomMenu from "../../BottomMenu/BottomMenu";
 
-const API_URL = "http://[::1]:3001/events";
+const API_URL = import.meta.env.VITE_API_BASE_URL + "/events";
 
 const diasSemana = ["L", "M", "X", "J", "V", "S", "D"];
 

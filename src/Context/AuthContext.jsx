@@ -18,6 +18,7 @@ import axios from 'axios';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 const AuthContext = createContext();
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -50,7 +51,7 @@ export const AuthProvider = ({ children }) => {
     async (uid) => {
       try {
         const token = await auth.currentUser?.getIdToken();
-        const response = await fetch(`http://[::1]:3001/users/${uid}`, {
+        const response = await fetch(`${API_URL}/users/${uid}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Cache-Control': 'no-cache',
@@ -80,7 +81,7 @@ export const AuthProvider = ({ children }) => {
       const token = await auth.currentUser?.getIdToken();
 
       const response = await axios.get(
-        `http://[::1]:3001/reviews?professionalId=${uid}`,
+        `${API_URL}/reviews?professionalId=${uid}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -114,7 +115,7 @@ export const AuthProvider = ({ children }) => {
       );
 
       const response = await axios.patch(
-        `http://[::1]:3001/users/${currentUser.uid}`,
+        `${API_URL}/users/${currentUser.uid}`,
         cleanedPayload,
         {
           headers: {
@@ -216,7 +217,7 @@ export const AuthProvider = ({ children }) => {
         validUser: true,
       };
 
-      await axios.post('http://[::1]:3001/users', userDataForBackend, {
+      await axios.post(`${API_URL}/users`, userDataForBackend, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -230,7 +231,7 @@ export const AuthProvider = ({ children }) => {
       for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
         try {
           const { data } = await axios.get(
-            `http://[::1]:3001/users/${user.uid}`,
+            `${API_URL}/users/${user.uid}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -326,7 +327,7 @@ export const AuthProvider = ({ children }) => {
       );
 
       const response = await axios.patch(
-        `http://[::1]:3001/users/${uid}`,
+        `${API_URL}/users/${uid}`,
         cleanedPayload,
         {
           headers: {
@@ -356,7 +357,7 @@ export const AuthProvider = ({ children }) => {
       const token = await currentUser?.getIdToken(true);
 
       const response = await axios.get(
-        'http://[::1]:3001/users?role=professional&formSubmitted=true',
+        `${API_URL}/users?role=professional&formSubmitted=true`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -376,7 +377,7 @@ export const AuthProvider = ({ children }) => {
       const currentUser = auth.currentUser;
       const token = await currentUser?.getIdToken(true);
 
-      const response = await axios.get('http://[::1]:3001/users', {
+      const response = await axios.get(`${API_URL}/users`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -395,7 +396,7 @@ export const AuthProvider = ({ children }) => {
       const token = await currentUser?.getIdToken(true);
 
       const response = await axios.get(
-        'http://[::1]:3001/users?role=professional&formSubmitted=false',
+        `${API_URL}/users?role=professional&formSubmitted=false`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -413,7 +414,7 @@ export const AuthProvider = ({ children }) => {
   const fetchUserDetails = useCallback(async (uid) => {
     try {
       const token = await auth.currentUser?.getIdToken();
-      const response = await fetch(`http://[::1]:3001/users/${uid}`, {
+      const response = await fetch(`${API_URL}/users/${uid}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Cache-Control': 'no-cache',
@@ -434,7 +435,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const token = await auth.currentUser?.getIdToken();
       const response = await axios.get(
-        `http://[::1]:3001/reviews?professionalId=${uid}`,
+        `${API_URL}/reviews?professionalId=${uid}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -458,7 +459,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const token = await auth.currentUser?.getIdToken();
       const response = await axios.patch(
-        `http://[::1]:3001/users/${uid}`,
+        `${API_URL}/users/${uid}`,
         { status },
         {
           headers: {
@@ -480,7 +481,7 @@ export const AuthProvider = ({ children }) => {
   const fetchOrders = async () => {
     try {
       const token = await auth.currentUser?.getIdToken();
-      const response = await fetch('http://localhost:3001/pedidos', {
+      const response = await fetch(`${API_URL}/pedidos`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -506,7 +507,7 @@ export const AuthProvider = ({ children }) => {
 
       // Importante: Usamos la ruta "/tomar" para que coincida con el backend
       const response = await fetch(
-        `http://localhost:3001/pedidos/${order.id || order._id}/tomar`,
+        `${API_URL}/pedidos/${order.id || order._id}/tomar`,
         {
           method: 'PATCH',
           headers: {
@@ -533,7 +534,7 @@ export const AuthProvider = ({ children }) => {
       const token = await auth.currentUser?.getIdToken();
       // Change from "/reject" to "/desmarcar" to match backend
       const response = await fetch(
-        `http://localhost:3001/pedidos/${order.id || order._id}/desmarcar`,
+        `${API_URL}/pedidos/${order.id || order._id}/desmarcar`,
         {
           method: 'PATCH',
           headers: {

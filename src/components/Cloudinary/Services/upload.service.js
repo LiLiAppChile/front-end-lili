@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://[::1]:3001';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const uploadToCloudinary = async (file, folder) => {
   const signatureResponse = await fetch(`${API_BASE_URL}/upload/signature?folder=${folder}`);
