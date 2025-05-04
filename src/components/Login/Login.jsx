@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import LogoCasa from "../../assets/Logo.png";
+import LogoCasa from "@/assets/logo.png";
 import { useAuth } from "../../Context/AuthContext";
 
 const Login = () => {
