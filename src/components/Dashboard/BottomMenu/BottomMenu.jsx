@@ -15,6 +15,10 @@ import {
   BookOpenIcon as BookOpenIconOutline,
   CalendarIcon as CalendarIconOutline,
 } from '@heroicons/react/24/outline';
+import LiLiIconHomeSolid from '@/assets/LiLiIconHomeWhite.png';
+import LiLiIconSolid from '@/assets/LiLiIconSolid.png';
+import trabajosSolid from '@/assets/trabajosSolid.png';
+import trabajosIcon from '@/assets/trabajos.png';
 
 const BottomMenu = () => {
   const navigate = useNavigate();
@@ -46,9 +50,9 @@ const BottomMenu = () => {
         >
           <div className="h-5 w-5 flex items-center justify-center">
             {activeIcon === '/home' ? (
-              <img src="./src/assets/LiLiIconSolid.png" alt="HomeIconWhite" className="h-5 w-5 object-contain" />
+              <img src={LiLiIconHomeSolid} alt="HomeIconWhite" className="h-5 w-5 object-contain" />
             ) : (
-              <img src="./src/assets/LiLiIconHomeWhite.png" alt="HomeIconWhiteSolid" className="h-5 w-5 object-contain" />
+              <img src={LiLiIconSolid} alt="HomeIconWhiteSolid" className="h-5 w-5 object-contain" />
             )}
           </div>
           {activeIcon === '/home' && <div className="h-0.5 w-6 bg-white mt-1"></div>}
@@ -61,9 +65,9 @@ const BottomMenu = () => {
         >
           <div className="h-5 w-5 flex items-center justify-center">
             {activeIcon === '/requests' ? (
-              <img src="./src/assets/trabajosSolid.png" alt="trabajosSolid" className="h-5 w-5 object-contain" />
+              <img src={trabajosSolid} alt="trabajosSolid" className="h-5 w-5 object-contain" />
             ) : (
-              <img src="./src/assets/trabajos.png" alt="trabajosIcon" className={`h-5 w-5 object-contain ${!hasFullAccess ? 'opacity-50' : ''}`} />
+              <img src={trabajosIcon} alt="trabajosIcon" className={`h-5 w-5 object-contain ${!hasFullAccess ? 'opacity-50' : ''}`} />
             )}
           </div>
           {activeIcon === '/requests' && <div className="h-0.5 w-6 bg-white mt-1"></div>}
