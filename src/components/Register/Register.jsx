@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../../Context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
-import LogoCasa from "../../assets/Logo.png";
+import LogoCasa from "@/assets/logo.png";
 import SuccessPopup from "./Succespopup";
 
 const RegisterPage = () => {
