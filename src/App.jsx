@@ -56,265 +56,58 @@ const App = () => {
   };
 
   return (
-    <div>
-      {showSplash ? (
-        <SplashScreen onFinish={() => setShowSplash(false)} />
-      ) : (
-        <AuthProvider>
-          <Routes>
-            {/* Rutas públicas */}
-            <Route path='/' element={<LandingPage />} />
-            <Route path='/login' element={<Login />} />
-            <Route path='/register' element={<RegisterPage />} />
+  <div>
+    {showSplash ? (
+      <SplashScreen onFinish={() => setShowSplash(false)} />
+    ) : (
+      <AuthProvider>
+        <Routes>
+          {/* Rutas públicas */}
+          <Route path='/' element={<LandingPage />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/register' element={<RegisterPage />} />
 
-            {/* Redirección automática según rol */}
-            <Route index element={<RoleRedirect />} />
-            <Route path='/redirect' element={<RoleRedirect />} />
+          {/* Redirección automática según rol */}
+          <Route index element={<RoleRedirect />} />
+          <Route path='/redirect' element={<RoleRedirect />} />
 
-            {/* Rutas de Professional */}
-            <Route
-              path='/home'
-              element={
-                <ProtectedRoute allowedRoles={['professional']}>
-                  <HomePage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/promotion1'
-              element={
-                <ProtectedRoute allowedRoles={['professional']}>
-                  <Promotion1 />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/history/detail/:id'
-              element={
-                <ProtectedRoute allowedRoles={['professional']}>
-                  <JobDetailPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/requests'
-              element={
-                <ProtectedRoute allowedRoles={['professional']}>
-                  <Requests />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/calendar'
-              element={
-                <ProtectedRoute allowedRoles={['professional']}>
-                  <CalendarPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/history'
-              element={
-                <ProtectedRoute allowedRoles={['professional']}>
-                  <HistoryPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/profile'
-              element={
-                <ProtectedRoute allowedRoles={['professional']}>
-                  <Profile />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/form'
-              element={
-                <ProtectedRoute allowedRoles={['professional']}>
-                  <Form />
-                </ProtectedRoute>
-              }
-            />
+          {/* Rutas de Professional */}
+          <Route path='/home' element={<ProtectedRoute allowedRoles={['professional']}><HomePage /></ProtectedRoute>} />
+          <Route path='/promotion1' element={<ProtectedRoute allowedRoles={['professional']}><Promotion1 /></ProtectedRoute>} />
+          <Route path='/history/detail/:id' element={<ProtectedRoute allowedRoles={['professional']}><JobDetailPage /></ProtectedRoute>} />
+          <Route path='/requests' element={<ProtectedRoute allowedRoles={['professional']}><Requests /></ProtectedRoute>} />
+          <Route path='/calendar' element={<ProtectedRoute allowedRoles={['professional']}><CalendarPage /></ProtectedRoute>} />
+          <Route path='/history' element={<ProtectedRoute allowedRoles={['professional']}><HistoryPage /></ProtectedRoute>} />
+          <Route path='/profile' element={<ProtectedRoute allowedRoles={['professional']}><Profile /></ProtectedRoute>} />
+          <Route path='/form' element={<ProtectedRoute allowedRoles={['professional']}><Form /></ProtectedRoute>} />
 
-            {/* Rutas de Admin */}
-            <Route
-              path='/admin/home'
-              element={
-                <ProtectedRoute allowedRoles={['admin']}>
-                  <HomePageSupport />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/admin/postulaciones'
-              element={
-                <ProtectedRoute allowedRoles={['admin']}>
-                  <SupportRequests />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/admin/postulaciones/detalles/:uid'
-              element={
-                <ProtectedRoute allowedRoles={['admin']}>
-                  <ProfessionalDetail />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/admin/presupuestos'
-              element={
-                <ProtectedRoute allowedRoles={['admin']}>
-                  <QuotesList />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/admin/users-record'
-              element={
-                <ProtectedRoute allowedRoles={['admin']}>
-                  <RegisteredUsers />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/admin/users-record/details/:uid'
-              element={
-                <ProtectedRoute allowedRoles={['admin']}>
-                  <UserProfileAdminView />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/admin/perfil'
-              element={
-                <ProtectedRoute allowedRoles={['admin']}>
-                  <SupportProfile />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/admin/perfil/settings'
-              element={
-                <ProtectedRoute allowedRoles={['admin']}>
-                  <SettingsPage />
-                </ProtectedRoute>
-              }
-            />
+          {/* Rutas de Admin */}
+          <Route path='/admin/home' element={<ProtectedRoute allowedRoles={['admin']}><HomePageSupport /></ProtectedRoute>} />
+          <Route path='/admin/postulaciones' element={<ProtectedRoute allowedRoles={['admin']}><SupportRequests /></ProtectedRoute>} />
+          <Route path='/admin/postulaciones/detalles/:uid' element={<ProtectedRoute allowedRoles={['admin']}><ProfessionalDetail /></ProtectedRoute>} />
+          <Route path='/admin/presupuestos' element={<ProtectedRoute allowedRoles={['admin']}><QuotesList /></ProtectedRoute>} />
+          <Route path='/admin/users-record' element={<ProtectedRoute allowedRoles={['admin']}><RegisteredUsers /></ProtectedRoute>} />
+          <Route path='/admin/users-record/details/:uid' element={<ProtectedRoute allowedRoles={['admin']}><UserProfileAdminView /></ProtectedRoute>} />
+          <Route path='/admin/perfil' element={<ProtectedRoute allowedRoles={['admin']}><SupportProfile /></ProtectedRoute>} />
+          <Route path='/admin/perfil/settings' element={<ProtectedRoute allowedRoles={['admin']}><SettingsPage /></ProtectedRoute>} />
 
-            {/* Rutas compartidas */}
-            <Route
-              path='/settings'
-              element={
-                <ProtectedRoute
-                  allowedRoles={['admin', 'professional', 'client']}
-                >
-                  <SettingsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/laboral-info'
-              element={
-                <ProtectedRoute allowedRoles={['professional']}>
-                  <LaboralInfo />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/bank-info'
-              element={
-                <ProtectedRoute allowedRoles={['professional']}>
-                  <BankInfo />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/about-lili'
-              element={
-                <ProtectedRoute
-                  allowedRoles={['admin', 'professional', 'client']}
-                >
-                  <AboutLili />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/how-it-works'
-              element={
-                <ProtectedRoute
-                  allowedRoles={['admin', 'professional', 'client']}
-                >
-                  <HowItWorks />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/guarantees'
-              element={
-                <ProtectedRoute
-                  allowedRoles={['admin', 'professional', 'client']}
-                >
-                  <Guarantees />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/contact-support'
-              element={
-                <ProtectedRoute
-                  allowedRoles={['admin', 'professional', 'client']}
-                >
-                  <ContactSupport />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/terms'
-              element={
-                <ProtectedRoute
-                  allowedRoles={['admin', 'professional', 'client']}
-                >
-                  <Terms />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/refund-policy'
-              element={
-                <ProtectedRoute
-                  allowedRoles={['admin', 'professional', 'client']}
-                >
-                  <RefundPolicy />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/privacy-policy'
-              element={
-                <ProtectedRoute
-                  allowedRoles={['admin', 'professional', 'client']}
-                >
-                  <PrivacyPolicy />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/contact'
-              element={
-                <ProtectedRoute
-                  allowedRoles={['admin', 'professional', 'client']}
-                >
-                  <Contact />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </AuthProvider>
-      )}
-    </div>
-  );
+          {/* Rutas compartidas */}
+          <Route path='/settings' element={<ProtectedRoute allowedRoles={['admin', 'professional', 'client']}><SettingsPage /></ProtectedRoute>} />
+          <Route path='/laboral-info' element={<ProtectedRoute allowedRoles={['professional']}><LaboralInfo /></ProtectedRoute>} />
+          <Route path='/bank-info' element={<ProtectedRoute allowedRoles={['professional']}><BankInfo /></ProtectedRoute>} />
+          <Route path='/about-lili' element={<ProtectedRoute allowedRoles={['admin', 'professional', 'client']}><AboutLili /></ProtectedRoute>} />
+          <Route path='/how-it-works' element={<ProtectedRoute allowedRoles={['admin', 'professional', 'client']}><HowItWorks /></ProtectedRoute>} />
+          <Route path='/guarantees' element={<ProtectedRoute allowedRoles={['admin', 'professional', 'client']}><Guarantees /></ProtectedRoute>} />
+          <Route path='/contact-support' element={<ProtectedRoute allowedRoles={['admin', 'professional', 'client']}><ContactSupport /></ProtectedRoute>} />
+          <Route path='/terms' element={<ProtectedRoute allowedRoles={['admin', 'professional', 'client']}><Terms /></ProtectedRoute>} />
+          <Route path='/refund-policy' element={<ProtectedRoute allowedRoles={['admin', 'professional', 'client']}><RefundPolicy /></ProtectedRoute>} />
+          <Route path='/privacy-policy' element={<ProtectedRoute allowedRoles={['admin', 'professional', 'client']}><PrivacyPolicy /></ProtectedRoute>} />
+          <Route path='/contact' element={<ProtectedRoute allowedRoles={['admin', 'professional', 'client']}><Contact /></ProtectedRoute>} />
+        </Routes>
+      </AuthProvider>
+    )}
+  </div>
+);
 };
 
 export default App;
