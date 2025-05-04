@@ -213,7 +213,7 @@ export const AuthProvider = ({ children }) => {
       const userDataForBackend = {
         ...userData,
         uid: user.uid,
-        validUser: true
+        validUser: true,
       };
 
       await axios.post('http://[::1]:3001/users', userDataForBackend, {
@@ -226,7 +226,7 @@ export const AuthProvider = ({ children }) => {
       const RETRY_DELAY = 300;
       let userDetails;
       let lastError;
-      console.log(userDataForBackend)
+      console.log(userDataForBackend);
       for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
         try {
           const { data } = await axios.get(
@@ -504,7 +504,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const token = await auth.currentUser?.getIdToken();
 
-      // Importante: Cambié la URL de "/accept" a "/tomar" para que coincida con el backend
+      // Importante: Usamos la ruta "/tomar" para que coincida con el backend
       const response = await fetch(
         `http://localhost:3001/pedidos/${order.id || order._id}/tomar`,
         {
