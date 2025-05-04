@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import SplashScreen from "./components/SplashScreen/SplashScreen";
 import LandingPage from "./components/LandingPage/LandingPage";
 import RegisterPage from "./components/Register/Register";
