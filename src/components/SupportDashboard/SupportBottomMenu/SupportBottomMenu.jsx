@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import LiLiIconHomeWhite from "@/assets/LiLiIconHomeWhite.png";
 import LiLiIconSolid from "@/assets/LiLiIconSolid.png";
 import checkboxSolid from "@/assets/checkboxSolid.png";
-import checkboxWhite from "@/assets/checkboxWhite.png";
+import checkboxWhite from "@/assets/checkBoxWhite.png";
 import Presupuestos from "@/assets/Presupuestos.png";
 import PresupuestosSolid from "@/assets/PresupuestosSolid.png";
 import IdCardIcon from "@/assets/IdCardIcon.png";
