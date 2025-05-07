@@ -7,6 +7,7 @@ import { getAuth } from 'firebase/auth';
 Modal.setAppElement('#root');
 
 const auth = getAuth();
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Requests = () => {
   const {
@@ -34,11 +35,20 @@ const Requests = () => {
   const [confirmActionType, setConfirmActionType] = useState(null);
   const [confirmMessage, setConfirmMessage] = useState('');
 
-  // Funciones de utilidad
   const formatHour = (timestamp) => {
-    if (!timestamp) return 'Hora no disponible';
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (!timestamp) return 'No disponible';
+    try {
+      const date = new Date(timestamp);
+      // Verificar si la fecha es válida
+      if (isNaN(date.getTime())) return 'No disponible';
+      return date.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    } catch (error) {
+      console.error('Error al formatear hora:', error);
+      return 'No disponible';
+    }
   };
 
   const getImageForCategory = (category) => {
@@ -102,11 +112,14 @@ const Requests = () => {
         setError(null);
 
         const data = await fetchOrders();
+        const currentUserUid = auth.currentUser?.uid;
 
         // Filtrar por el valor de "tomado"
         const pendingOrders = data.filter((order) => order.tomado === 'no');
+
+        // Filtrar pedidos aceptados para que solo aparezcan los del usuario actual
         const acceptedOrdersList = data.filter(
-          (order) => order.tomado === 'si'
+          (order) => order.tomado === 'si' && order.userId === currentUserUid
         );
 
         setOrders(pendingOrders);
@@ -121,7 +134,6 @@ const Requests = () => {
     loadOrders();
   }, [fetchOrders]);
 
-  // Actualización en la función handleAcceptOrder: reemplazar el punto final de la API
   const handleAcceptOrder = async (order) => {
     try {
       // 1. Primera pantalla de carga del programa
@@ -131,35 +143,43 @@ const Requests = () => {
       // 2. Cierra el modal inmediatamente
       closeModal();
 
-      // Check
       if (order.tomado === 'si') {
-        // El pedido ya fue aceptado, actualizar la interfaz de usuario y cambio de pestaña
         console.log('La orden ya estaba marcada como tomada');
 
-        // Asegúrese de que se elimine de pendientes y se agregue a aceptados.
-        setOrders(
-          orders.filter((o) => (o.id || o._id) !== (order.id || order._id))
-        );
+        // Verificar si la orden pertenece al usuario actual
+        const currentUserUid = auth.currentUser?.uid;
+        if (order.userId === currentUserUid) {
+          // Asegurar de que se elimine de pendientes y se agregue a aceptados
+          setOrders(
+            orders.filter((o) => (o.id || o._id) !== (order.id || order._id))
+          );
 
-        if (
-          !acceptedOrders.some(
-            (o) => (o.id || o._id) === (order.id || order._id)
-          )
-        ) {
-          setAcceptedOrders([
-            { ...order, status: 'accepted', tomado: 'si' },
-            ...acceptedOrders,
-          ]);
-        }
+          if (
+            !acceptedOrders.some(
+              (o) => (o.id || o._id) === (order.id || order._id)
+            )
+          ) {
+            setAcceptedOrders([
+              { ...order, status: 'accepted', tomado: 'si' },
+              ...acceptedOrders,
+            ]);
+          }
 
-        // Cambiar a pesteña de aceptadas
-        setTimeout(() => {
-          setTabActivo('aceptadas');
+          // Cambiar a pestaña de aceptadas
+          setTimeout(() => {
+            setTabActivo('aceptadas');
+            setIsProcessingAction(false);
+            setLoading(false);
+          }, 1000);
+        } else {
+          // La orden está tomada por otro usuario
+          setError('Esta orden ya ha sido tomada por otro profesional');
           setIsProcessingAction(false);
           setLoading(false);
-        }, 1000);
+        }
         return;
       }
+
       // 3. Procesar la orden en segundo plano
       try {
         // Intentar primero con el método de contexto
@@ -177,7 +197,7 @@ const Requests = () => {
         }
 
         const response = await fetch(
-          `http://localhost:3001/pedidos/${order.id || order._id}/tomar`,
+          `${API_URL}/pedidos/${order.id || order._id}/tomar`,
           {
             method: 'PATCH',
             headers: {
@@ -195,7 +215,6 @@ const Requests = () => {
           try {
             const errorJson = JSON.parse(errorText);
             if (errorJson.message) {
-              // Esto probablemente sea el mensaje "ya tiene el campo tomado en sí"
               // Si indica que la orden ya está tomada, podemos continuar
               if (
                 errorJson.message.includes('ya tiene el campo "tomado" en "si"')
@@ -214,15 +233,41 @@ const Requests = () => {
         }
       }
 
-      // Preparar la orden actualizada
+      // Obtener el ID del usuario actual para asignarlo a la orden aceptada
+      const currentUserUid = auth.currentUser?.uid;
+
+      // Quitar de pedidos pendientes
       setOrders(
         orders.filter((o) => (o.id || o._id) !== (order.id || order._id))
       );
 
-      setAcceptedOrders([
-        { ...order, status: 'accepted', tomado: 'si' },
-        ...acceptedOrders,
-      ]);
+      // Preparar la orden actualizada con todos los datos necesarios
+      const updatedOrder = {
+        ...order,
+        status: 'accepted',
+        tomado: 'si',
+        userId: currentUserUid, // Asignar el ID del usuario actual
+      };
+
+      // Agregar a pedidos aceptados
+      setAcceptedOrders((prevAccepted) => {
+        // Evitar duplicados
+        const exists = prevAccepted.some(
+          (o) =>
+            (o.id || o._id) === updatedOrder.id ||
+            (o.id || o._id) === updatedOrder._id
+        );
+
+        if (exists) {
+          return prevAccepted.map((o) =>
+            (o.id || o._id) === (updatedOrder.id || updatedOrder._id)
+              ? updatedOrder
+              : o
+          );
+        }
+
+        return [updatedOrder, ...prevAccepted];
+      });
 
       // 4. Cambiar a la pestaña de aceptadas con un ligero retraso para una mejor experiencia de usuario
       setTimeout(() => {
@@ -240,25 +285,25 @@ const Requests = () => {
 
   const handleRejectOrder = async (order) => {
     try {
-      // 1. Primera pantalla de carga del programa
+      // Primera pantalla de carga del programa
       setIsProcessingAction(true);
       setLoading(true);
 
-      // 2. Cierra el modal inmediatamente
+      // Cierra el modal inmediatamente
       closeModal();
 
       // Check
       if (order.tomado === 'no') {
         console.log('La orden ya estaba desmarcada como no tomada');
 
-        // Asegúrese de que se elimine de aceptadas y se agregue a pendientes.
+        // Asegurar que se elimine de aceptadas y se agregue a pendientes
         setAcceptedOrders(
           acceptedOrders.filter(
             (o) => (o.id || o._id) !== (order.id || order._id)
           )
         );
 
-        // Agregue a pedidos pendientes (solo si no está ya allí)
+        // A pedidos pendientes
         if (!orders.some((o) => (o.id || o._id) === (order.id || order._id))) {
           setOrders((currentOrders) => [
             ...currentOrders,
@@ -275,7 +320,7 @@ const Requests = () => {
         return;
       }
 
-      // 3. Procesar la orden en segundo plano
+      // Procesar la orden en segundo plano
       try {
         // Intentar primero con el método de contexto
         await contextRejectOrder(order);
@@ -292,7 +337,7 @@ const Requests = () => {
         }
 
         const response = await fetch(
-          `http://localhost:3001/pedidos/${order.id || order._id}/desmarcar`,
+          `${API_URL}/pedidos/${order.id || order._id}/desmarcar`,
           {
             method: 'PATCH',
             headers: {
@@ -303,15 +348,14 @@ const Requests = () => {
         );
 
         if (!response.ok) {
-          // Si la respuesta tiene contenido, intenta analizarlo para obtener mejores mensajes de error
+          // Si la respuesta tiene contenido, intenta analizarlo para mensajes de error
           const errorText = await response.text();
           let errorMessage = `Error al rechazar: ${response.status} ${response.statusText}`;
 
           try {
             const errorJson = JSON.parse(errorText);
             if (errorJson.message) {
-              // Esto probablemente sea el mensaje "ya tiene el campo tomado en no"
-              // Si indica que la orden ya está desmarcada, podemos continuar
+              // Si indica que la orden ya está desmarcada
               if (
                 errorJson.message.includes('ya tiene el campo "tomado" en "no"')
               ) {
@@ -350,7 +394,7 @@ const Requests = () => {
         return currentOrders;
       });
 
-      // 4. Cambiar a la pestaña de pendientes con un ligero retraso para una mejor experiencia de usuario
+      //Cambiar a la pestaña de pendientes con un retraso para una mejor experiencia de usuario
       setTimeout(() => {
         setTabActivo('pendientes');
         setIsProcessingAction(false);
@@ -375,6 +419,19 @@ const Requests = () => {
   };
 
   const openModal = (order) => {
+    const currentUserUid = auth.currentUser?.uid;
+
+    // Verificar si la orden está tomada por otro usuario
+    if (
+      order.tomado === 'si' &&
+      order.userId &&
+      order.userId !== currentUserUid
+    ) {
+      setError(`Esta orden ya ha sido tomada por otro profesional`);
+      return;
+    }
+
+    // Si la orden está tomada por el usuario actual o no está tomada, mostrar el modal
     setSelectedOrder(order);
     setIsModalOpen(true);
   };
@@ -430,8 +487,8 @@ const Requests = () => {
         <div className='flex justify-between border-b'>
           <button
             className={`flex-1 py-3 text-center ${tabActivo === 'aceptadas'
-                ? 'text-purple-600 font-medium border-b-2 border-purple-600'
-                : 'text-gray-700'
+              ? 'text-purple-600 font-medium border-b-2 border-purple-600'
+              : 'text-gray-700'
               }`}
             onClick={() => setTabActivo('aceptadas')}
           >
@@ -439,8 +496,8 @@ const Requests = () => {
           </button>
           <button
             className={`flex-1 py-3 text-center ${tabActivo === 'pendientes'
-                ? 'text-purple-600 font-medium border-b-2 border-purple-600'
-                : 'text-gray-700'
+              ? 'text-purple-600 font-medium border-b-2 border-purple-600'
+              : 'text-gray-700'
               }`}
             onClick={() => setTabActivo('pendientes')}
           >
@@ -461,88 +518,162 @@ const Requests = () => {
         <div className='flex flex-col bg-white pb-16'>
           <div className='h-auto p-4'>
             <div className='overflow-x-auto'>
-              <table className='w-full border-collapse'>
-                <thead>
-                  <tr className='bg-gray-100 text-left'>
-                    <th className='p-3 text-sm'>Cliente</th>
-                    <th className='p-3 text-sm'>Fecha</th>
-                    <th className='p-3 text-sm'>Hora</th>
-                    <th className='p-3 text-sm'>Tipo</th>
-                    <th className='p-3 text-sm'></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentOrders.map((order, index) => (
-                    <tr
-                      key={order.id || order._id}
-                      className={`cursor-pointer ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
-                        } hover:bg-purple-100 transition`}
-                      onClick={() => openModal(order)}
-                    >
-                      <td className='p-3 text-sm whitespace-nowrap'>
-                        {order.nombreCliente || 'Cliente'}
-                      </td>
-                      <td className='p-3 text-sm whitespace-nowrap'>
-                        {order.fechaCreacion
-                          ? new Date(order.fechaCreacion).toLocaleDateString()
-                          : 'Fecha no disponible'}
-                      </td>
-                      <td className='p-3 text-sm whitespace-nowrap'>
-                        {formatHour(order.fechaCreacion)}
-                      </td>
-                      <td className='p-3 text-sm whitespace-nowrap'>
-                        {getImageForCategory(order.categoria) ? (
-                          <img
-                            src={getImageForCategory(order.categoria)}
-                            alt={order.categoria}
-                            title={order.categoria}
-                            className='h-8 w-8'
-                          />
-                        ) : (
-                          'Tipo no disponible'
-                        )}
-                      </td>
-                      <td className='p-3 text-right text-sm whitespace-nowrap'>
-                        <span className='text-purple-600'>➔</span>
-                      </td>
+              {loading && !isProcessingAction ? (
+                <div className='text-center py-12'>
+                  <div className='w-12 h-12 border-t-4 border-purple-500 border-solid rounded-full animate-spin mx-auto mb-4'></div>
+                  <p className='text-gray-500'>Cargando solicitudes...</p>
+                </div>
+              ) : currentOrders.length > 0 ? (
+                <table className='w-full border-collapse'>
+                  <thead>
+                    <tr className='bg-gray-100 text-left'>
+                      <th className='p-3 text-sm'>Cliente</th>
+                      <th className='p-3 text-sm'>Fecha</th>
+                      <th className='p-3 text-sm'>Hora</th>
+                      <th className='p-3 text-sm'>Tipo</th>
+                      <th className='p-3 text-sm'></th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {currentOrders.map((order, index) => (
+                      <tr
+                        key={order.id || order._id}
+                        className={`cursor-pointer ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                          } hover:bg-purple-100 transition`}
+                        onClick={() => openModal(order)}
+                      >
+                        <td className='p-3 text-sm whitespace-nowrap'>
+                          {order.nombreCliente || 'Cliente'}
+                        </td>
+                        <td className='p-3 text-sm whitespace-nowrap'>
+                          {order.fechaCreacion
+                            ? new Date(order.fechaCreacion).toLocaleDateString()
+                            : 'Fecha no disponible'}
+                        </td>
+                        <td className='p-3 text-sm whitespace-nowrap'>
+                          {formatHour(order.fechaCreacion)}
+                        </td>
+                        <td className='p-3 text-sm whitespace-nowrap'>
+                          {getImageForCategory(order.categoria) ? (
+                            <img
+                              src={getImageForCategory(order.categoria)}
+                              alt={order.categoria}
+                              title={order.categoria}
+                              className='h-8 w-8'
+                            />
+                          ) : (
+                            'Tipo no disponible'
+                          )}
+                        </td>
+                        <td className='p-3 text-right text-sm whitespace-nowrap'>
+                          <span className='text-purple-600'>➔</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div className='text-center py-8 bg-gray-50 rounded-lg'>
+                  <p className='text-gray-500'>
+                    {tabActivo === 'pendientes'
+                      ? 'No hay solicitudes pendientes disponibles'
+                      : 'No tienes trabajos aceptados'}
+                  </p>
+                </div>
+              )}
 
               {/* Paginación */}
+              {/* Paginación modificada para mostrar sólo un conjunto de páginas si hay muchas */}
               {totalPages > 1 && (
                 <div className='flex justify-center items-center mt-4'>
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                     className={`px-3 py-1 mx-1 rounded-md ${currentPage === 1
-                        ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                        : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                      : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
                       }`}
                   >
                     &laquo;
                   </button>
 
-                  {[...Array(totalPages)].map((_, index) => (
-                    <button
-                      key={index + 1}
-                      onClick={() => handlePageChange(index + 1)}
-                      className={`px-3 py-1 mx-1 rounded-md ${currentPage === index + 1
+                  {totalPages <= 5 ? (
+                    // Si hay 5 páginas o menos, mostrar todas
+                    [...Array(totalPages)].map((_, index) => (
+                      <button
+                        key={index + 1}
+                        onClick={() => handlePageChange(index + 1)}
+                        className={`px-3 py-1 mx-1 rounded-md ${currentPage === index + 1
                           ? 'bg-purple-600 text-white'
                           : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-                        }`}
-                    >
-                      {index + 1}
-                    </button>
-                  ))}
+                          }`}
+                      >
+                        {index + 1}
+                      </button>
+                    ))
+                  ) : (
+                    // Si hay más de 5 páginas, mostrar un subconjunto
+                    <>
+                      {/* Primera página siempre visible */}
+                      <button
+                        onClick={() => handlePageChange(1)}
+                        className={`px-3 py-1 mx-1 rounded-md ${currentPage === 1
+                          ? 'bg-purple-600 text-white'
+                          : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                          }`}
+                      >
+                        1
+                      </button>
+
+                      {/* Mostrar puntos suspensivos si la página actual es mayor que 3 */}
+                      {currentPage > 3 && <span className='mx-1'>...</span>}
+
+                      {/* Páginas alrededor de la actual */}
+                      {[...Array(5)]
+                        .map((_, index) => {
+                          const pageNum = Math.max(2, currentPage - 1) + index;
+                          if (pageNum > 1 && pageNum < totalPages) {
+                            return (
+                              <button
+                                key={pageNum}
+                                onClick={() => handlePageChange(pageNum)}
+                                className={`px-3 py-1 mx-1 rounded-md ${currentPage === pageNum
+                                  ? 'bg-purple-600 text-white'
+                                  : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                                  }`}
+                              >
+                                {pageNum}
+                              </button>
+                            );
+                          }
+                          return null;
+                        })
+                        .filter(Boolean)}
+
+                      {/* Mostrar puntos suspensivos si la página actual es menor que el total - 2 */}
+                      {currentPage < totalPages - 2 && (
+                        <span className='mx-1'>...</span>
+                      )}
+
+                      {/* Última página siempre visible */}
+                      <button
+                        onClick={() => handlePageChange(totalPages)}
+                        className={`px-3 py-1 mx-1 rounded-md ${currentPage === totalPages
+                          ? 'bg-purple-600 text-white'
+                          : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                          }`}
+                      >
+                        {totalPages}
+                      </button>
+                    </>
+                  )}
 
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
                     className={`px-3 py-1 mx-1 rounded-md ${currentPage === totalPages
-                        ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                        : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                      : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
                       }`}
                   >
                     &raquo;
@@ -747,14 +878,18 @@ const Requests = () => {
                   // Para órdenes ya aceptadas, solo mostrar botón de rechazar
                   <button
                     onClick={() => {
+                      if (loading || isProcessingAction) return;
                       setConfirmActionType('reject');
                       setConfirmMessage(
                         '¿Estás seguro de que quieres rechazar esta solicitud?'
                       );
                       setConfirmModalOpen(true);
                     }}
-                    className='flex-1 py-4 text-center border-2 border-orange-700 text-orange-700 rounded-lg font-bold'
-                    disabled={loading}
+                    className={`flex-1 py-4 text-center border-2 border-orange-700 text-orange-700 rounded-lg font-bold ${loading || isProcessingAction
+                      ? 'opacity-50 cursor-not-allowed'
+                      : ''
+                      }`}
+                    disabled={loading || isProcessingAction}
                   >
                     {loading ? 'Procesando...' : 'Rechazar'}
                   </button>
@@ -762,14 +897,18 @@ const Requests = () => {
                   // Para órdenes pendientes, solo mostrar botón de aceptar
                   <button
                     onClick={() => {
+                      if (loading || isProcessingAction) return;
                       setConfirmActionType('accept');
                       setConfirmMessage(
                         '¿Estás seguro de que quieres aceptar esta solicitud?'
                       );
                       setConfirmModalOpen(true);
                     }}
-                    className='flex-1 py-4 text-center bg-green-500 text-white rounded-lg font-bold'
-                    disabled={loading}
+                    className={`flex-1 py-4 text-center border-2 border-orange-700 text-orange-700 rounded-lg font-bold ${loading || isProcessingAction
+                      ? 'opacity-50 cursor-not-allowed'
+                      : ''
+                      }`}
+                    disabled={loading || isProcessingAction}
                   >
                     {loading ? 'Procesando...' : 'Aceptar'}
                   </button>
@@ -807,8 +946,8 @@ const Requests = () => {
                   }
                 }}
                 className={`px-4 py-2 rounded-md text-white ${confirmActionType === 'accept'
-                    ? 'bg-green-500'
-                    : 'bg-orange-600'
+                  ? 'bg-green-500'
+                  : 'bg-orange-600'
                   }`}
                 disabled={loading}
               >

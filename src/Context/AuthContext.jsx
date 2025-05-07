@@ -18,6 +18,7 @@ import axios from 'axios';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 const AuthContext = createContext();
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -57,7 +58,7 @@ export const AuthProvider = ({ children }) => {
     async (uid) => {
       try {
         const token = await auth.currentUser?.getIdToken();
-        const response = await fetch(`http://[::1]:3001/users/${uid}`, {
+        const response = await fetch(`${API_URL}/users/${uid}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Cache-Control': 'no-cache',
@@ -78,31 +79,6 @@ export const AuthProvider = ({ children }) => {
       }
     }, [logout]);
 
-  const fetchClientData = useCallback(async (uid) => {
-    try {
-      const token = await auth.currentUser?.getIdToken();
-      const response = await fetch(`http://[::1]:3001/clients/${uid}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Cache-Control": "no-cache"
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Error al obtener los datos del usuario");
-      }
-      const data = await response.json();
-      setUserData(data);
-      localStorage.setItem("userData", JSON.stringify(data));
-      return data;
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      await logout();
-      throw error;
-    }
-  }, [logout]);
-
-
   const fetchReviews = useCallback(async () => {
     try {
       const currentUser = auth.currentUser;
@@ -110,7 +86,7 @@ export const AuthProvider = ({ children }) => {
       const token = await auth.currentUser?.getIdToken();
 
       const response = await axios.get(
-        `http://[::1]:3001/reviews?professionalId=${uid}`,
+        `${API_URL}/reviews?professionalId=${uid}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -144,7 +120,7 @@ export const AuthProvider = ({ children }) => {
       );
 
       const response = await axios.patch(
-        `http://[::1]:3001/users/${currentUser.uid}`,
+        `${API_URL}/users/${currentUser.uid}`,
         cleanedPayload,
         {
           headers: {
@@ -174,32 +150,46 @@ export const AuthProvider = ({ children }) => {
           setUser(firebaseUser);
           localStorage.setItem('user', JSON.stringify(firebaseUser));
 
-          if (['/client/home', '/client/profile'].includes(location.pathname)) {
-            const userData = await fetchClientData(firebaseUser.uid);
-            return userData;
-          }
+          const userData = await fetchUserData(firebaseUser.uid);
 
-          if (['/home', '/profile'].includes(location.pathname)) {
-            const userData = await fetchUserData(firebaseUser.uid);
-            return userData;
+          if (!userData) {
+            throw new Error('Datos de usuario no válidos');
           }
 
           if (['/login', '/register'].includes(location.pathname)) {
             navigate('/home');
           }
-          if (['client/login', '/client/register'].includes(location.pathname)) {
+          if (['/client/login', '/client/register'].includes(location.pathname)) {
             navigate('/client/home');
           }
-
         } else {
           setUser(null);
           setUserData(null);
           localStorage.removeItem('user');
           localStorage.removeItem('userData');
+
+          if (location.pathname.startsWith('/client')) {
+            if (!['/client/login', '/client/register', '/client'].includes(location.pathname)) {
+              navigate('/client/login');
+            }
+          } else {
+            if (!['/login', '/register', '/'].includes(location.pathname)) {
+              navigate('/login');
+            }
+          }
+
         }
       } catch (error) {
-        console.error("Error en el observer de autenticación:", error);
-
+        console.error('Error en el observer de autenticación:', error);
+        if (location.pathname.startsWith('/client')) {
+          if (!['/client/login', '/client/register', '/client'].includes(location.pathname)) {
+            navigate('/client/login');
+          }
+        } else {
+          if (!['/login', '/register', '/'].includes(location.pathname)) {
+            navigate('/login');
+          }
+        }
       } finally {
         setLoading(false);
         setAuthChecked(true);
@@ -207,7 +197,7 @@ export const AuthProvider = ({ children }) => {
     });
 
     return () => unsubscribe();
-  }, [navigate, isLoggingOut, location.pathname, fetchUserData, fetchClientData]);
+  }, [navigate, isLoggingOut, location.pathname, fetchUserData]);
 
 
 
@@ -236,7 +226,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      const userData = await fetchClientData(user.uid);
+      const userData = await fetchUserData(user.uid);
       navigate('/home/client');
       return userData;
     } catch (error) {
@@ -247,8 +237,8 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-   // Función de registro
-   const register = async (email, password, userData) => {
+  // Función de registro
+  const register = async (email, password, userData) => {
     try {
       setLoading(true);
 
@@ -327,7 +317,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // // Función de registro
+  // Función de registro de cliente
   const registerClient = async (email, password, userData) => {
     try {
       setLoading(true);
@@ -347,7 +337,7 @@ export const AuthProvider = ({ children }) => {
         role: 'client'
       };
 
-      await axios.post('http://[::1]:3001/users', userDataForBackend, {
+      await axios.post(`${API_URL}/users`, userDataForBackend, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -361,7 +351,7 @@ export const AuthProvider = ({ children }) => {
       for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
         try {
           const { data } = await axios.get(
-            `http://[::1]:3001/users/${user.uid}`,
+            `${API_URL}/users/${user.uid}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -389,7 +379,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('userData', JSON.stringify(userDetails));
 
-      navigate('client/home');
+      navigate('/client/home');
       return { success: true, user: userDetails };
     } catch (err) {
       console.error('Error en el registro:', err);
@@ -458,7 +448,7 @@ export const AuthProvider = ({ children }) => {
       );
 
       const response = await axios.patch(
-        `http://[::1]:3001/users/${uid}`,
+        `${API_URL}/users/${uid}`,
         cleanedPayload,
         {
           headers: {
@@ -488,7 +478,7 @@ export const AuthProvider = ({ children }) => {
       const token = await currentUser?.getIdToken(true);
 
       const response = await axios.get(
-        'http://[::1]:3001/users?role=professional&formSubmitted=true',
+        `${API_URL}/users?role=professional&formSubmitted=true`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -508,7 +498,7 @@ export const AuthProvider = ({ children }) => {
       const currentUser = auth.currentUser;
       const token = await currentUser?.getIdToken(true);
 
-      const response = await axios.get('http://[::1]:3001/users', {
+      const response = await axios.get(`${API_URL}/users`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -527,7 +517,7 @@ export const AuthProvider = ({ children }) => {
       const token = await currentUser?.getIdToken(true);
 
       const response = await axios.get(
-        'http://[::1]:3001/users?role=professional&formSubmitted=false',
+        `${API_URL}/users?role=professional&formSubmitted=false`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -545,7 +535,7 @@ export const AuthProvider = ({ children }) => {
   const fetchUserDetails = useCallback(async (uid) => {
     try {
       const token = await auth.currentUser?.getIdToken();
-      const response = await fetch(`http://[::1]:3001/users/${uid}`, {
+      const response = await fetch(`${API_URL}/users/${uid}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Cache-Control': 'no-cache',
@@ -566,7 +556,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const token = await auth.currentUser?.getIdToken();
       const response = await axios.get(
-        `http://[::1]:3001/reviews?professionalId=${uid}`,
+        `${API_URL}/reviews?professionalId=${uid}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -590,7 +580,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const token = await auth.currentUser?.getIdToken();
       const response = await axios.patch(
-        `http://[::1]:3001/users/${uid}`,
+        `${API_URL}/users/${uid}`,
         { status },
         {
           headers: {
@@ -612,7 +602,7 @@ export const AuthProvider = ({ children }) => {
   const fetchOrders = async () => {
     try {
       const token = await auth.currentUser?.getIdToken();
-      const response = await fetch('http://localhost:3001/pedidos', {
+      const response = await fetch(`${API_URL}/pedidos`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -663,9 +653,9 @@ export const AuthProvider = ({ children }) => {
     try {
       const token = await auth.currentUser?.getIdToken();
 
-      // Importante: Cambié la URL de "/accept" a "/tomar" para que coincida con el backend
+      // Importante: Usamos la ruta "/tomar" para que coincida con el backend
       const response = await fetch(
-        `http://localhost:3001/pedidos/${order.id || order._id}/tomar`,
+        `${API_URL}/pedidos/${order.id || order._id}/tomar`,
         {
           method: 'PATCH',
           headers: {
@@ -692,7 +682,7 @@ export const AuthProvider = ({ children }) => {
       const token = await auth.currentUser?.getIdToken();
       // Change from "/reject" to "/desmarcar" to match backend
       const response = await fetch(
-        `http://localhost:3001/pedidos/${order.id || order._id}/desmarcar`,
+        `${API_URL}/pedidos/${order.id || order._id}/desmarcar`,
         {
           method: 'PATCH',
           headers: {
@@ -741,7 +731,6 @@ export const AuthProvider = ({ children }) => {
       rejectOrder,
       registerClient,
       clientLogin,
-      fetchClientData,
       fetchClientsOrders,
     }}>
       {children}
