@@ -16,7 +16,7 @@ const RegisterPageClient = () => {
   const [errors, setErrors] = useState({});
   const [firebaseError, setFirebaseError] = useState("");
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-  const { registerClient } = useAuth();
+  const { registerClient} = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -213,7 +213,6 @@ const RegisterPageClient = () => {
         {/* Popup de éxito */}
         {showSuccessPopup && (
           <SuccessPopup 
-            // onContinue={handleContinueToForm}
             onLater={handleLater}
           />
         )}

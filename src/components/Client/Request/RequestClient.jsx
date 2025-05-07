@@ -9,8 +9,6 @@ Modal.setAppElement('#root');
 const ClientRequests = () => {
   const {fetchClientsOrders} = useAuth();
   const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -67,15 +65,11 @@ const ClientRequests = () => {
   useEffect(() => {
     const loadOrders = async () => {
       try {
-        setLoading(true);
-        setError(null);
         const data = await fetchClientsOrders();
         setOrders(data);
       } catch (err) {
-        setError(err.message || 'Error al cargar los pedidos');
-      } finally {
-        setLoading(false);
-      }
+       err.message || 'Error al cargar los pedidos'
+      } 
     };
 
     loadOrders();
