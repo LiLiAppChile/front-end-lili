@@ -55,7 +55,7 @@ const App = () => {
       case 'professional':
         return <Navigate to="/home" replace />;
       case 'client':
-        return <Navigate to="/client" replace />;
+        return <Navigate to="/client/home" replace />;
       default:
         return <Navigate to="/login" replace />;
     }
@@ -97,6 +97,14 @@ const App = () => {
             <Route path="/admin/perfil" element={<ProtectedRoute allowedRoles={['admin']}><SupportProfile /></ProtectedRoute>} />
             <Route path="/admin/perfil/settings" element={<ProtectedRoute allowedRoles={['admin']}><SettingsPage /></ProtectedRoute>} />
 
+            {/* Rutas de Cliente */}
+            <Route path="/client" element={<LandingClient />} /> {/* Página de inicio de cliente */}
+            <Route path="/client/register" element={<RegisterPageClient />} /> {/* Página de registro de cliente */}
+            <Route path="/client/login" element={<LoginClient />} /> {/* Página de inicio de sesión de cliente */}
+            <Route path="/client/home" element={<ProtectedRoute allowedRoles={['client']}><HomeClient /> </ProtectedRoute>} /> {/* Página principal de cliente */}
+            <Route path="/client/profile" element={<ProtectedRoute allowedRoles={['client']}><ClientProfile/> </ProtectedRoute>} /> {/* Página de perfil de cliente */}
+            <Route path="/client/requests" element={<ProtectedRoute allowedRoles={['client']}><ClientRequests /> </ProtectedRoute>} /> {/* Página de solicitudes de cliente */}
+
             {/* Rutas compartidas */}
             <Route path="/settings" element={<ProtectedRoute allowedRoles={['admin', 'professional', 'client']}><SettingsPage /></ProtectedRoute>} />
             <Route path="/laboral-info" element={<ProtectedRoute allowedRoles={['professional']}><LaboralInfo /></ProtectedRoute>} />
@@ -110,13 +118,6 @@ const App = () => {
             <Route path="/privacy-policy" element={<ProtectedRoute allowedRoles={['admin', 'professional', 'client']}><PrivacyPolicy /></ProtectedRoute>} />
             <Route path="/contact" element={<ProtectedRoute allowedRoles={['admin', 'professional', 'client']}><Contact /></ProtectedRoute>} />
 
-            {/* Rutas de cliente */}
-            <Route path="/client" element={<LandingClient />} /> {/* Página de inicio de cliente */}
-            <Route path="/client/register" element={<RegisterPageClient />} /> {/* Página de registro de cliente */}
-            <Route path="/client/login" element={<LoginClient />} /> {/* Página de inicio de sesión de cliente */}
-            <Route path="/client/home" element={<ProtectedRoute allowedRoles={['client']}><HomeClient /> </ProtectedRoute>} /> {/* Página principal de cliente */}
-            <Route path="/client/profile" element={<ProtectedRoute allowedRoles={['client']}><ClientProfile/> </ProtectedRoute>} /> {/* Página de perfil de cliente */}
-            <Route path="/client/requests" element={<ProtectedRoute allowedRoles={['client']}><ClientRequests /> </ProtectedRoute>} /> {/* Página de solicitudes de cliente */}
           </Routes>
         </AuthProvider>
       )}

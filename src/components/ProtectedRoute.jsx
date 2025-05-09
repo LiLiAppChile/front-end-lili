@@ -22,7 +22,7 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     const defaultRoutes = {
       admin: '/admin/home',
       professional: '/home',
-      client: 'client/home'
+      client: '/client/home'
     };
     return <Navigate to={defaultRoutes[userData?.role] || '/login'} replace />;
   }
