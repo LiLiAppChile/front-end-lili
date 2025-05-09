@@ -1,133 +1,96 @@
-import React from "react";
-import { useAuth } from "../../../Context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../Context/AuthContext';
+import { IoChevronBack, IoChevronForward } from 'react-icons/io5';
 
 const SettingsPage = () => {
-  const { logout } = useAuth();
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const handleNavigation = (path) => {
     navigate(path);
   };
 
   return (
-    <div className="min-h-screen bg-white p-4">
-      {/* Botón para volver a la pestaña anterior */}
-      <div className="flex items-center mb-4">
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center text-[#6D28D9] text-2xl font-bold mr-2 cursor-pointer"
-        >
-          <span className="text-[#6D28D9] text-3xl font-medium">&lt;</span>
+    <div className='min-h-screen bg-white flex flex-col'>
+      {/* Header  */}
+      <div className='p-4 border-b border-gray-200 flex items-center'>
+        <button onClick={() => navigate(-1)} className='text-[#6D28D9] mr-3'>
+          <IoChevronBack size={24} />
         </button>
-        <button
-          onClick={() => navigate(-1)}
-          className="text-2xl font-bold text-black cursor-pointer"
-        >
-          Configuración
-        </button>
+        <h1 className='font-bold text-lg'>Configuración</h1>
       </div>
 
-      {/* Borde inferior debajo de "Configuración" */}
-      <div className="border-b border-[#d1d5db] mb-6"></div>
+      {/* Contenedor principal */}
+      <div className='flex-1 py-4 px-5 flex flex-col'>
+        <div className='bg-[#F3F4F6] rounded-lg overflow-hidden mb-4'>
+          <button
+            onClick={() => handleNavigation('/guarantees')}
+            className='w-full text-left py-3 px-4 border-b border-gray-200 hover:bg-gray-200 transition-colors'
+          >
+            <span className='font-medium text-[#6D28D9]'>
+              Garantías y coberturas
+            </span>
+          </button>
 
-      {/* Grupos de opciones */}
-      <div className="space-y-4">
-        {/* Información laboral y bancaria */}
-        <div className="bg-[#eaecf6] rounded-lg p-4 space-y-2">
           <button
-            onClick={() => handleNavigation("/laboral-info")}
-            className="w-full flex justify-between items-center py-2 border-b border-[#d1d5db] cursor-pointer"
+            onClick={() => handleNavigation('/contact-support')}
+            className='w-full text-left py-3 px-4 border-b border-gray-200 hover:bg-gray-200 transition-colors'
           >
-            <span className="font-semibold">Información laboral</span>
-            <span className="text-[#6D28D9] text-xl">&gt;</span>
+            <span className='font-medium text-[#6D28D9]'>
+              Resolución de problemas
+            </span>
           </button>
-          <button
-            onClick={() => handleNavigation("/bank-info")}
-            className="w-full flex justify-between items-center py-2 cursor-pointer"
-          >
-            <span className="font-semibold">Información bancaria</span>
-            <span className="text-[#6D28D9] text-xl">&gt;</span>
-          </button>
-        </div>
 
-        {/* LiLi App y cómo funciona */}
-        <div className="bg-[#eaecf6] rounded-lg p-4 space-y-2">
           <button
-            onClick={() => handleNavigation("/about-lili")}
-            className="w-full flex justify-between items-center py-2 border-b border-[#d1d5db] cursor-pointer"
+            onClick={() => handleNavigation('/terms')}
+            className='w-full text-left py-3 px-4 border-b border-gray-200 hover:bg-gray-200 transition-colors'
           >
-            <span className="font-semibold">¿Qué es LiLi App?</span>
-            <span className="text-[#6D28D9] text-xl">&gt;</span>
+            <span className='font-medium text-[#6D28D9]'>
+              Términos y condiciones
+            </span>
           </button>
-          <button
-            onClick={() => handleNavigation("/how-it-works")}
-            className="w-full flex justify-between items-center py-2 cursor-pointer"
-          >
-            <span className="font-semibold">¿Cómo funciona?</span>
-            <span className="text-[#6D28D9] text-xl">&gt;</span>
-          </button>
-        </div>
 
-        {/* Garantías, coberturas, resolución de problemas, términos y condiciones, políticas de reembolso y privacidad */}
-        <div className="bg-[#eaecf6] rounded-lg p-4 space-y-2">
           <button
-            onClick={() => handleNavigation("/guarantees")}
-            className="w-full flex justify-between items-center py-2 border-b border-[#d1d5db] cursor-pointer"
+            onClick={() => handleNavigation('/refund-policy')}
+            className='w-full text-left py-3 px-4 border-b border-gray-200 hover:bg-gray-200 transition-colors'
           >
-            <span className="font-semibold">Garantías y coberturas</span>
-            <span className="text-[#6D28D9] text-xl">&gt;</span>
+            <span className='font-medium text-[#6D28D9]'>
+              Políticas de reembolso
+            </span>
           </button>
+
           <button
-            onClick={() => handleNavigation("/contact-support")}
-            className="w-full flex justify-between items-center py-2 border-b border-[#d1d5db] cursor-pointer"
+            onClick={() => handleNavigation('/privacy-policy')}
+            className='w-full text-left py-3 px-4 hover:bg-gray-200 transition-colors'
           >
-            <span className="font-semibold">Resolución de problemas</span>
-            <span className="text-[#6D28D9] text-xl">&gt;</span>
-          </button>
-          <button
-            onClick={() => handleNavigation("/terms")}
-            className="w-full flex justify-between items-center py-2 border-b border-[#d1d5db] cursor-pointer"
-          >
-            <span className="font-semibold">Términos y condiciones</span>
-            <span className="text-[#6D28D9] text-xl">&gt;</span>
-          </button>
-          <button
-            onClick={() => handleNavigation("/refund-policy")}
-            className="w-full flex justify-between items-center py-2 border-b border-[#d1d5db] cursor-pointer"
-          >
-            <span className="font-semibold">Políticas de reembolso</span>
-            <span className="text-[#6D28D9] text-xl">&gt;</span>
-          </button>
-          <button
-            onClick={() => handleNavigation("/privacy-policy")}
-            className="w-full flex justify-between items-center py-2 cursor-pointer"
-          >
-            <span className="font-semibold">Políticas de privacidad</span>
-            <span className="text-[#6D28D9] text-xl">&gt;</span>
+            <span className='font-medium text-[#6D28D9]'>
+              Políticas de privacidad
+            </span>
           </button>
         </div>
 
         {/* Contáctanos */}
-        <div className="bg-[#eaecf6] rounded-lg p-4">
+        <div className='bg-[#F3F4F6] rounded-lg overflow-hidden mb-4'>
           <button
-            onClick={() => handleNavigation("/contact")}
-            className="w-full flex justify-between items-center py-2 cursor-pointer"
+            onClick={() => handleNavigation('/contact')}
+            className='w-full flex justify-between items-center py-3 px-4 hover:bg-gray-200 transition-colors'
           >
-            <span className="font-semibold">Contáctanos</span>
-            <span className="text-[#6D28D9] text-xl">&gt;</span>
+            <span className='font-medium'>Contáctanos</span>
+            <IoChevronForward size={20} className='text-gray-500' />
           </button>
         </div>
-      </div>
 
-      {/* Botón de cerrar sesión */}
-      <div className="mt-8 flex justify-center">
-        <button
-          onClick={logout}
-          className="bg-white border border-red-500 text-red-500 py-2 px-4 rounded-lg hover:bg-red-50 transition font-bold cursor-pointer"
-        >
-          Cerrar sesión
-        </button>
+        {/* Botón de cerrar sesión */}
+        <div className='mb-4'>
+          {' '}
+          <button
+            onClick={logout}
+            className='w-full border border-[#C2410C] text-[#C2410C] py-3 px-4 rounded-md font-medium text-center hover:bg-orange-50 transition-colors'
+          >
+            Cerrar sesión
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -47,17 +47,17 @@ const App = () => {
   const RoleRedirect = () => {
     const { user, userData } = useAuth();
 
-    if (!user) return <Navigate to="/login" replace />;
+    if (!user) return <Navigate to='/login' replace />;
 
     switch (userData?.role) {
       case 'admin':
-        return <Navigate to="/admin/home" replace />;
+        return <Navigate to='/admin/home' replace />;
       case 'professional':
-        return <Navigate to="/home" replace />;
+        return <Navigate to='/home' replace />;
       case 'client':
         return <Navigate to="/client/home" replace />;
       default:
-        return <Navigate to="/login" replace />;
+        return <Navigate to='/login' replace />;
     }
   };
 
@@ -69,23 +69,23 @@ const App = () => {
         <AuthProvider>
           <Routes>
             {/* Rutas públicas */}
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<RegisterPage />} />
+            <Route path='/' element={<LandingPage />} />
+            <Route path='/login' element={<Login />} />
+            <Route path='/register' element={<RegisterPage />} />
 
             {/* Redirección automática según rol */}
             <Route index element={<RoleRedirect />} />
-            <Route path="/redirect" element={<RoleRedirect />} />
+            <Route path='/redirect' element={<RoleRedirect />} />
 
             {/* Rutas de Professional */}
-            <Route path="/home" element={<ProtectedRoute allowedRoles={['professional']}><HomePage /></ProtectedRoute>} />
-            <Route path="/promotion1" element={<ProtectedRoute allowedRoles={['professional']}><Promotion1 /></ProtectedRoute>} />
-            <Route path="/history/detail/:id" element={<ProtectedRoute allowedRoles={['professional']}><JobDetailPage /></ProtectedRoute>} />
-            <Route path="/requests" element={<ProtectedRoute allowedRoles={['professional']}><Requests /></ProtectedRoute>} />
-            <Route path="/calendar" element={<ProtectedRoute allowedRoles={['professional']}><CalendarPage /></ProtectedRoute>} />
-            <Route path="/history" element={<ProtectedRoute allowedRoles={['professional']}><HistoryPage /></ProtectedRoute>} />
-            <Route path="/profile" element={<ProtectedRoute allowedRoles={['professional']}><Profile /></ProtectedRoute>} />
-            <Route path="/form" element={<ProtectedRoute allowedRoles={['professional']}><Form /></ProtectedRoute>} />
+            <Route path='/home' element={<ProtectedRoute allowedRoles={['professional']}><HomePage /></ProtectedRoute>} />
+            <Route path='/promotion1' element={<ProtectedRoute allowedRoles={['professional']}><Promotion1 /></ProtectedRoute>} />
+            <Route path='/history/detail/:id' element={<ProtectedRoute allowedRoles={['professional']}><JobDetailPage /></ProtectedRoute>} />
+            <Route path='/requests' element={<ProtectedRoute allowedRoles={['professional']}><Requests /></ProtectedRoute>} />
+            <Route path='/calendar' element={<ProtectedRoute allowedRoles={['professional']}><CalendarPage /></ProtectedRoute>} />
+            <Route path='/history' element={<ProtectedRoute allowedRoles={['professional']}><HistoryPage /></ProtectedRoute>}/>
+            <Route path='/profile' element={<ProtectedRoute allowedRoles={['professional']}><Profile /></ProtectedRoute>}/>
+            <Route path='/form' element={<ProtectedRoute allowedRoles={['professional']}><Form /></ProtectedRoute>}/>
 
             {/* Rutas de Admin */}
             <Route path="/admin/home" element={<ProtectedRoute allowedRoles={['admin']}><HomePageSupport /></ProtectedRoute>} />
@@ -102,7 +102,7 @@ const App = () => {
             <Route path="/client/register" element={<RegisterPageClient />} /> {/* Página de registro de cliente */}
             <Route path="/client/login" element={<LoginClient />} /> {/* Página de inicio de sesión de cliente */}
             <Route path="/client/home" element={<ProtectedRoute allowedRoles={['client']}><HomeClient /> </ProtectedRoute>} /> {/* Página principal de cliente */}
-            <Route path="/client/profile" element={<ProtectedRoute allowedRoles={['client']}><ClientProfile/> </ProtectedRoute>} /> {/* Página de perfil de cliente */}
+            <Route path="/client/profile" element={<ProtectedRoute allowedRoles={['client']}><ClientProfile /> </ProtectedRoute>} /> {/* Página de perfil de cliente */}
             <Route path="/client/requests" element={<ProtectedRoute allowedRoles={['client']}><ClientRequests /> </ProtectedRoute>} /> {/* Página de solicitudes de cliente */}
 
             {/* Rutas compartidas */}
@@ -126,5 +126,3 @@ const App = () => {
 };
 
 export default App;
-
-
