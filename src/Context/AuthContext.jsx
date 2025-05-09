@@ -38,7 +38,14 @@ export const AuthProvider = ({ children }) => {
       setUserData(null);
       localStorage.removeItem('user');
       localStorage.removeItem('userData');
-      navigate('/login');
+
+      if (location.pathname === '/home') {
+        navigate('/login');
+      }
+      if (location.pathname === '/client/home') {
+        navigate('/client/login');
+      }
+
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
     } finally {
@@ -59,20 +66,18 @@ export const AuthProvider = ({ children }) => {
         });
 
         if (!response.ok) {
-          throw new Error('Error al obtener los datos del usuario');
+          throw new Error("Error al obtener los datos del usuario");
         }
         const data = await response.json();
         setUserData(data);
-        localStorage.setItem('userData', JSON.stringify(data));
+        localStorage.setItem("userData", JSON.stringify(data));
         return data;
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error("Error fetching user data:", error);
         await logout();
         throw error;
       }
-    },
-    [logout]
-  );
+    }, [logout]);
 
   const fetchReviews = useCallback(async () => {
     try {
@@ -154,20 +159,36 @@ export const AuthProvider = ({ children }) => {
           if (['/login', '/register'].includes(location.pathname)) {
             navigate('/home');
           }
+          if (['/client/login', '/client/register'].includes(location.pathname)) {
+            navigate('/client/home');
+          }
         } else {
           setUser(null);
           setUserData(null);
           localStorage.removeItem('user');
           localStorage.removeItem('userData');
 
-          if (!['/login', '/register', '/'].includes(location.pathname)) {
-            navigate('/login');
+          if (location.pathname.startsWith('/client')) {
+            if (!['/client/login', '/client/register', '/client'].includes(location.pathname)) {
+              navigate('/client/login');
+            }
+          } else {
+            if (!['/login', '/register', '/'].includes(location.pathname)) {
+              navigate('/login');
+            }
           }
+
         }
       } catch (error) {
         console.error('Error en el observer de autenticación:', error);
-        if (!['/login', '/register'].includes(location.pathname)) {
-          navigate('/login');
+        if (location.pathname.startsWith('/client')) {
+          if (!['/client/login', '/client/register', '/client'].includes(location.pathname)) {
+            navigate('/client/login');
+          }
+        } else {
+          if (!['/login', '/register', '/'].includes(location.pathname)) {
+            navigate('/login');
+          }
         }
       } finally {
         setLoading(false);
@@ -177,6 +198,8 @@ export const AuthProvider = ({ children }) => {
 
     return () => unsubscribe();
   }, [navigate, isLoggingOut, location.pathname, fetchUserData]);
+
+
 
   const login = async (email, password) => {
     try {
@@ -192,6 +215,22 @@ export const AuthProvider = ({ children }) => {
       return userData;
     } catch (error) {
       console.error('Error al iniciar sesión:', error.message);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const clientLogin = async (email, password) => {
+    try {
+      setLoading(true);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      const userData = await fetchUserData(user.uid);
+      navigate('/home/client');
+      return userData;
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error.message);
       throw error;
     } finally {
       setLoading(false);
@@ -277,6 +316,88 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
+
+  // Función de registro de cliente
+  const registerClient = async (email, password, userData) => {
+    try {
+      setLoading(true);
+
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+      const token = await user.getIdToken();
+
+      const userDataForBackend = {
+        ...userData,
+        uid: user.uid,
+        validUser: true,
+        role: 'client'
+      };
+
+      await axios.post(`${API_URL}/users`, userDataForBackend, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const MAX_ATTEMPTS = 3;
+      const RETRY_DELAY = 300;
+      let userDetails;
+      let lastError;
+      console.log(userDataForBackend)
+      for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+        try {
+          const { data } = await axios.get(
+            `${API_URL}/users/${user.uid}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          userDetails = data;
+          break;
+        } catch (err) {
+          lastError = err;
+          if (attempt < MAX_ATTEMPTS - 1) {
+            await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
+          }
+        }
+      }
+
+      if (!userDetails) {
+        throw (
+          lastError || new Error('No se pudieron obtener los datos del usuario')
+        );
+      }
+
+      setUser(user);
+      setUserData(userDetails);
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('userData', JSON.stringify(userDetails));
+
+      navigate('/client/home');
+      return { success: true, user: userDetails };
+    } catch (err) {
+      console.error('Error en el registro:', err);
+
+      if (auth.currentUser) {
+        try {
+          await deleteUser(auth.currentUser);
+        } catch (deleteErr) {
+          console.error('Error al limpiar usuario:', deleteErr);
+        }
+      }
+
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const updateUser = async (formData, options = { showLoading: true }) => {
     try {
@@ -500,6 +621,33 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const fetchClientsOrders = async () => {
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      const email = auth.currentUser?.email;
+      const response = await fetch('http://localhost:3001/pedidos', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      const orders = await response.json()
+      const ordersClient = orders.filter((order) => order.emailCliente === email);
+      return await ordersClient;
+
+    } catch (error) {
+      console.error('Error al obtener pedidos:', error);
+      throw error;
+    }
+  };
+
+
   // Función para aceptar un pedido
   const acceptOrder = async (order) => {
     try {
@@ -560,30 +708,31 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        userData,
-        login,
-        register,
-        logout,
-        loading,
-        fetchUserData,
-        updateUser,
-        authChecked,
-        fetchReviews,
-        updateProfile,
-        fetchSubmissions,
-        fetchLightUsers,
-        fetchLightUsersAll,
-        fetchUserDetails,
-        fetchUsersReviews,
-        updateUserStatus,
-        fetchOrders,
-        acceptOrder,
-        rejectOrder,
-      }}
-    >
+    <AuthContext.Provider value={{
+      user,
+      userData,
+      login,
+      register,
+      logout,
+      loading,
+      fetchUserData,
+      updateUser,
+      authChecked,
+      fetchReviews,
+      updateProfile,
+      fetchSubmissions,
+      fetchLightUsers,
+      fetchLightUsersAll,
+      fetchUserDetails,
+      fetchUsersReviews,
+      updateUserStatus,
+      fetchOrders,
+      acceptOrder,
+      rejectOrder,
+      registerClient,
+      clientLogin,
+      fetchClientsOrders,
+    }}>
       {children}
     </AuthContext.Provider>
   );
