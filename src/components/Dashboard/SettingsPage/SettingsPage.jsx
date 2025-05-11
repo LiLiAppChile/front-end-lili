@@ -7,8 +7,12 @@ const SettingsPage = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
 
-  const handleNavigation = (path) => {
-    navigate(path);
+  // const handleNavigation = (path) => {
+  //   navigate(path);
+  // };
+
+  const handleNavigation = (url) => {
+    window.open(url, '_blank');
   };
 
   return (
@@ -25,7 +29,7 @@ const SettingsPage = () => {
       <div className='flex-1 py-4 px-5 flex flex-col'>
         <div className='bg-[#F3F4F6] rounded-lg overflow-hidden mb-4'>
           <button
-            onClick={() => handleNavigation('/guarantees')}
+            onClick={() => handleNavigation('https://liliapp.cl/garantias-y-coberturas-para-profesionales')}
             className='w-full text-left py-3 px-4 border-b border-gray-200 hover:bg-gray-200 transition-colors'
           >
             <span className='font-medium text-[#6D28D9]'>
