@@ -625,7 +625,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const token = await auth.currentUser?.getIdToken();
       const email = auth.currentUser?.email;
-      const response = await fetch('http://localhost:3001/pedidos', {
+      const response = await fetch(`${API_URL}/pedidos/obtener-por-usuario/${email}`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -636,15 +636,12 @@ export const AuthProvider = ({ children }) => {
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
       }
-
-      const orders = await response.json()
-      const ordersClient = orders.filter((order) => order.emailCliente === email);
-      return await ordersClient;
-
+      return await response.json();    
     } catch (error) {
       console.error('Error al obtener pedidos:', error);
       throw error;
     }
+    
   };
 
 
