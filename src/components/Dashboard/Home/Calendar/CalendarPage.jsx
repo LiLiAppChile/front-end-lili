@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import BottomMenu from "../../BottomMenu/BottomMenu";
+import { useAuth } from "../../../../Context/AuthContext";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL + "/events";
 
 const diasSemana = ["L", "M", "X", "J", "V", "S", "D"];
 
 const CalendarPage = () => {
+  const { userData } = useAuth();
   const [events, setEvents] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [newEvent, setNewEvent] = useState({
@@ -22,7 +24,7 @@ const CalendarPage = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch(API_URL);
+        const response = await fetch(`${API_URL}/professional/${userData?.uid}`);
         const data = await response.json();
         const formattedEvents = data.map((event) => ({
           id: event.id,
@@ -38,7 +40,9 @@ const CalendarPage = () => {
       }
     };
 
-    fetchEvents();
+    if (userData?.uid) {
+      fetchEvents();
+    }
   }, []);
 
   // 🔵 Agregar evento
@@ -51,6 +55,7 @@ const CalendarPage = () => {
       end: newEvent.end,
       location: newEvent.location,
       description: newEvent.description,
+      professionalId: userData?.uid
     };
 
     try {
@@ -78,16 +83,21 @@ const CalendarPage = () => {
   };
 
   const renderMensual = () => {
-    const diasMes = Array.from(
-      {
-        length: new Date(
-          selectedDate.getFullYear(),
-          selectedDate.getMonth() + 1,
-          0
-        ).getDate(),
-      },
-      (_, i) => i + 1
+    const firstDayOfMonth = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth(),
+      1
     );
+    const startDay = (firstDayOfMonth.getDay() + 6) % 7;
+
+    const daysInMonth = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth() + 1,
+      0
+    ).getDate();
+
+    const emptyDays = Array.from({ length: startDay });
+    const diasMes = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
     const eventosDelDia = events.filter(
       (ev) =>
@@ -142,6 +152,9 @@ const CalendarPage = () => {
         </div>
 
         <div className="grid grid-cols-7 text-center gap-1 mt-2">
+          {emptyDays.map((_, idx) => (
+            <div key={`empty-${idx}`} />
+          ))}
           {diasMes.map((dia) => {
             const date = new Date(
               selectedDate.getFullYear(),
@@ -150,8 +163,7 @@ const CalendarPage = () => {
             );
             const isSelected = selectedDay === dia;
             const eventosDelDia = events.filter(
-              (ev) =>
-                new Date(ev.start).toDateString() === date.toDateString()
+              (ev) => new Date(ev.start).toDateString() === date.toDateString()
             );
 
             return (
@@ -174,6 +186,7 @@ const CalendarPage = () => {
             );
           })}
         </div>
+
 
         <div className="mt-4">
           <h2 className="font-bold mb-2">Hoy</h2>

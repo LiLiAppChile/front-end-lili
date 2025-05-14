@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import BottomMenuAdmin from "../SupportBottomMenu/SupportBottomMenu";
-import UserPlaceholder from "@/assets/user.jpeg";
+import UserPlaceholder from "@/assets/perfilDefault.png";
 import profileIcon from "@/assets/profile.png";
 import editPen from "@/assets/editPen.png";
 import LoadingSpinner from "../../LoadingSpinner";

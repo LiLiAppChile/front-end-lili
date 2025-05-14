@@ -2,8 +2,10 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Cog6ToothIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
+import editPen from '@/assets/editPen.png';
+import profilIcon from '@/assets/profile.png';
 import Navbar from "../BottomMenu/BottomMenu";
-import UserPlaceholder from "../../../assets/user.jpeg";
+import UserPlaceholder from "@/assets/perfilDefault.png";
 import LoadingSpinner from "../../LoadingSpinner";
 import EditProfilePopup from './EditProfilePopup';
 import { useAuth } from '../../../Context/AuthContext';
@@ -96,7 +98,7 @@ const Profile = () => {
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-3">
                             <img
-                                src="./src/assets/profile.png"
+                                src={profilIcon}
                                 alt="profileIcon"
                             />
                             <h1 className="text-2xl font-bold">Perfil</h1>
@@ -136,7 +138,7 @@ const Profile = () => {
                                     </div>
                                 </div>
                                 <img
-                                    src="./src/assets/editPen.png"
+                                    src={editPen}
                                     alt="editProfile"
                                     className="w-6 h-6 cursor-pointer text-gray-600 hover:text-indigo-500 transition"
                                     onClick={() => setShowEditPopup(true)}

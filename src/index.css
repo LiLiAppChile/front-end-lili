@@ -79,6 +79,7 @@
       opacity: 0;
       transform: scale(0.9);
     }
+
     to {
       opacity: 1;
       transform: scale(1);
@@ -204,6 +205,7 @@
   font-weight: 100;
   font-style: normal;
 }
+
 .noto-sans-regular {
   font-family: "Noto Sans", sans-serif;
   font-optical-sizing: auto;
