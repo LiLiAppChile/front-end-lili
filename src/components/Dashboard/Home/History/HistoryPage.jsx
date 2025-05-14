@@ -151,11 +151,11 @@ const HistoryPage = () => {
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-100">
+        <div className="flex flex-col min-h-screen bg-white">
             {" "}
-            <div className="bg-white p-4 flex items-center gap-2 border-b border-gray-200 pb-4">
+            <div className="border-b-2 border-gray-200 mb-5 pb-4 py-5 px-5 flex items-center gap-2">
                 <img src={HistoryIcon} alt="historial" />
-                <h1 className="text-2xl font-bold text-gray-800">Historial</h1>
+                <h1 className="text-2xl font-bold">Historial</h1>
             </div>
             {/* Tabs Container */}
             <div className="flex bg-white px-4">
