@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../Context/AuthContext';
 import Icons from '../../ItemIconIndex';
 import IdCardImage from '@/assets/IdCardImage.png';
-import filterIcon from '@/assets/filter.png';
+import filterIcon from '@/assets/Filter.png';
 import searchIcon from '@/assets/search.png';
 import arrowIcon from '@/assets/Arrow.png';
 

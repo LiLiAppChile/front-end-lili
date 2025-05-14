@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
 import HeaderUsers from '../Dashboard/Header/HeaderUsers';
+import JobsUsers from '../Dashboard/Home/Jobs/JobsUsers';
 import PromotionUsers from '../Dashboard/Home/Promotion/PromotionUsers';
 import BottomMenu from '../Dashboard/BottomMenu/BottomMenu';
 import TrainingUsers from '../Dashboard/Home/Training/TrainingUsers';
