@@ -6,7 +6,8 @@ import PromotionUsers from '../Dashboard/Home/Promotion/PromotionUsers';
 import BottomMenu from '../Dashboard/BottomMenu/BottomMenu';
 import TrainingUsers from '../Dashboard/Home/Training/TrainingUsers';
 
-const HomePage = () => {
+
+const HomePageClient = () => {
   const navigate = useNavigate();
   const { userData } = useAuth();
 
@@ -92,4 +93,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default HomePageClient;

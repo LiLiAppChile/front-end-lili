@@ -1,32 +1,36 @@
-import { useEffect, useState } from 'react';
-import BottomMenuAdmin from "../SupportBottomMenu/SupportBottomMenu";
-import UserPlaceholder from "@/assets/perfilDefault.png";
-import profileIcon from "@/assets/profile.png";
-import editPen from "@/assets/editPen.png";
-import LoadingSpinner from "../../LoadingSpinner";
-import EditProfilePopup from './SupportEditProfilePopup';
-import { useAuth } from '../../../Context/AuthContext';
+import { useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Cog6ToothIcon } from '@heroicons/react/24/outline';
+import { Cog6ToothIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
+import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
+import Navbar from "../ClientBottomMenu/BottomMenuClient";
+import UserPlaceholder from "../../../assets/user.jpeg";
+import LoadingSpinner from "../../LoadingSpinner";
+import EditProfilePopup from '../../Dashboard/Profile/EditProfilePopup';
+import { useAuth } from '../../../Context/AuthContext';
 
-const SupportProfile = () => {
+const ClientProfile = () => {
     const [showEditPopup, setShowEditPopup] = useState(false);
     const { userData } = useAuth();
-    const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(true);
+
 
     const [profile, setProfile] = useState({
         name: "Cargando...",
         email: "",
+        phone: "",
         profilePicture: "",
+        rut: "",
+        commune: "",
         personalDescription: ""
     });
+
 
     useEffect(() => {
         if (userData) {
             setProfile(prev => ({
                 ...prev,
-                ...userData
+                ...userData,
             }));
             setIsLoading(false);
         } else {
@@ -34,10 +38,11 @@ const SupportProfile = () => {
         }
     }, [userData]);
 
+
     if (isLoading) {
         return (
             <>
-                <BottomMenuAdmin />
+                <Navbar />
                 <section className='bg-white min-h-screen'>
                     <div className="flex justify-center items-center h-64">
                         <LoadingSpinner />
@@ -50,13 +55,13 @@ const SupportProfile = () => {
 
     return (
         <>
-            <BottomMenuAdmin />
+            <Navbar />
             <section className='bg-white min-h-screen'>
                 <div className="border-b-2 border-gray-200 mb-5 pb-4 py-5 px-5">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-3">
                             <img
-                                src={profileIcon}
+                                src="/src/assets/profile.png"
                                 alt="profileIcon"
                             />
                             <h1 className="text-2xl font-bold">Perfil</h1>
@@ -86,13 +91,10 @@ const SupportProfile = () => {
                                     <h2 className="text-lg font-medium text-left">
                                         {profile.name || "Nombre no disponible"}
                                     </h2>
-                                    <div className='flex flex-wrap gap-2 mt-2'>
-                                        <p className='bg-white rounded-lg py-1 px-4 text-indigo-600 font-bold text-sm shadow'>Admin</p>
-                                        <p className='bg-white rounded-lg py-1 px-4 text-indigo-600 font-bold text-sm shadow'>Soporte</p>
-                                    </div>
+
                                 </div>
                                 <img
-                                    src={editPen}
+                                    src="/src/assets/editPen.png"
                                     alt="editProfile"
                                     className="w-6 h-6 cursor-pointer text-gray-600 hover:text-indigo-500 transition"
                                     onClick={() => setShowEditPopup(true)}
@@ -101,8 +103,18 @@ const SupportProfile = () => {
                         </div>
                     </div>
 
+                    <div className="border-t border-gray-300 my-3"></div>
+
                     <div className="bg-[#eaecf6] rounded-lg p-1">
                         <div className="space-y-1">
+                            <div className="flex items-center">
+                                <span className="font-semibold text-gray-700 w-24">Comuna:</span>
+                                <span className="text-gray-600">{profile.commune || "No proporcionado"}</span>
+                            </div>
+                            <div className="flex items-center">
+                                <span className="font-semibold text-gray-700 w-24">Número:</span>
+                                <span className="text-gray-600">{profile.phone || "No proporcionado"}</span>
+                            </div>
                             <div className="flex items-center">
                                 <span className="font-semibold text-gray-700 w-24">Correo:</span>
                                 <span className="text-gray-600">{profile.email || "No proporcionado"}</span>
@@ -115,6 +127,7 @@ const SupportProfile = () => {
                         )}
                     </div>
                 </div>
+
 
                 {showEditPopup && (
                     <EditProfilePopup
@@ -132,4 +145,4 @@ const SupportProfile = () => {
     );
 };
 
-export default SupportProfile;
+export default ClientProfile;

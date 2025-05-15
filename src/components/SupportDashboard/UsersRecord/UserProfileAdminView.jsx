@@ -4,7 +4,7 @@ import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faFileAlt } from "@fortawesome/free-solid-svg-icons";
 import BottomMenuAdmin from "../SupportBottomMenu/SupportBottomMenu";
-import UserPlaceholder from "../../../assets/user.jpeg";
+import UserPlaceholder from "../../../assets/perfilDefault.png";
 import LoadingSpinner from "../../LoadingSpinner";
 import { useAuth } from '../../../Context/AuthContext';
 

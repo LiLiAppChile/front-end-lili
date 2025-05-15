@@ -5,7 +5,7 @@ import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import editPen from '@/assets/editPen.png';
 import profilIcon from '@/assets/profile.png';
 import Navbar from "../BottomMenu/BottomMenu";
-import UserPlaceholder from "../../../assets/user.jpeg";
+import UserPlaceholder from "@/assets/perfilDefault.png";
 import LoadingSpinner from "../../LoadingSpinner";
 import EditProfilePopup from './EditProfilePopup';
 import { useAuth } from '../../../Context/AuthContext';

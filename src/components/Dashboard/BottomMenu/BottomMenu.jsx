@@ -50,9 +50,9 @@ const BottomMenu = () => {
         >
           <div className="h-5 w-5 flex items-center justify-center">
             {activeIcon === '/home' ? (
-              <img src={LiLiIconHomeSolid} alt="HomeIconWhite" className="h-5 w-5 object-contain" />
+              <img src={LiLiIconSolid} alt="HomeIconWhite" className="h-5 w-5 object-contain" />
             ) : (
-              <img src={LiLiIconSolid} alt="HomeIconWhiteSolid" className="h-5 w-5 object-contain" />
+              <img src={LiLiIconHomeSolid} alt="HomeIconWhiteSolid" className="h-5 w-5 object-contain" />
             )}
           </div>
           {activeIcon === '/home' && <div className="h-0.5 w-6 bg-white mt-1"></div>}

@@ -18,7 +18,7 @@ const HeaderUsers = () => {
         <button onClick={toggleNotifications} className="focus:outline-none">
           <BellIcon className="h-8 w-8 text-gray-700 cursor-pointer" />
           <span className="notify-number absolute -top-1 -right-1 bg-[#714dbf] text-white text-xs font-semibold px-1 rounded-full">
-            7
+            1
           </span>
         </button>
 
@@ -30,7 +30,6 @@ const HeaderUsers = () => {
               </h2>
               <ul>
                 <li className="py-2 border-b border-gray-200"><strong>¡Bienvenido a LiLi! </strong>Completa el formulario. Serás notificado cuando tu cuenta sea arpobada.</li>
-                <li className="py-2 border-b border-gray-200"><strong>¡Tu cuenta ha sido aprobada! </strong>Ya puedes aceptar trabajos.</li>
               </ul>
             </div>
           </div>
