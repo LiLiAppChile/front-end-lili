@@ -7,8 +7,12 @@ const SettingsPage = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
 
-  const handleNavigation = (path) => {
+  const handleNavigationPath = (path) => {
     navigate(path);
+  };
+
+  const handleNavigation = (url) => {
+    window.open(url, '_blank');
   };
 
   return (
@@ -25,7 +29,7 @@ const SettingsPage = () => {
       <div className='flex-1 py-4 px-5 flex flex-col'>
         <div className='bg-[#F3F4F6] rounded-lg overflow-hidden mb-4'>
           <button
-            onClick={() => handleNavigation('/guarantees')}
+            onClick={() => handleNavigation('https://liliapp.cl/garantias-y-coberturas-para-profesionales')}
             className='w-full text-left py-3 px-4 border-b border-gray-200 hover:bg-gray-200 transition-colors'
           >
             <span className='font-medium text-[#6D28D9]'>
@@ -34,7 +38,7 @@ const SettingsPage = () => {
           </button>
 
           <button
-            onClick={() => handleNavigation('/contact-support')}
+            onClick={() => handleNavigation('https://liliapp.cl/resolucion-de-problemas-e-inconvenientes')}
             className='w-full text-left py-3 px-4 border-b border-gray-200 hover:bg-gray-200 transition-colors'
           >
             <span className='font-medium text-[#6D28D9]'>
@@ -43,7 +47,7 @@ const SettingsPage = () => {
           </button>
 
           <button
-            onClick={() => handleNavigation('/terms')}
+            onClick={() => handleNavigation('https://liliapp.cl/terminos-y-condiciones')}
             className='w-full text-left py-3 px-4 border-b border-gray-200 hover:bg-gray-200 transition-colors'
           >
             <span className='font-medium text-[#6D28D9]'>
@@ -52,7 +56,7 @@ const SettingsPage = () => {
           </button>
 
           <button
-            onClick={() => handleNavigation('/refund-policy')}
+            onClick={() => handleNavigation('https://liliapp.cl/politica-de-reembolso')}
             className='w-full text-left py-3 px-4 border-b border-gray-200 hover:bg-gray-200 transition-colors'
           >
             <span className='font-medium text-[#6D28D9]'>
@@ -61,7 +65,7 @@ const SettingsPage = () => {
           </button>
 
           <button
-            onClick={() => handleNavigation('/privacy-policy')}
+            onClick={() => handleNavigation('https://liliapp.cl/politica-de-privacidad')}
             className='w-full text-left py-3 px-4 hover:bg-gray-200 transition-colors'
           >
             <span className='font-medium text-[#6D28D9]'>
@@ -73,7 +77,7 @@ const SettingsPage = () => {
         {/* Contáctanos */}
         <div className='bg-[#F3F4F6] rounded-lg overflow-hidden mb-4'>
           <button
-            onClick={() => handleNavigation('/contact')}
+            onClick={() => handleNavigationPath('/contact')}
             className='w-full flex justify-between items-center py-3 px-4 hover:bg-gray-200 transition-colors'
           >
             <span className='font-medium'>Contáctanos</span>

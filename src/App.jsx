@@ -98,12 +98,12 @@ const App = () => {
             <Route path="/admin/perfil/settings" element={<ProtectedRoute allowedRoles={['admin']}><SettingsPage /></ProtectedRoute>} />
 
             {/* Rutas de Cliente */}
-            <Route path="/client" element={<LandingClient />} /> {/* Página de inicio de cliente */}
-            <Route path="/client/register" element={<RegisterPageClient />} /> {/* Página de registro de cliente */}
-            <Route path="/client/login" element={<LoginClient />} /> {/* Página de inicio de sesión de cliente */}
-            <Route path="/client/home" element={<ProtectedRoute allowedRoles={['client']}><HomeClient /> </ProtectedRoute>} /> {/* Página principal de cliente */}
-            <Route path="/client/profile" element={<ProtectedRoute allowedRoles={['client']}><ClientProfile /> </ProtectedRoute>} /> {/* Página de perfil de cliente */}
-            <Route path="/client/requests" element={<ProtectedRoute allowedRoles={['client']}><ClientRequests /> </ProtectedRoute>} /> {/* Página de solicitudes de cliente */}
+            <Route path="/client" element={<LandingClient />} /> 
+            <Route path="/client/register" element={<RegisterPageClient />} /> 
+            <Route path="/client/login" element={<LoginClient />} /> 
+            <Route path="/client/home" element={<ProtectedRoute allowedRoles={['client']}><HomeClient /> </ProtectedRoute>} /> 
+            <Route path="/client/profile" element={<ProtectedRoute allowedRoles={['client']}><ClientProfile /> </ProtectedRoute>} /> 
+            <Route path="/client/requests" element={<ProtectedRoute allowedRoles={['client']}><ClientRequests /> </ProtectedRoute>} /> 
 
             {/* Rutas compartidas */}
             <Route path="/settings" element={<ProtectedRoute allowedRoles={['admin', 'professional', 'client']}><SettingsPage /></ProtectedRoute>} />
