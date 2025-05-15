@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import promocion from "@/assets/promocion.png";
-import arrowIcon from "@/assets/Arrow.png";
+import promocion from "@/assets/prom22.png";
+import arrowIcon from "@/assets/arrow.png"; // Importa la flecha
 
 const Promocion2 = () => {
     const navigate = useNavigate();
@@ -18,7 +18,7 @@ const Promocion2 = () => {
                         <img
                             src={arrowIcon}
                             alt="Flecha atrás"
-                            style={{ transform: "rotate(180deg)" }}
+                            className="rotate-180"
                         />
                     </button>
                     <h1 className="text-xl md:text-2xl font-bold text-gray-800">Promoción Especial</h1>

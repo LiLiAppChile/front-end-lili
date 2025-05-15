@@ -35,6 +35,7 @@ export default function ProfessionalDetail() {
                     specialties: userData.specialties || [],
                     registeredInSII: userData.siiRegistered || false,
                     activityStarted: userData.siiActivitiesStarted || false,
+                    ownTransportation: userData.ownTransportation || false,
                     hasTools: userData.hasTools || false,
                     documents: {
                         identityCardFront: userData.identityCardFront,
@@ -194,6 +195,10 @@ export default function ProfessionalDetail() {
                             <div className="flex justify-between items-center">
                                 <span className="text-sm font-medium text-gray-700">¿Inicio de actividades?</span>
                                 <ReadOnlyYesNoCheckbox value={professional.activityStarted} />
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-sm font-medium text-gray-700">¿Cuenta con transporte?</span>
+                                <ReadOnlyYesNoCheckbox value={professional.ownTransportation} />
                             </div>
                             <div className="flex justify-between items-center">
                                 <span className="text-sm font-medium text-gray-700">¿Posee herramientas?</span>
