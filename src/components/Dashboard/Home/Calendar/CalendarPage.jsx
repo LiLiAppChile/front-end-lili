@@ -215,9 +215,6 @@ const CalendarPage = () => {
         </div>
 
         <div className="flex justify-between mt-6">
-          <button className="w-[156px] h-[48px] rounded-[10px] border border-black px-4 py-3 text-black">
-            Bloquear
-          </button>
           <button
             onClick={() => setShowModal(true)}
             className="w-40 h-12 rounded-lg px-4 py-3 bg-[var(--bg-primary)] text-[var(--bg-secundary)]"

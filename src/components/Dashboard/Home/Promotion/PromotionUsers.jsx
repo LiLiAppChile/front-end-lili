@@ -1,10 +1,9 @@
 import PromoImg from "@/assets/promocion.png"
-import PromoImg2 from "@/assets/promocion2.png"
-import PromoImg3 from "@/assets/promocion3.png"
+import PromoImg2 from "@/assets/prom22.png"
 import { useNavigate } from "react-router-dom"
 
 const PromotionUsers = () => {
-    const images = [PromoImg, PromoImg2, PromoImg3]
+    const images = [PromoImg, PromoImg2]
     const Navigate = useNavigate()
     return (
         <div className="mt-3">

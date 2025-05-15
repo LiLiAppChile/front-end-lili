@@ -32,14 +32,16 @@ import QuotesList from "./components/SupportDashboard/Quotes/Quotes";
 import UserProfileAdminView from "./components/SupportDashboard/UsersRecord/UserProfileAdminView";
 import CalendarPage from "./components/Dashboard/Home/Calendar/CalendarPage";
 import HistoryPage from "./components/Dashboard/Home/History/HistoryPage";
-import JobDetailPage from "./components/Dashboard/Home/History/JobDetailPage";
 import Promotion1 from "./components/Dashboard/Home/Promotion/Promotion1";
+import Promotion2 from "./components/Dashboard/Home/Promotion/Promotion2";
 import RegisterPageClient from "./components/Client/RegisterClient/RegisterClient";
 import LandingClient from "./components/Client/LangingClient";
 import LoginClient from "./components/Client/LoginClient/LoginClient";
 import HomeClient from "./components/Client/homeClient/HomeClient";
 import ClientProfile from "./components/Client/Profile/ClientProfile";
 import ClientRequests from "./components/Client/Request/RequestClient";
+import Training1 from "./components/Dashboard/Home/Training/Training1";
+import Training2 from "./components/Dashboard/Home/Training/Training2";
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -79,13 +81,11 @@ const App = () => {
 
             {/* Rutas de Professional */}
             <Route path='/home' element={<ProtectedRoute allowedRoles={['professional']}><HomePage /></ProtectedRoute>} />
-            <Route path='/promotion1' element={<ProtectedRoute allowedRoles={['professional']}><Promotion1 /></ProtectedRoute>} />
-            <Route path='/history/detail/:id' element={<ProtectedRoute allowedRoles={['professional']}><JobDetailPage /></ProtectedRoute>} />
             <Route path='/requests' element={<ProtectedRoute allowedRoles={['professional']}><Requests /></ProtectedRoute>} />
             <Route path='/calendar' element={<ProtectedRoute allowedRoles={['professional']}><CalendarPage /></ProtectedRoute>} />
-            <Route path='/history' element={<ProtectedRoute allowedRoles={['professional']}><HistoryPage /></ProtectedRoute>}/>
-            <Route path='/profile' element={<ProtectedRoute allowedRoles={['professional']}><Profile /></ProtectedRoute>}/>
-            <Route path='/form' element={<ProtectedRoute allowedRoles={['professional']}><Form /></ProtectedRoute>}/>
+            <Route path='/history' element={<ProtectedRoute allowedRoles={['professional']}><HistoryPage /></ProtectedRoute>} />
+            <Route path='/profile' element={<ProtectedRoute allowedRoles={['professional']}><Profile /></ProtectedRoute>} />
+            <Route path='/form' element={<ProtectedRoute allowedRoles={['professional']}><Form /></ProtectedRoute>} />
 
             {/* Rutas de Admin */}
             <Route path="/admin/home" element={<ProtectedRoute allowedRoles={['admin']}><HomePageSupport /></ProtectedRoute>} />
@@ -106,6 +106,11 @@ const App = () => {
             <Route path="/client/requests" element={<ProtectedRoute allowedRoles={['client']}><ClientRequests /> </ProtectedRoute>} /> 
 
             {/* Rutas compartidas */}
+            <Route path='/promotion1' element={<ProtectedRoute allowedRoles={['admin', 'professional', 'client']}><Promotion1 /></ProtectedRoute>} />
+            <Route path='/promotion2' element={<ProtectedRoute allowedRoles={['admin', 'professional', 'client']}><Promotion2 /></ProtectedRoute>} />
+            <Route path='/training1' element={<ProtectedRoute allowedRoles={['admin', 'professional', 'client']}><Training1 /></ProtectedRoute>} />
+            <Route path='/training2' element={<ProtectedRoute allowedRoles={['admin', 'professional', 'client']}><Training2 /></ProtectedRoute>} />
+            <Route path='/training3' element={<ProtectedRoute allowedRoles={['admin', 'professional', 'client']}><Training1 /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute allowedRoles={['admin', 'professional', 'client']}><SettingsPage /></ProtectedRoute>} />
             <Route path="/laboral-info" element={<ProtectedRoute allowedRoles={['professional']}><LaboralInfo /></ProtectedRoute>} />
             <Route path="/bank-info" element={<ProtectedRoute allowedRoles={['professional']}><BankInfo /></ProtectedRoute>} />

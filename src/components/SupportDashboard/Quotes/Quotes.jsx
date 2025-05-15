@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import BottomMenuAdmin from "../SupportBottomMenu/SupportBottomMenu";
 import Icons from "../../ItemIconIndex";
+import PresupuestosIcons from "@/assets/Presupuestos.png";
+import searchIcon from '@/assets/search.png';
 
 const QuotesList = ({ limit }) => {
     const [quotes, setQuotes] = useState([]);
@@ -81,7 +83,7 @@ const QuotesList = ({ limit }) => {
             <div className='flex flex-col min-h-screen bg-white items-center px-2'>
                 <div className="border-b-2 border-gray-200 mb-3 pb-3 pt-4 w-full max-w-[360px]">
                     <div className="flex items-center gap-2 pl-2">
-                        <img src={Icons.default} alt="Presupuestos" className="w-6 h-6" />
+                        <img src={PresupuestosIcons} alt="Presupuestos" className="h-6 invert" />
                         <h1 className="text-xl font-bold">Presupuestos</h1>
                     </div>
                 </div>
@@ -107,7 +109,7 @@ const QuotesList = ({ limit }) => {
                             className='w-full p-2 pr-12 pl-3 border border-gray-300 rounded-md text-sm'
                         />
                         <div className='absolute right-2 top-1/2 transform -translate-y-1/2 flex gap-1'>
-                            <img src={Icons.default} alt='filter' className='h-4 w-4 opacity-70' />
+                            <img src={searchIcon} alt='filter' className='h-4 w-4 opacity-70' />
                         </div>
                     </div>
                 </div>
